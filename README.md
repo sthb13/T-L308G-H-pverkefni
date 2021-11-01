@@ -1,1 +1,1 @@
-# T-L308G-H-pverkefni
+# TÖL308G Hópverkefni
