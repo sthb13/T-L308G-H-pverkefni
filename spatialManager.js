@@ -41,9 +41,11 @@ getNewSpatialID : function() {
 register: function(entity) {
     var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
+    var width = entity.getWidth();
+    var height = entity.getHeight()
     
     // DONE: YOUR STUFF HERE!
-    this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, radius: entity.getRadius(), entity};
+    this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity};
     
     
 },
@@ -76,6 +78,19 @@ render: function(ctx) {
         util.strokeCircle(ctx, e.posX, e.posY, e.radius);
     }
     ctx.strokeStyle = oldStyle;
+},
+
+//Returns true if any of the entities in entities collide with the box defined by posX, posY, width, height
+checkBoxCollision: function(posX, posY, width, height, entities) {
+    for (const ID in entities) {
+        let e = this._entities[ID];
+        let collision = true;
+        if(posX < e.posX + e.width) { collision = false;} //A.X1 < B.X2
+        else if(posX + width > e.posX) { collision = false;} //A.X2 > B.X1
+        else if(posY < e.posY + e.height) {collision = false;} //A.Y1 < B.Y2
+        else if(posY + height > e.posY) {collision = false;} //A.Y2 > B.Y1
+    }
+    return collision;
 }
 
 }

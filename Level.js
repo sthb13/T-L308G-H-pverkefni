@@ -42,8 +42,6 @@ class Level {
                     default:
                         this.sprite = g_sprites.empty;
                         break;
-
-
                     }
 
                 this.sprite.drawAt(ctx, this.x+offsetX, this.y+offsetY);
