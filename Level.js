@@ -3,8 +3,8 @@ class Level {
         this.level = level;
         this.x = 0;
         this.y = 0;
-        this.width = GRID_BLOCK_X;
-        this.height = GRID_BLOCK_Y;
+        this.width = GRID_BLOCK_W;
+        this.height = GRID_BLOCK_H;
         this.sprite = g_sprites.empty;
     }
     update (du){

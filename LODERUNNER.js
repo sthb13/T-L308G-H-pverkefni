@@ -145,8 +145,8 @@ function requestPreloads() {
         ladder  : "./images/ladder.png",
         rope    : "./images/rope.png",
         gold    : "./images/gold.png",
-        //player  : "./images/runner.png", //spriteSheet
-        player : "./images/runner1.png",
+        player  : "./images/runner.png", //spriteSheet
+        // player : "./images/runner1.png",
         guard   : "./images/guard1.png",
         empty   : "./images/empty.png"
     };

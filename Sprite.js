@@ -14,11 +14,12 @@
 
 // Construct a "sprite" from the given `image`,
 //
-function Sprite(image) {
+function Sprite(image, spriteIndex = 0) {
     this.image = image;
 
     // this.width = image.width;
     // this.height = image.height;
+    this.sx = spriteIndex;
     this.width = 40;
     this.height = 44;
     this.scale = 1;
@@ -28,10 +29,12 @@ Sprite.prototype.drawAt = function (ctx, x, y) {
     ctx.drawImage(this.image, x, y);
 };
 
-Sprite.prototype.drawAtFromSpriteSheet = function (ctx,x,y,x2,y2){
+Sprite.prototype.drawFromSpriteSheetAt = function (ctx,x,y){
+    // console.log(this);
+    // console.log(g_sprites);
     ctx.drawImage(this.image,
-                  x,y,this.width,this.height,
-                  x2,y2,this.width, this.height);
+                  this.sx*this.width,0,this.width,this.height,
+                  x+this.width,y,this.width, this.height);
 }
 
 Sprite.prototype.drawCentredAt = function (ctx, cx, cy, rotation) {

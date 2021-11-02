@@ -109,6 +109,7 @@ findInitalPositionOfPlayer : function(){
 
 generatePlayer : function(descr){
     const init = this.findInitalPositionOfPlayer();
+    // console.log(init);
     this._player.push(new Player(init.x,init.y,init));
 },
 
