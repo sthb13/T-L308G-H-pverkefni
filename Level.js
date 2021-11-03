@@ -7,9 +7,11 @@ class Level {
         this.height = GRID_BLOCK_H;
         this.sprite = g_sprites.empty;
     }
+
     update (du){
         
     }
+    
     render (ctx){
         let offsetY = 0;
         //row
@@ -51,6 +53,45 @@ class Level {
 
             offsetY += this.height;
         }
+    }
+
+    //initializes the level by spawning objects, and changing the level data to be empty tiles in those places.
+    initialize() {
+        for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
+            for(let j = 0; j < NUM_ROWS_OF_BLOCKS; j++) {
+                block = this.level[j][i];
+                switch(block){
+                    case BLOCKTYPE.GOLD_SPAWN:
+                        spawnGold(i, j);
+                        this.level[j][i] = BLOCKTYPE.empty;
+                        break;
+                    case BLOCKTYPE.GUARD_SPAWN:
+                        spawnGuard(i, j);
+                        this.level[j][i] = BLOCKTYPE.empty;
+                        break;
+                    case BLOCKTYPE.PLAYER_SPAWN:
+                        spawnPlayer(i, j);
+                        this.level[j][i] = BLOCKTYPE.empty;
+                        break;
+                }
+            }
+        }
+    }
+
+    //reveals hidden ladders by changing the block type to ladder.
+    revealLadders() {
+        for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
+            for(let j = 0; j < NUM_ROWS_OF_BLOCKS; j++) {
+                block = this.level[j][i];
+                if(block === BLOCKTYPE.HIDDEN_LADDER) {
+                    level[j][i] = BLOCKTYPE.LADDER;
+                }
+            }
+        }
+    }
+
+    getBlockType(x, y) {
+        return this.level[y][x];
     }
 
     renderElement (ctx,x,y,w,h, col){

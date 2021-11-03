@@ -24,6 +24,8 @@ class Player {
     }
 
     canMoveH(dir){
+        spatialManager
+
         if(this.PASSES.SIDEWAYS.includes(gLevel[this.row][this.column+dir])) return true;
         return false;
     }
@@ -37,6 +39,7 @@ class Player {
     nextMove(){
 
     }
+    
     whereCanIMove(){
 
     }
@@ -69,7 +72,6 @@ class Player {
             this.x -= this.speed * du;
         }
         if(keys[this.KEY_RIGHT] && this.canMoveH(0)) {
-
             this.spriteAnim(this.ANIM.RIGHT);
             this.x += this.speed * du;
         }
