@@ -44,6 +44,20 @@ class Player {
 
     }
 
+    dig(dir){
+        if (dir === 1) {
+            if (gLevel[this.row+1][this.column+2] === 1) {
+                gLevel[this.row+1][this.column+2] = 0;    
+            }
+        }
+        else {
+            if (gLevel[this.row+1][this.column] === 1) {
+                gLevel[this.row+1][this.column] = 0;    
+            }
+        }
+    }
+
+
     generateSprites(frames){
         this.sprites = [];
         let sprite;
@@ -77,10 +91,21 @@ class Player {
         }
         if(keys[this.KEY_UP] && this.canMoveV(-1)) {
             this.spriteAnim(this.ANIM.UP);
-            this.y -= this.speed * du; }
+            this.y -= this.speed * du; 
+        }
         if(keys[this.KEY_DOWN] && this.canMoveV(0)) {
             this.spriteAnim(this.ANIM.DOWN);
-            this.y += this.speed * du; }
+            this.y += this.speed * du; 
+        }
+        
+        if(keys[this.KEY_HOLE_LEFT]) {
+                this.dig(-1);
+            }
+        if(keys[this.KEY_HOLE_RIGHT]) {
+                this.dig(1);
+                
+            }
+            
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
         this.column = Math.ceil(this.x/GRID_BLOCK_W);
     }
