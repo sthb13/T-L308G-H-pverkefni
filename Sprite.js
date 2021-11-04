@@ -34,7 +34,7 @@ Sprite.prototype.drawFromSpriteSheetAt = function (ctx,x,y){
     // console.log(g_sprites);
     ctx.drawImage(this.image,
                   this.sx*this.width,0,this.width,this.height,
-                  x+this.width,y,this.width, this.height);
+                  x,y,this.width, this.height);
 }
 
 Sprite.prototype.drawCentredAt = function (ctx, cx, cy, rotation) {
