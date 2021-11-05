@@ -38,3 +38,12 @@ var BLOCKTYPE = {
     FALSE_BREAKABLE: 7,
     GUARD_SPAWN: 8
 }
+
+var DIRECTION = {
+    LEFT: 1,
+    RIGHT: 2,
+    UP: 3,
+    DOWN: 4
+}
+
+
