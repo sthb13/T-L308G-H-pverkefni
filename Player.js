@@ -41,6 +41,7 @@ class Player {
         return false;
     }
 
+    //dig a hole
     dig(dir){
                 gLevel[this.row+1][this.column+dir] = 0;    
     }
