@@ -1,5 +1,5 @@
 // ===========
-// LODE RUNNER 
+// LODE RUNNER
 // ===========
 /*
 
@@ -27,7 +27,7 @@ var g_ctx = g_canvas.getContext("2d");
 //         cx : 200,
 //         cy : 200
 //     });
-    
+
 // }
 
 function createInitialLevel(){
@@ -59,9 +59,9 @@ function gatherInputs() {
 // GAME-SPECIFIC UPDATE LOGIC
 
 function updateSimulation(du) {
-    
+
     processDiagnostics();
-    
+
     entityManager.update(du);
 
     // Prevent perpetual firing!
@@ -103,7 +103,7 @@ function processDiagnostics() {
 
     if (eatKey(KEY_HALT)) entityManager.haltShips();
 
-    if (eatKey(KEY_RESET)) entityManager.resetShips();
+  //  if (eatKey(KEY_RESET)) entityManager.resetShips();
 
 }
 
@@ -125,6 +125,7 @@ function processDiagnostics() {
 function renderSimulation(ctx) {
 
     entityManager.render(ctx);
+    scoreManager.render(ctx);
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
