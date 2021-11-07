@@ -33,14 +33,6 @@ class Level {
                     case 4:
                          this.sprite = g_sprites.rope;
                         break;
-                    case 5:
-                        this.sprite = g_sprites.gold;
-                        break;
-                    case 6:
-                        break;
-                    case 8:
-                        this.sprite = g_sprites.guard;
-                        break;
                     default:
                         this.sprite = g_sprites.empty;
                         break;

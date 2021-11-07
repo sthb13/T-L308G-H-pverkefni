@@ -147,8 +147,9 @@ function requestPreloads() {
         gold    : "./images/gold.png",
         player  : "./images/runner.png", //spriteSheet
         // player : "./images/runner1.png",
-        guard   : "./images/guard1.png",
-        empty   : "./images/empty.png"
+        guard   : "./images/guard.png",
+        empty   : "./images/empty.png",
+        hole    : "./images/hole.png"
     };
 
     imagesPreload(requiredImages, g_images, preloadDone);
@@ -167,6 +168,7 @@ function preloadDone() {
     g_sprites.player = new Sprite(g_images.player);
     g_sprites.guard = new Sprite(g_images.guard);
     g_sprites.empty = new Sprite(g_images.empty);
+    g_sprites.hole = new Sprite(g_images.hole);
 
     // g_sprites.bullet = new Sprite(g_images.ship);
     // g_sprites.bullet.scale = 0.25;

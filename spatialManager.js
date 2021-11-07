@@ -82,9 +82,10 @@ render: function(ctx) {
 
 //Returns true if any of the entities in entities collide with the box defined by posX, posY, width, height
 checkBoxCollision: function(posX, posY, width, height, entities) {
+
+    let collision = true;
     for (const ID in entities) {
         let e = this._entities[ID];
-        let collision = true;
         if(posX < e.posX + e.width) { collision = false;} //A.X1 < B.X2
         else if(posX + width > e.posX) { collision = false;} //A.X2 > B.X1
         else if(posY < e.posY + e.height) {collision = false;} //A.Y1 < B.Y2
