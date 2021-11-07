@@ -42,9 +42,21 @@ class Player {
     }
 
     //dig a hole
-    dig(dir){
-                gLevel[this.row+1][this.column+dir] = 0;    
+    dig(dir, du){
+
+        this.lifeSpan = 300 / NOMINAL_UPDATE_INTERVAL;
+
+        this.lifeSpan -= du;
+
+        if (gLevel[this.row+1][this.column+dir] !== 1 && this.lifeSpan > 0) {
+                gLevel[this.row+1][this.column+dir] = 2;
+        }
+        else {
+            gLevel[this.row+1][this.column+dir] = 0;
+        }   
     }
+
+
 
     // has direction of player changed between update cycle 
     isDirectionChange(){
@@ -108,8 +120,8 @@ class Player {
         if(keys[this.KEY_RIGHT] && this.canMoveH(0)) this.moveRight(du);
         if(keys[this.KEY_UP] && this.canMoveV(-1)) this.moveUp(du);
         if(keys[this.KEY_DOWN] && this.canMoveV(0)) this.moveDown(du);
-        if(keys[this.KEY_HOLE_RIGHT]) this.dig(1);
-        if(keys[this.KEY_HOLE_LEFT]) this.dig(-1);
+        if(keys[this.KEY_HOLE_RIGHT]) this.dig(1, du);
+        if(keys[this.KEY_HOLE_LEFT]) this.dig(-1, du);
 
         // track current grid cel
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
