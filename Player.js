@@ -1,10 +1,11 @@
-class Player {
-    constructor(x,y, pos){
+class Player extends Actor{
+    constructor(x,y){
+        super();
         this.x = x*GRID_BLOCK_W;
         this.y = y*GRID_BLOCK_H;
         this.row = x;
         this.column = y;
-        this.pos = pos;
+        // this.pos = pos;
         this.speed = 4; // ~240 px/s
         this.image = g_images.player;
         this.sprite = g_sprites.player;
@@ -12,12 +13,12 @@ class Player {
         this.KEY_RIGHT = 'D'.charCodeAt(0);
         this.KEY_UP = 'W'.charCodeAt(0);
         this.KEY_DOWN = 'S'.charCodeAt(0);
-        this.KEY_HOLE_LEFT = 'J'.charCodeAt(0);
-        this.KEY_HOLE_RIGHT = 'K'.charCodeAt(0);
-        this.PASSES = {SIDEWAYS:[0,2,4,5,6],
-                       UP:[2,5,6,7],
-                       DOWN:[0,2,5,6,7]};
-        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6]};
+        this.KEY_HOLE_LEFT = 'Z'.charCodeAt(0);
+        this.KEY_HOLE_RIGHT = 'X'.charCodeAt(0);
+        this.PASSES = {SIDEWAYS:[0,2,4,5,6,8],
+                       UP:[0,2,4,5,6],
+                       DOWN:[0,2,4,5,6]};
+        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);
         this.csf = 0; //currentSpriteFrame
         this.dir = DIRECTION.RIGHT;
@@ -28,91 +29,32 @@ class Player {
         this.nextSpriteCounter = this.SPRITEFREQ;
     }
 
-    canMoveH(dir){
-        // TODO spatialManager should take care of this
-
-        if(this.PASSES.SIDEWAYS.includes(gLevel[this.row][this.column+dir])) return true;
-        return false;
-    }
-
-    canMoveV(dir){
-        if(this.PASSES.UP.includes(gLevel[this.row+dir][this.column])) return true;
-
-        return false;
-    }
-
+ 
     // has direction of player changed between update cycle 
-    isDirectionChange(){
-        if(this.dir != this.dirPrev) return true;
-        return false;
-    }
-
-    // returns array of sprite frames
-    generateSprites(frames){
-        let sprites = [];
-        let sprite;
-        for(let e = 0; e < frames.length; e++){
-            sprite = new Sprite(this.image,frames[e]);
-            sprites.push(sprite);
-        }
-        return sprites;
-    }
-
-    // handles cycling through the spite frames and updates sprite object
-    spriteAnim(frames){
-        if(this.isDirectionChange) this.sprites = [];
-        if(this.nextSpriteCounter < 0){
-            if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
-            this.nextSpriteCounter = this.SPRITEFREQ;
-            this.sprite = this.sprites[this.csf];
-            ++this.csf;
-
-            if(this.csf === this.sprites.length) this.csf = 0;
-        }
-    }
-
-    moveRight(du){
-        this.dir = DIRECTION.RIGHT;
-        this.spriteAnim(this.ANIM.RIGHT);
-        this.x += this.speed * du;
-    }
-
-    moveLeft(du){
-        this.dir = DIRECTION.LEFT;
-        this.spriteAnim(this.ANIM.LEFT);
-        this.x -= this.speed * du;
-    }
-
-    moveUp(du){
-        this.dir = DIRECTION.UP;
-        this.spriteAnim(this.ANIM.UP);
-        this.y -= this.speed * du;
-    }
-
-    moveDown(du){
-        this.dir = DIRECTION.DOWN;
-        this.spriteAnim(this.ANIM.DOWN);
-        this.y += this.speed * du;
-    }
 
     update(du){
         this.nextSpriteCounter -= du;
+        const d = this.dir * this.dirPrev;
+        if(this.isDirectionChange()) this.correctPosition();
         //track previous direction
         this.dirPrev = this.dir;
-        if(keys[this.KEY_LEFT] && this.canMoveH(-1)) this.moveLeft(du);
-        if(keys[this.KEY_RIGHT] && this.canMoveH(0)) this.moveRight(du);
-        if(keys[this.KEY_UP] && this.canMoveV(-1)) this.moveUp(du);
-        if(keys[this.KEY_DOWN] && this.canMoveV(0)) this.moveDown(du);
-
-        // track current grid cel
+        // if(keys[this.KEY_LEFT] && this.canMoveH(-1)) this.moveLeft(du);
+        if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
+        if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
+        
+        if(keys[this.KEY_LEFT] && this.canMove(DIRECTION.LEFT)) this.moveLeft(du);
+        // if(keys[this.KEY_RIGHT] && this.canMoveH(0)) this.moveRight(du);
+        if(keys[this.KEY_RIGHT] && this.canMove(DIRECTION.RIGHT)) this.moveRight(du);
+        if(keys[this.KEY_UP] && this.canMove(DIRECTION.UP)) this.moveUp(du);
+        if(keys[this.KEY_DOWN] && this.canMove(DIRECTION.DOWN)) this.moveDown(du);
+        if(keys[this.KEY_HOLE_LEFT]) entityManager._holes.push(new Hole(13,15));
+        
+        Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
-        this.column = Math.ceil(this.x/GRID_BLOCK_W);
+        // determine column from center of actor
+        this.column = Math.ceil((this.x-20)/GRID_BLOCK_W);
     }
 
-    render(ctx){
-         // this.sprite.drawAt(ctx, this.x, this.y);
-         this.sprite.drawFromSpriteSheetAt(ctx, this.x,this.y);
-    }
 }
 
 
