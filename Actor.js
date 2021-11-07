@@ -12,9 +12,10 @@ class Actor extends Entity{
     canMove(where){
         //check 9 blocks around itself
         //      13,14,15
-        // 13 [[ 0, 0, 0]
-        // 14  [ 0, 6, 0]
+        // 13 [[ 0, 0, 0]    
+        // 14  [ 0, 6, 0] // blocks[1][1] is current pos 
         // 15  [ 1, 1, 1]]
+        
         const cx = this.getPos().posX;
         // console.log(cx, this.x);
         this.blocks = this.surroundingElements(this.row, this.column);
@@ -120,12 +121,16 @@ class Actor extends Entity{
 
     // handles cycling through the spite frames and updates sprite object
     spriteAnim(frames){
-        if(this.isDirectionChange()) this.sprites = [];
+        if(this.isDirectionChange()) {
+            this.csf = 0;
+            this.sprites = [];
+        }
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
+            console.log(this.csf);
             this.sprite = this.sprites[this.csf];
-            ++this.csf;
+            this.csf++;
 
             if(this.csf === this.sprites.length) this.csf = 0;
         }
@@ -133,6 +138,7 @@ class Actor extends Entity{
 
     render(ctx){
         // this.sprite.drawAt(ctx, this.x, this.y);
+        // console.log(this.sprite);
         this.sprite.drawFromSpriteSheetAt(ctx, this.x,this.y);
     }
 

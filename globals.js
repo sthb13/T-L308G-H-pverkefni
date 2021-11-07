@@ -46,4 +46,3 @@ var DIRECTION = {
     DOWN: 2 
 }
 
-

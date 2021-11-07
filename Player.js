@@ -15,7 +15,7 @@ class Player extends Actor{
         this.KEY_DOWN = 'S'.charCodeAt(0);
         this.KEY_HOLE_LEFT = 'Z'.charCodeAt(0);
         this.KEY_HOLE_RIGHT = 'X'.charCodeAt(0);
-        this.PASSES = {SIDEWAYS:[0,2,4,5,6,8],
+        this.PASSES = {SIDEWAYS:[0,2,4,5,6,8], //air,ladder,rope...
                        UP:[0,2,4,5,6],
                        DOWN:[0,2,4,5,6]};
         this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8]};
