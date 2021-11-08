@@ -109,7 +109,7 @@ helperGrid: function (ctx) {
     const stepX = 40;
     const stepY = 44;
     const w = 1120;
-    const h = 704;
+    const h = 748;
     ctx.beginPath();
     // horizontal grid
     for (var x=0, i=0;x<=w;x+=stepX, i++) {
@@ -122,8 +122,8 @@ helperGrid: function (ctx) {
     }
     ctx.strokeStyle = st;
     ctx.lineWidth = lw;
-    ctx.stroke(); 
-    ctx.beginPath(); 
+    ctx.stroke();
+    ctx.beginPath();
     // vertigal grid
     for (var y=0,i=0;y<=h;y+=stepY, i++) {
   	    ctx.font='8px sans';

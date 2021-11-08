@@ -25,7 +25,7 @@ var SECS_TO_NOMINALS = 1000 / NOMINAL_UPDATE_INTERVAL;
 var GRID_BLOCK_W = 40;
 var GRID_BLOCK_H = 44;
 var NUM_COLUMNS_OF_BLOCKS = 28;
-var NUM_ROWS_OF_BLOCKS = 16;
+var NUM_ROWS_OF_BLOCKS = 17;
 
 var BLOCKTYPE = {
     AIR: 0,
@@ -42,8 +42,6 @@ var BLOCKTYPE = {
 var DIRECTION = {
     LEFT: -1,
     RIGHT: 1,
-    UP: -2, 
-    DOWN: 2 
+    UP: -2,
+    DOWN: 2
 }
-
-

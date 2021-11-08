@@ -32,7 +32,7 @@ Sprite.prototype.drawAt = function (ctx, x, y) {
 Sprite.prototype.drawFromSpriteSheetAt = function (ctx,x,y){
     // console.log(this);
     // console.log(g_sprites);
-    ctx.drawImage(this.image,
+        ctx.drawImage(this.image,
                   this.sx*this.width,0,this.width,this.height,
                   x,y,this.width, this.height);
 }
