@@ -7,6 +7,10 @@ class Actor extends Entity{
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
         this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
         this.blocks = this.surroundingElements(this.row,this.column);
+        this.prevX = this.x;
+        this.prevY = this.x;
+        this.prevX = this.x;
+        this.prevY = this.y;
     }
 
     canMove(where){
@@ -20,28 +24,29 @@ class Actor extends Entity{
         // console.log(cx, this.x);
         this.blocks = this.surroundingElements(this.row, this.column);
         // console.log(blocks[1][0], this.PASSES.SIDEWAYS);
-        if(where == DIRECTION.LEFT && this.PASSES.SIDEWAYS.includes(this.blocks[1][0])) return true;
-        if(where == DIRECTION.RIGHT && this.PASSES.SIDEWAYS.includes(this.blocks[1][2])) return true;
-        if(where == DIRECTION.UP
-          && this.PASSES.UP.includes(this.blocks[0][1])
-           && (this.blocks[1][1] == BLOCKTYPE.LADDER
-               ||  this.blocks[1][1] == BLOCKTYPE.ROPE)) return true;
+        // if(where == DIRECTION.LEFT && this.PASSES.SIDEWAYS.includes(this.blocks[1][0])) return true;
+        // if(where == DIRECTION.RIGHT && this.PASSES.SIDEWAYS.includes(this.blocks[1][2])) return true;
+        // if(where == DIRECTION.UP
+          // && this.PASSES.UP.includes(this.blocks[0][1])
+           // && (this.blocks[1][1] == BLOCKTYPE.LADDER
+               // ||  this.blocks[1][1] == BLOCKTYPE.ROPE)) return true;
 
-        if(where == DIRECTION.DOWN
-           && this.PASSES.DOWN.includes(this.blocks[0][1])
-           && (this.blocks[1][1] == BLOCKTYPE.LADDER
-               || this.blocks[2][1] == BLOCKTYPE.LADDER)) return true;
-        return false;
+        // if(where == DIRECTION.DOWN
+           // && this.PASSES.DOWN.includes(this.blocks[0][1])
+           // && (this.blocks[1][1] == BLOCKTYPE.LADDER
+               // || this.blocks[2][1] == BLOCKTYPE.LADDER)) return true;
+        return true;
     }
 
     correctPosition(){
-        const d = this.dirPrev - this.dir;
-        if(d % 2 !== 0){
-
-            console.log("correct: "+ d);
-            this.x = this.column * GRID_BLOCK_W;
-            this.y = this.row * GRID_BLOCK_H;
+        // const d = this.dirPrev - this.dir;
+        // if(d % 2 !== 0){
+        if(this.x != this.prevX){
+            console.log("moving to: " + this.column * GRID_BLOCK_W);
+            // this.x = this.column * GRID_BLOCK_W;
+            // this.y = this.row * GRID_BLOCK_H;
         }
+        // if(this.y != this.prevY) this.x = this.column * GRID_BLOCK_H;
     }
 
     surroundingElements(r,c){
@@ -69,35 +74,89 @@ class Actor extends Entity{
         }
     }
 
-    moveRight(du){
-        this.dir = DIRECTION.RIGHT;
-        this.spriteAnim(this.ANIM.RIGHT);
-        this.x += this.speed * du;
+    move(du,dir){
+        if(this._isFalling) return;
+        if(!spatialManager.checkCollision(this.x,this.y) &&
+           spatialManager.checkExtremeties(this.x,this.y)){
+            if(dir == DIRECTION.RIGHT || dir == DIRECTION.LEFT) this.prevX = this.x;
+            if(dir == DIRECTION.UP || dir == DIRECTION.DOWN) this.prevY = this.y;
+            this.dir = dir;
+            switch(dir){
+            case DIRECTION.RIGHT:
+                this.spriteAnim(this.ANIM.RIGHT);
+                this.x += this.speed * du;
+                break;
+            case DIRECTION.LEFT:
+                this.spriteAnim(this.ANIM.LEFT);
+                this.x -= this.speed * du;
+                break;
+            case DIRECTION.DOWN:
+                this.spriteAnim(this.ANIM.DOWN);
+                this.y += this.speed * du;
+                break;
+            case DIRECTION.UP:
+                //on ladder
+                if(this.blocks[1][1] == BLOCKTYPE.LADDER ||
+                   this.blocks[2][1] == BLOCKTYPE.LADDER ){
+                   // this.blocks[0][1] == BLOCKTYPE.AIR) {
+                // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
+                    this.x = (this.column ) * GRID_BLOCK_W;
+                    this.spriteAnim(this.ANIM.UP);
+                    this.y -= this.speed * du;
+                }
+                //above ladder
+                if(this.blocks[2][1] == BLOCKTYPE.LADDER &&
+                   this.blocks[0][1] == BLOCKTYPE.AIR ){
+                    // this.blocks[0][1] == BLOCKTYPE.AIR) {
+                    // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
+                    this.y = this.row  * GRID_BLOCK_H;
+                    this.spriteAnim(this.ANIM.UP);
+                    this.y -= this.speed * du;
+                }
+                // this.correctPosition();
+                break;
+            }
+            // this.correctPosition();
+            // this.blocks = this.surroundingElements(this.row,this.column);
+            
+        }else{
+            if(dir == DIRECTION.RIGHT || dir == DIRECTION.LEFT) this.x = this.prevX;
+            if(dir == DIRECTION.UP || dir == DIRECTION.DOWN) this.x = this.prevX;
+        }
     }
-
-    moveLeft(du){
-        this.dir = DIRECTION.LEFT;
-        this.spriteAnim(this.ANIM.LEFT);
-        this.x -= this.speed * du;
-    }
-
-    moveUp(du){
-        this.dir = DIRECTION.UP;
-        this.spriteAnim(this.ANIM.UP);
-        this.y -= this.speed * du;
-    }
-
-    moveDown(du){
-        this.dir = DIRECTION.DOWN;
-        this.spriteAnim(this.ANIM.DOWN);
-        this.y += this.speed * du;
-    }
-
+  
     fallingDown(du){
-        this.dir = DIRECTION.DOWN;
-        this.spriteAnim(this.ANIM.FALL);
-        this.y += this.speed * du;
+        // this.correctPosition();
+        // this.x = this.prevX;
+        if(!spatialManager.checkCollision(this.x,this.y) &&
+           spatialManager.checkExtremeties(this.x,this.y)){
+
+            this._isFalling = true;
+            this.dir = DIRECTION.DOWN;
+            this.spriteAnim(this.ANIM.FALL);
+            this.y += this.speed * du;
+
+        }else{
+        // if(this.y == this.prevY){
+            this.y = (this.row-1) * GRID_BLOCK_H;
+            this._isFalling = false;
+            // this.move(du,DIRECTION.RIGHT);
+        }
     }
+    
+// moveDown(du){
+//     //if we can climb we climb, if we cannot climb only then do we try dropping
+//     if(this._canClimb) {
+//         this.dir = DIRECTION.DOWN;
+//         this.spriteAnim(this.ANIM.DOWN);
+//         this._velY = this._speed * du;
+//     } else if(this._canDrop) {
+//         this.dir = DIRECTION.DOWN;
+//         this.spriteAnim(this.ANIM.FALL);
+//         this._velY = this._speed * du;
+//     }
+
+// };
 
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
@@ -128,7 +187,7 @@ class Actor extends Entity{
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
-            console.log(this.csf);
+            // console.log(this.csf);
             this.sprite = this.sprites[this.csf];
             this.csf++;
 

@@ -13,6 +13,41 @@ class Level {
     }
     
     render (ctx){
+        // let offsetY = 0;
+        // //row
+        // for(let j=0;j<this.level.length;j++){
+        //     let offsetX = 0;
+        //     //column
+        //     for(let i=0;i<this.level[j].length;i++){
+        //         const e = this.level[j][i];
+        //             switch (e){
+                    // case 1:
+                    //     // this.sprite = g_sprites.brick;
+                    //     break;
+                    // case 2:
+                    //      this.sprite = g_sprites.ladder;
+                    //     break;
+                    // case 3:
+                    //      this.sprite = g_sprites.ladder;
+                    //     break;
+                    // case 4:
+                    //      this.sprite = g_sprites.rope;
+                    //     break;
+                    // default:
+                    //     this.sprite = g_sprites.empty;
+                    //     break;
+                    // }
+
+        //         this.sprite.drawAt(ctx, this.x+offsetX, this.y+offsetY);
+
+        //         offsetX += this.width;
+        //     }
+
+        //     offsetY += this.height;
+        // }
+    }
+    
+    init(){
         let offsetY = 0;
         //row
         for(let j=0;j<this.level.length;j++){
@@ -20,30 +55,51 @@ class Level {
             //column
             for(let i=0;i<this.level[j].length;i++){
                 const e = this.level[j][i];
-                    switch (e){
-                    case 1:
-                        this.sprite = g_sprites.brick;
-                        break;
-                    case 2:
-                         this.sprite = g_sprites.ladder;
-                        break;
-                    case 3:
-                         this.sprite = g_sprites.ladder;
-                        break;
-                    case 4:
-                         this.sprite = g_sprites.rope;
-                        break;
-                    default:
-                        this.sprite = g_sprites.empty;
-                        break;
-                    }
+                const x = this.x+offsetX;
+                const y = this.y+offsetY;
+                switch (e){
+                case BLOCKTYPE.BREAKABLE:
+                    // console.log(j+offsetX);
+                    entityManager._blocks.push(new Wall(x,y));
+                   // entityManager.generateBlock(e,x,y);
+                    break;
+                case BLOCKTYPE.LADDER:
+                    entityManager._blocks.push(new Ladder(x,y));
+                    break;
+                case BLOCKTYPE.ROPE:
+                     entityManager._blocks.push(new Rope(x,y));
+                    break;
+                case BLOCKTYPE.GOLD_SPAWN:
+                      entityManager._gold.push(new Gold(x,y));
+                    break;
+                case BLOCKTYPE.PLAYER_SPAWN:
+                      entityManager._player.push(new Player(x,y));
+                    break;
+                case BLOCKTYPE.GUARD_SPAWN:
+                      entityManager._guards.push(new Guard(x,y));
+                    break;
+                // case 2:
 
-                this.sprite.drawAt(ctx, this.x+offsetX, this.y+offsetY);
-
-                offsetX += this.width;
+                //     // this.sprite = g_sprites.ladder;
+                //     break;
+                // case 3:
+                //      // this.sprite = g_sprites.ladder;
+                //     break;
+                // case 4:
+                //     // this.sprite = g_sprites.rope;
+                //     break;
+                default:
+                    
+                    // console.log("defaultinit?");
+                    // this.sprite = g_sprites.empty;
+                    break;
+                    
             }
 
-            offsetY += this.height;
+            offsetX += this.width;
+        }
+
+        offsetY += this.height;
         }
     }
 
