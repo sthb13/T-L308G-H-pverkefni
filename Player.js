@@ -26,7 +26,7 @@ class Player extends Actor{
         this.csf = 0; //currentSpriteFrame
         this.dir = DIRECTION.RIGHT;
         this.dirPrev = DIRECTION.RIGHT;
-        this.SPRITEFREQ = 3; // requests next sprite every 3rd update
+        this.SPRITEFREQ = 10; // requests next sprite every 3rd update
                              // got this value by visual trial and error
                              // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;

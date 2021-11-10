@@ -78,6 +78,10 @@ class Level {
                 case BLOCKTYPE.GUARD_SPAWN:
                       entityManager._guards.push(new Guard(x,y));
                     break;
+                case BLOCKTYPE.HOLE:
+                      entityManager._holes.push(new Hole(x,y));
+                    break;
+
                 // case 2:
 
                 //     // this.sprite = g_sprites.ladder;
