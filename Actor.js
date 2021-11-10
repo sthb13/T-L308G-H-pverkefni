@@ -95,8 +95,24 @@ class Actor extends Entity{
                 this.y += this.speed * du;
                 break;
             case DIRECTION.UP:
-                this.spriteAnim(this.ANIM.UP);
-                this.y -= this.speed * du;
+                //on ladder
+                if(this.blocks[1][1] == BLOCKTYPE.LADDER ||
+                   this.blocks[2][1] == BLOCKTYPE.LADDER ){
+                   // this.blocks[0][1] == BLOCKTYPE.AIR) {
+                // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
+                    this.x = (this.column ) * GRID_BLOCK_W;
+                    this.spriteAnim(this.ANIM.UP);
+                    this.y -= this.speed * du;
+                }
+                //above ladder
+                if(this.blocks[2][1] == BLOCKTYPE.LADDER &&
+                   this.blocks[0][1] == BLOCKTYPE.AIR ){
+                    // this.blocks[0][1] == BLOCKTYPE.AIR) {
+                    // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
+                    this.y = this.row  * GRID_BLOCK_H;
+                    this.spriteAnim(this.ANIM.UP);
+                    this.y -= this.speed * du;
+                }
                 // this.correctPosition();
                 break;
             }
@@ -122,6 +138,7 @@ class Actor extends Entity{
 
         }else{
         // if(this.y == this.prevY){
+            this.y = (this.row-1) * GRID_BLOCK_H;
             this._isFalling = false;
             // this.move(du,DIRECTION.RIGHT);
         }

@@ -72,8 +72,12 @@ class Player extends Actor{
          this.prevY = this.y;
         
         //     if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
+        console.log(this.x,this.column,this.blocks[0][1],this.blocks[1][1],this.blocks[2][1]);
+        // console.log(this.blocks);
+        
         this.blocks = this.surroundingElements(this.row,this.column);
-        if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
+        
+        if(this.blocks[2][1] == BLOCKTYPE.AIR) this._isFalling = true;
         if(this._isFalling) this.fallingDown(du);
         if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
         if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
@@ -83,6 +87,7 @@ class Player extends Actor{
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
         this.column = Math.ceil((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
+        // console.log(this.x,this.prevX);
 
     }
 }
