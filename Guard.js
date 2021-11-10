@@ -28,29 +28,37 @@ class Guard extends Actor{
     }
 
     distanceToPLayer(){
-        const p = entityManager._player[0];
+        if(entityManager._player[0]) {
+            const p = entityManager._player[0];
+        // console.log(p);
         return util.distSq(this.x,this.y,p.x,p.y);
+        }
+        return false;
     }
 
     findPlayer(du, dir){
         let d = this.dtp;
         // console.log(this.dtp);
         if(this.distanceToPLayer() > this.dtp){
-            if(this.canMove(DIRECTION.RIGHT)) this.moveRight(du);
+            this.move(du,DIRECTION.RIGHT);
+        }else{
+            this.move(du,DIRECTION.LEFT);
         }
 
         if(this.distanceToPLayer() > this.dtp){
-            if(this.canMove(DIRECTION.DOWN)) this.moveLeft(du);
+            // this.move(du,DIRECTION.DOWN);
         }else{
-            if(this.canMove(DIRECTION.UP)) this.moveDown(du);
+            // this.move(du,DIRECTION.UP);
         }
 
 
         this.dtp = this.distanceToPLayer();
         if(this.dtp < d){
-            console.log("right path");
+            this.move(du,DIRECTION.LEFT);
+            // console.log("right path");
         }else{
-            console.log("wrong path");
+            this.move(du,DIRECTION.RIGHT);
+            // console.log("wrong path");
         } 
     }
 
@@ -58,22 +66,17 @@ class Guard extends Actor{
         // spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         const d = this.dir * this.dirPrev;
-        if(this.isDirectionChange()) this.correctPosition();
+        // if(this.isDirectionChange()) this.correctPosition();
         //track previous direction
-<<<<<<< Updated upstream
-        if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
-        if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
+        this.dirPrev = this.dir;
 
-        this.dirPrev = this.dir;
-        // this.distanceToPLayer();
-        this.findPlayer(du,this.dir);
-        Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
-=======
-        this.dirPrev = this.dir;
+        this.blocks = this.surroundingElements(this.row,this.column);
+        if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
+        if(this._isFalling) this.fallingDown(du);
         // if(this.canMove(DIRECTION.LEFT)) this.move(du,DIRECTION.LEFT);
-        this.move(du,DIRECTION.LEFT);
+        // this.move(du,DIRECTION.LEFT);
+        this.findPlayer(du, DIRECTION.LEFT);
         Entity.prototype.setPos(this.x,this.y);
->>>>>>> Stashed changes
 
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
         // determine column from center of actor

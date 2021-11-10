@@ -7,14 +7,10 @@ class Actor extends Entity{
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
         this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
         this.blocks = this.surroundingElements(this.row,this.column);
-<<<<<<< Updated upstream
         this.prevX = this.x;
         this.prevY = this.x;
-=======
-        this._velX;
         this.prevX = this.x;
         this.prevY = this.y;
->>>>>>> Stashed changes
     }
 
     canMove(where){
@@ -43,21 +39,14 @@ class Actor extends Entity{
     }
 
     correctPosition(){
-<<<<<<< Updated upstream
-        const d = this.dirPrev - this.dir;
-        if(d % 2 !== 0){
-
-            // console.log("correct: "+ d);
-=======
         // const d = this.dirPrev - this.dir;
         // if(d % 2 !== 0){
         if(this.x != this.prevX){
             console.log("moving to: " + this.column * GRID_BLOCK_W);
->>>>>>> Stashed changes
-            this.x = this.column * GRID_BLOCK_W;
-            //this.y = this.row * GRID_BLOCK_H;
+            // this.x = this.column * GRID_BLOCK_W;
+            // this.y = this.row * GRID_BLOCK_H;
         }
-        if(this.y != this.prevY) this.x = this.column * GRID_BLOCK_H;
+        // if(this.y != this.prevY) this.x = this.column * GRID_BLOCK_H;
     }
 
     surroundingElements(r,c){
@@ -108,7 +97,7 @@ class Actor extends Entity{
             case DIRECTION.UP:
                 this.spriteAnim(this.ANIM.UP);
                 this.y -= this.speed * du;
-                this.correctPosition();
+                // this.correctPosition();
                 break;
             }
             // this.correctPosition();
