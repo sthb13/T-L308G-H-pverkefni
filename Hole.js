@@ -3,8 +3,13 @@ class Hole extends Entity{
         super();
         this.x = x * GRID_BLOCK_W;
         this.y = y * GRID_BLOCK_H;
+        this.row = x;
+        this.column = y;
         this.image = g_images.hole;
         this.sprite = g_sprites.hole;
+
+        this.digLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL; // dig timer.
+
         this.ANIM = {LEFT:[0,1,2,3,4,5,6,7],RIGHT:[9,10,11,12,13,14,15,16]};
         this.sprites = [];
         this.csf = 0; //currentSpriteFrame
@@ -18,7 +23,11 @@ class Hole extends Entity{
     }
 
     update(du){
-        console.log("hole?", this.x, this.y) ;
+        console.log("hole?", this.column, this.row) ;
+        gLevel[this.column][this.row] = 0;
+        this.digLifeSpan -= du;
+        if (this.digLifeSpan < 0) return gLevel[this.column][this.row] = 1;
+
     }
 
     // returns array of sprite frames

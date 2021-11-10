@@ -13,8 +13,8 @@ class Player extends Actor{
         this.KEY_RIGHT = 'D'.charCodeAt(0);
         this.KEY_UP = 'W'.charCodeAt(0);
         this.KEY_DOWN = 'S'.charCodeAt(0);
-        this.KEY_HOLE_LEFT = 'Z'.charCodeAt(0);
-        this.KEY_HOLE_RIGHT = 'X'.charCodeAt(0);
+        this.KEY_HOLE_LEFT = 'J'.charCodeAt(0);
+        this.KEY_HOLE_RIGHT = 'K'.charCodeAt(0);
         this.PASSES = {SIDEWAYS:[0,2,4,5,6,8], //air,ladder,rope...
                        UP:[0,2,4,5,6],
                        DOWN:[0,2,4,5,6]};
@@ -49,9 +49,13 @@ class Player extends Actor{
         if(keys[this.KEY_UP] && this.canMove(DIRECTION.UP)) this.moveUp(du);
         if(keys[this.KEY_DOWN] && this.canMove(DIRECTION.DOWN)) this.moveDown(du);
 
-        if(keys[this.KEY_HOLE_LEFT]) entityManager._holes.push(new Hole(this.column-1,this.row+1));
+        if(keys[this.KEY_HOLE_LEFT]) {
+            entityManager._holes.push(new Hole(this.column-1,this.row+1));
+        }
 
-        if(keys[this.KEY_HOLE_RIGHT]) entityManager._holes.push(new Hole(this.column+1,this.row+1));
+        if(keys[this.KEY_HOLE_RIGHT]) {
+            entityManager._holes.push(new Hole(this.column+1,this.row+1));
+            }
 
         Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
