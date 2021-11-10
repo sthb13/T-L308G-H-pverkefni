@@ -23,6 +23,7 @@ var spatialManager = {
 _nextSpatialID : 1, // make all valid IDs non-falsey (i.e. don't start at 0)
 
 _entities : [],
+_level : [],
 
 // "PRIVATE" METHODS
 //
@@ -36,6 +37,11 @@ getNewSpatialID : function() {
     // DONE: YOUR STUFF HERE!
     return this._nextSpatialID++;
 
+},
+
+setLevel : function(level) {
+    this._level = level;
+    //console.log("Level Set", this._level);
 },
 
 register: function(entity) {
@@ -85,12 +91,32 @@ checkBoxCollision: function(posX, posY, width, height, entities) {
     for (const ID in entities) {
         let e = this._entities[ID];
         let collision = true;
-        if(posX < e.posX + e.width) { collision = false;} //A.X1 < B.X2
-        else if(posX + width > e.posX) { collision = false;} //A.X2 > B.X1
-        else if(posY < e.posY + e.height) {collision = false;} //A.Y1 < B.Y2
-        else if(posY + height > e.posY) {collision = false;} //A.Y2 > B.Y1
+        if(posX > e.posX + e.width) { collision = false;} //A.X1 > B.X2
+        else if(posX + width < e.posX) { collision = false;} //A.X2 < B.X1
+        else if(posY > e.posY + e.height) {collision = false;} //A.Y1 > B.Y2
+        else if(posY + height < e.posY) {collision = false;} //A.Y2 < B.Y1
     }
     return collision;
+},
+
+//Returns the blocktypes adjacent to an object at posisiton given.
+//From top left to bottom right (in reading order.) Return Unbreakable type if out of bounds.
+getAdjacentBlocks: function(posX, posY, width, height) {
+    let centerX = posX + width/2;
+    let centerY = posY + height/2;
+    centerX = Math.floor(centerX / GRID_BLOCK_W);
+    centerY = Math.floor(centerY / GRID_BLOCK_H);
+    let adjacentBlocks = [];
+    for(let i = -1; i < 2; i++) {
+        for(let j = -1; j < 2; j++) {
+            if(centerX + j < 0 || centerX + j >= NUM_COLUMNS_OF_BLOCKS || centerY + i < 0 || centerY + i >= NUM_ROWS_OF_BLOCKS) {
+                adjacentBlocks.push(BLOCKTYPE.UNBREAKABLE);
+            } else {
+                adjacentBlocks.push(this._level.getBlockType(centerX + j, centerY + i));
+            }
+        }
+    }
+    return adjacentBlocks;
 }
 
 }
