@@ -32,6 +32,7 @@ function Entity() {
 
 };
 
+
 Entity.prototype.setup = function (descr) {
 
     // Apply all setup properies from the (optional) descriptor
@@ -46,6 +47,7 @@ Entity.prototype.setup = function (descr) {
     this._isDeadNow = false;
 };
 
+/*
 Entity.prototype.setPos = function (cx, cy) {
     this.cx = cx;
     this.cy = cy;
@@ -83,3 +85,4 @@ Entity.prototype.wrapPosition = function () {
     this.cx = util.wrapRange(this.cx, 0, g_canvas.width);
     this.cy = util.wrapRange(this.cy, 0, g_canvas.height);
 };
+*/

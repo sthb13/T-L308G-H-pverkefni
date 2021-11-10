@@ -94,6 +94,7 @@ deferredSetup : function () {
 
 init: function() {
     this._level.push(new Level(gLevel));
+    spatialManager.setLevel(this._level[0]);
     this.generatePlayer();
     //this._generateShip();
 },

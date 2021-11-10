@@ -62,11 +62,11 @@ Actor.prototype.moveLeft = function(du) {
 };
 
 Actor.prototype.moveUp = function(du) {
-    //console.log("canClimb : " + this._canClimb);
     if(this._canClimb) {
         this.dir = DIRECTION.UP;
         this.spriteAnim(this.ANIM.UP);
         this._velY = -this._speed * du;
+        this._velX = 0;
     }
 };
 
@@ -76,23 +76,66 @@ Actor.prototype.moveDown = function(du){
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.DOWN);
         this._velY = this._speed * du;
+        this._velX = 0;
     } else if(this._canDrop) {
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
         this._velY = this._speed * du;
+        this._velX = 0;
     }
 
 };
 
 Actor.prototype.move = function(du) {
+    if(this._shouldFall) {
+        this.moveDown(du);
+    }
     this._x += this._velX;
     if(this._isFalling) {this._velY += speed}
     this._y += this._velY;
-    let collisions = spatialManager.checkLevelCollision(
-        this._x + this._speed, this._y+1, GRID_BLOCK_W - 2*this._speed, GRID_BLOCK_H-2);
+    let adjacentBlocks = spatialManager.getAdjacentBlocks(
+        this._x, this._y, GRID_BLOCK_W, GRID_BLOCK_H);
+    //console.log(adjacentBlocks);
     let shouldFall = true;
     this._canClimb = false;
     this._canDrop = false;
+    if(this.COLLIDEABLE_BLOCK_TYPES.includes(adjacentBlocks[1])) {
+        if((this._y+GRID_BLOCK_H) % GRID_BLOCK_H >= GRID_BLOCK_H/2) {
+            this._y = GRID_BLOCK_H*Math.ceil(this._y / GRID_BLOCK_H);
+        }
+    }
+    if(this.COLLIDEABLE_BLOCK_TYPES.includes(adjacentBlocks[3])) {
+        //if in left block
+        if((this._x+GRID_BLOCK_W) % GRID_BLOCK_W >= GRID_BLOCK_W/2) {
+            this._x = GRID_BLOCK_W*Math.ceil(this._x / GRID_BLOCK_W);
+        }
+    }
+    if(this.CLIMBABLE_BLOCK_TYPES.includes(adjacentBlocks[4])) {
+        this._canClimb = true;
+    }
+    if(this.COLLIDEABLE_BLOCK_TYPES.includes(adjacentBlocks[5])) {
+        //if in right block
+        if((this._x+GRID_BLOCK_W) % GRID_BLOCK_W <= GRID_BLOCK_W/2) {
+            this._x = GRID_BLOCK_W*Math.floor(this._x / GRID_BLOCK_W);
+        }
+    }
+    if(this.COLLIDEABLE_BLOCK_TYPES.includes(adjacentBlocks[7])) {
+        if((this._y+GRID_BLOCK_H) % GRID_BLOCK_H <= GRID_BLOCK_H/2) {
+            this._y = GRID_BLOCK_H*Math.floor(this._y / GRID_BLOCK_H);
+            shouldFall = false;
+        }
+    }
+    if(this.CLIMBABLE_BLOCK_TYPES.includes(adjacentBlocks[7])) {
+        if((this._y+GRID_BLOCK_H) % GRID_BLOCK_H <= GRID_BLOCK_H/2) {
+            this._canClimb = true;
+            shouldFall = false;
+        }
+        this._canDrop = true;
+    }
+    this._shouldFall = shouldFall;
+
+
+        /*
     collisions.forEach(c => {
         if(c.posX === 0 && c.posY === 1 && !this.COLLIDEABLE_BLOCK_TYPES.includes(c.blockType)) {
             this._canDrop = true;
@@ -124,6 +167,8 @@ Actor.prototype.move = function(du) {
             }
         }
     });
+    */
+
     this._velX = 0;
     this._velY = 0;
 }
