@@ -126,6 +126,8 @@ function renderSimulation(ctx) {
 
     entityManager.render(ctx);
     scoreManager.render(ctx);
+    lifeManager.render(ctx);
+    levelNumberManager.render(ctx);
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
