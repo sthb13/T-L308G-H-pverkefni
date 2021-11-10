@@ -56,8 +56,13 @@ Entity.prototype.getPos = function () {
 };
 
 Entity.prototype.getRadius = function () {
-    return 0;
+    // return 0;
+    return this.radius;
 };
+
+Entity.prototype.setRadius = function (r) {
+    this.radius = r;
+}
 
 Entity.prototype.getSpatialID = function () {
     return this._spatialID;

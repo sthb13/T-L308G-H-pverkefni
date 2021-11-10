@@ -32,6 +32,7 @@ _gold : [],
 _guards   : [],
 _player: [],
 _level: [],
+_blocks: [],
 
 
 _forEachOf: function(aCategory, fn) {
@@ -51,48 +52,51 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._guards, this._gold, this._holes, this._level, this._player];
+    this._categories = [this._guards, this._gold, this._holes, this._level, this._player, this._blocks];
 },
 
 init: function() {
     this._level.push(new Level(gLevel));
-    this.generatePlayer();
-    this.generateGuards();
-    this.generateGold();
+    this._level[0].init();
+    // this.initLevel(gLevel);
+    // this.generatePlayer();
+    // this.generateGuards();
+    // this.generateGold();
+
 },
 
     // TODO better have this in Player class?
-findInitalPositionOfEntity : function(entity){
-    let entities = [];
-    for(let j=0;j<gLevel.length;j++){
-        for(let i=0;i<gLevel[j].length;i++){
-            // if (gLevel[j][i] == entity) return {x:j,y:i};
-            if (gLevel[j][i] == entity) entities.push({x:i,y:j});
-        }
-    }
-    return entities;
-},
+// findInitalPositionOfEntity : function(entity){
+//     let entities = [];
+//     for(let j=0;j<gLevel.length;j++){
+//         for(let i=0;i<gLevel[j].length;i++){
+//             // if (gLevel[j][i] == entity) return {x:j,y:i};
+//             if (gLevel[j][i] == entity) entities.push({x:i,y:j});
+//         }
+//     }
+//     return entities;
+// },
 
-generatePlayer : function(descr){
-    const init = this.findInitalPositionOfEntity(BLOCKTYPE.PLAYER_SPAWN);
-    this._player.push(new Player(init[0].x,init[0].y));
-},
+//     generatePlayer : function(x,y){
+//     // const init = this.findInitalPositionOfEntity(BLOCKTYPE.PLAYER_SPAWN);
+//         this._player.push(new Player(x,y));
+// },
 
-generateGuards : function(descr) {
-    const init = this.findInitalPositionOfEntity(BLOCKTYPE.GUARD_SPAWN);
-    for(let i=0;i<init.length;i++){
-        this._guards.push(new Guard(init[i].x,init[i].y));
-    }
-},
+//     generateGuard : function(x,y) {
+//     // const init = this.findInitalPositionOfEntity(BLOCKTYPE.GUARD_SPAWN);
+//     // for(let i=0;i<init.length;i++){
+//     //     this._guards.push(new Guard(init[i].x,init[i].y));
+//     // }
+//     this._guards.push(new Guard(x,y));
+// },
 
-generateGold : function(descr) {
-    // this._gold.push(new Gold(descr));
-    const init = this.findInitalPositionOfEntity(BLOCKTYPE.GOLD_SPAWN);
-    for(let i=0;i<init.length;i++){
-        this._gold.push(new Gold(init[i].x,init[i].y));
-    }
+//     generateGold : function(x,y) {
+//         this._gold.push(new Gold(x,y));
+// },
 
-},
+//     generateBlock : function(e,x,y){
+//         this._blocks.push(e,x,y);
+//     },
 
 
 update: function(du) {
@@ -100,7 +104,7 @@ update: function(du) {
 
         var aCategory = this._categories[c];
         var i = 0;
-        // console.log(aCategory);
+        // console.log(this._blocks);
         while (i < aCategory.length) {
             var status = aCategory[i].update(du);
             // console.log(status);

@@ -1,8 +1,9 @@
 class Gold extends Entity{
     constructor(x,y){
         super();
-        this.x = x * GRID_BLOCK_W;
-        this.y = y * GRID_BLOCK_H;
+        super.setup();
+        this.x = x ;
+        this.y = y ;
 
         // this.image = g_images.gold;
         this.sprite = g_sprites.gold;

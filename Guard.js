@@ -1,8 +1,9 @@
 class Guard extends Actor{
     constructor(x,y){
         super();
-        this.x = x*GRID_BLOCK_W;
-        this.y = y*GRID_BLOCK_H;
+        super.setup();
+        this.x = x;
+        this.y = y;
         this.row = x;
         this.column = y;
         // this.pos = pos;
@@ -54,10 +55,12 @@ class Guard extends Actor{
     }
 
     update(du){
+        // spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         const d = this.dir * this.dirPrev;
         if(this.isDirectionChange()) this.correctPosition();
         //track previous direction
+<<<<<<< Updated upstream
         if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
         if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
 
@@ -65,9 +68,16 @@ class Guard extends Actor{
         // this.distanceToPLayer();
         this.findPlayer(du,this.dir);
         Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
+=======
+        this.dirPrev = this.dir;
+        // if(this.canMove(DIRECTION.LEFT)) this.move(du,DIRECTION.LEFT);
+        this.move(du,DIRECTION.LEFT);
+        Entity.prototype.setPos(this.x,this.y);
+>>>>>>> Stashed changes
 
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
         // determine column from center of actor
-        this.column = Math.ceil((this.x-20)/GRID_BLOCK_W);
+        this.column = Math.ceil((this.x)/GRID_BLOCK_W);
+        // spatialManager.register(this);
     }
 }

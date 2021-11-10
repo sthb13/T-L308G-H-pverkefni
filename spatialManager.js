@@ -41,8 +41,10 @@ getNewSpatialID : function() {
 register: function(entity) {
     var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
-    var width = entity.getWidth();
-    var height = entity.getHeight()
+    var width = 40;
+    var height = 42;
+    // var width = entity.getWidth();
+    // var height = entity.getHeight()
     
     // DONE: YOUR STUFF HERE!
     this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity};
@@ -60,38 +62,76 @@ unregister: function(entity) {
 
 findEntityInRange: function(posX, posY, radius) {
     // DONE: YOUR STUFF HERE!
-    for (const ID in this._entities){
-        let e = this._entities[ID];
+    for (let i=0;i<this._entities.length;i++) {
+        let e = this._entities[i];
+        if(e){
         const d = util.distSq(posX,posY, e.posX, e.posY);
-        const r = util.square(radius+e.radius);
-        if(d < r) return e.entity;
+        // const r = util.square(radius+e.radius);
+        const b = util.square(40);
+        // if(d < b) return e.entity;
+            console.log(d,b);
+            
+            if(d < b) return true;
+        }
     }
     return false;
 },
 
 render: function(ctx) {
+    // console.log(this._entities);
     var oldStyle = ctx.strokeStyle;
     ctx.strokeStyle = "red";
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
-        util.strokeCircle(ctx, e.posX, e.posY, e.radius);
+        util.fillBox(ctx, e.posX, e.posY, 40,44,'red');
     }
     ctx.strokeStyle = oldStyle;
 },
 
 //Returns true if any of the entities in entities collide with the box defined by posX, posY, width, height
-checkBoxCollision: function(posX, posY, width, height, entities) {
+    checkBoxCollision: function(posX, posY, width, height, entities) {
+        // console.log(this._entities);
+        // console.log(entities);
+        // if(this._entities.length > 0){
+             // let collision = true;
+        // console.log(`_entities: ${this._entities[3]}`);
+            for (let i=0;i<this._entities.length;i++) {
+                const e = this._entities[i];
+                if(e){
+                    console.log("posX: " + posX, e.posX + "  posY: " + posY, e.posY);
+                    if(posX > e.posX && posY == e.posY) return true;
+                // if(posX < e.posX + e.width) { collision = false;} //A.X1 < B.X2
+                // else if(posX + width > e.posX) { collision = false;} //A.X2 > B.X1
+                // else if(posY < e.posY + e.height) {collision = false;} //A.Y1 < B.Y2
+                // else if(posY + height > e.posY) {collision = false;} //A.Y2 > B.Y1
+                }}
+            // return collision;
 
-    let collision = true;
-    for (const ID in entities) {
-        let e = this._entities[ID];
-        if(posX < e.posX + e.width) { collision = false;} //A.X1 < B.X2
-        else if(posX + width > e.posX) { collision = false;} //A.X2 > B.X1
-        else if(posY < e.posY + e.height) {collision = false;} //A.Y1 < B.Y2
-        else if(posY + height > e.posY) {collision = false;} //A.Y2 > B.Y1
+    },
+    // } 
+    checkExtremeties: function(x,y){
+        if(x > 0 && x < 1080 && y > 0 && y < 704) return true;
+        return false;
+    },
+
+checkCollision: function(x,y){
+    for (let i=0;i<this._entities.length;i++) {
+        const e = this._entities[i];
+        // console.log(e);
+        if(e){
+          if  (x < e.posX + e.width &&
+               x + e.width > e.posX &&
+               y < e.posY + e.height &&
+               e.height + y > e.posY) return e.entity;
+        }
+        
     }
-    return collision;
-}
+    return false;
+},
+    isInAir: function(x,y){
+        
+        return false;
+    }
 
 }

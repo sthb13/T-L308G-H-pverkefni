@@ -1,6 +1,7 @@
 class Hole extends Entity{
     constructor(x,y){
         super();
+        super.setup();
         this.x = x * GRID_BLOCK_W;
         this.y = y * GRID_BLOCK_H;
         this.image = g_images.hole;

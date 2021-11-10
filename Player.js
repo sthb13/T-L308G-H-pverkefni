@@ -1,8 +1,11 @@
 class Player extends Actor{
     constructor(x,y){
         super();
-        this.x = x*GRID_BLOCK_W;
-        this.y = y*GRID_BLOCK_H;
+        super.setup();
+
+        this.x = x;
+        this.y = y;
+        
         this.row = x;
         this.column = y;
         // this.pos = pos;
@@ -32,29 +35,56 @@ class Player extends Actor{
  
     // has direction of player changed between update cycle 
 
-    update(du){
-        this.nextSpriteCounter -= du;
-        const d = this.dir * this.dirPrev;
-        if(this.isDirectionChange()) this.correctPosition();
-        //track previous direction
-        this.dirPrev = this.dir;
-        // if(keys[this.KEY_LEFT] && this.canMoveH(-1)) this.moveLeft(du);
-        if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
-        if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
-        
-        if(keys[this.KEY_LEFT] && this.canMove(DIRECTION.LEFT)) this.moveLeft(du);
-        // if(keys[this.KEY_RIGHT] && this.canMoveH(0)) this.moveRight(du);
-        if(keys[this.KEY_RIGHT] && this.canMove(DIRECTION.RIGHT)) this.moveRight(du);
-        if(keys[this.KEY_UP] && this.canMove(DIRECTION.UP)) this.moveUp(du);
-        if(keys[this.KEY_DOWN] && this.canMove(DIRECTION.DOWN)) this.moveDown(du);
-        if(keys[this.KEY_HOLE_LEFT]) entityManager._holes.push(new Hole(13,15));
-        
-        Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
-        this.row = Math.ceil(this.y/GRID_BLOCK_H);
-        // determine column from center of actor
-        this.column = Math.ceil((this.x-20)/GRID_BLOCK_W);
-    }
+    // update(du){
+    //     spatialManager.checkBoxCollision();
+    //     spatialManager.unregister(this);
+    //     if(this._isDeadNow) return entityManager.KILL_ME_NOW;
 
+    //     this.nextSpriteCounter -= du;
+    //     const d = this.dir * this.dirPrev;
+        // if(this.isDirectionChange()) this.correctPosition();
+    //     //track previous direction
+    //     this.dirPrev = this.dir;
+    //     // if(keys[this.KEY_LEFT] && this.canMoveH(-1)) this.moveLeft(du);
+    //     if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
+    //     if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
+        
+    //     if(keys[this.KEY_LEFT] && this.canMove(DIRECTION.LEFT)) this.moveLeft(du);
+    //     // if(keys[this.KEY_RIGHT] && this.canMoveH(0)) this.moveRight(du);
+    //     if(keys[this.KEY_RIGHT] && this.canMove(DIRECTION.RIGHT)) this.moveRight(du);
+    //     if(keys[this.KEY_UP] && this.canMove(DIRECTION.UP)) this.moveUp(du);
+    //     if(keys[this.KEY_DOWN] && this.canMove(DIRECTION.DOWN)) this.moveDown(du);
+    //     if(keys[this.KEY_HOLE_LEFT]) entityManager._holes.push(new Hole(13,15));
+        
+    //     Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
+    //     this.row = Math.ceil(this.y/GRID_BLOCK_H);
+    //     // determine column from center of actor
+    //     this.column = Math.ceil((this.x-20)/GRID_BLOCK_W);
+    //     spatialManager.register(this);
+    // }
+
+    update(du){
+        spatialManager.unregister(this);
+        this.nextSpriteCounter -= du;
+        this.dirPrev = this.dir;
+        // console.log(this.blocks);
+          this.prevX = this.x;
+         this.prevY = this.y;
+        
+        //     if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
+        this.blocks = this.surroundingElements(this.row,this.column);
+        if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
+        if(this._isFalling) this.fallingDown(du);
+        if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+        if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+        if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
+        if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+        Entity.prototype.setPos(this.x,this.y);
+        this.row = Math.ceil(this.y/GRID_BLOCK_H);
+        this.column = Math.ceil((this.x)/GRID_BLOCK_W);
+        spatialManager.register(this);
+
+    }
 }
 
 
