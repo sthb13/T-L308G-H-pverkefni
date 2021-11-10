@@ -7,6 +7,8 @@ class Actor extends Entity{
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
         this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
         this.blocks = this.surroundingElements(this.row,this.column);
+        this.prevX = this.x;
+        this.prevY = this.x;
     }
 
     canMove(where){
@@ -38,7 +40,7 @@ class Actor extends Entity{
         const d = this.dirPrev - this.dir;
         if(d % 2 !== 0){
 
-            console.log("correct: "+ d);
+            // console.log("correct: "+ d);
             this.x = this.column * GRID_BLOCK_W;
             this.y = this.row * GRID_BLOCK_H;
         }
@@ -128,7 +130,7 @@ class Actor extends Entity{
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
-            console.log(this.csf);
+            // console.log(this.csf);
             this.sprite = this.sprites[this.csf];
             this.csf++;
 

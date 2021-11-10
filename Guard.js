@@ -21,8 +21,36 @@ class Guard extends Actor{
         // got this value by visual trial and error
         // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
+        this.dtp = this.distanceToPLayer();
 
 
+    }
+
+    distanceToPLayer(){
+        const p = entityManager._player[0];
+        return util.distSq(this.x,this.y,p.x,p.y);
+    }
+
+    findPlayer(du, dir){
+        let d = this.dtp;
+        // console.log(this.dtp);
+        if(this.distanceToPLayer() > this.dtp){
+            if(this.canMove(DIRECTION.RIGHT)) this.moveRight(du);
+        }
+
+        if(this.distanceToPLayer() > this.dtp){
+            if(this.canMove(DIRECTION.DOWN)) this.moveLeft(du);
+        }else{
+            if(this.canMove(DIRECTION.UP)) this.moveDown(du);
+        }
+
+
+        this.dtp = this.distanceToPLayer();
+        if(this.dtp < d){
+            console.log("right path");
+        }else{
+            console.log("wrong path");
+        } 
     }
 
     update(du){
@@ -30,9 +58,12 @@ class Guard extends Actor{
         const d = this.dir * this.dirPrev;
         if(this.isDirectionChange()) this.correctPosition();
         //track previous direction
-        this.dirPrev = this.dir;
-        if(this.canMove(DIRECTION.LEFT)) this.moveLeft(du);
+        if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
+        if(this.blocks[2][1] == BLOCKTYPE.BREAKABLE) this.correctPosition();
 
+        this.dirPrev = this.dir;
+        // this.distanceToPLayer();
+        this.findPlayer(du,this.dir);
         Entity.prototype.setPos(this.x+GRID_BLOCK_W/2,this.y+GRID_BLOCK_H/2);
 
         this.row = Math.ceil(this.y/GRID_BLOCK_H);
