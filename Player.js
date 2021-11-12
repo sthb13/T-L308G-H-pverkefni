@@ -21,7 +21,7 @@ class Player extends Actor{
         this.PASSES = {SIDEWAYS:[0,2,4,5,6,8], //air,ladder,rope...
                        UP:[0,2,4,5,6],
                        DOWN:[0,2,4,5,6]};
-        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8]};
+        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8], ROPE_RIGHT:[9,10,11], ROPE_LEFT:[12,13,14]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);
         this.csf = 0; //currentSpriteFrame
         this.dir = DIRECTION.RIGHT;
@@ -54,7 +54,6 @@ class Player extends Actor{
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
         spatialManager.register(this);
-        // console.log(this.x,this.prevX);
         // this.debug();
     }
 

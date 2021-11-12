@@ -50,7 +50,7 @@ var STATE = {
     ONBLOCK : 0,
     ONLADDER : 1,
     CANCLIMB : 2,
-    FALLING : 3
-
+    FALLING : 3,
+    INROPE : 4
 
 }
