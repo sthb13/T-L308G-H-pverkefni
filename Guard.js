@@ -13,7 +13,7 @@ class Guard extends Actor{
         this.PASSES = {SIDEWAYS:[0,2,4,5,6,8],
                        UP:[0,2,4,5,6],
                        DOWN:[0,2,4,5,6]};
-        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8]};
+        this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8], ROPE_RIGHT:[9,10,11], ROPE_LEFT:[12,13,14]};
         this.sprites = this.generateSprites(this.ANIM.LEFT);
         this.csf = 0; //currentSpriteFrame
         this.dir = DIRECTION.LEFT;
@@ -23,64 +23,97 @@ class Guard extends Actor{
         // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.dtp = this.distanceToPLayer();
+        this.dx = 0;
+        this.dy = 0;
+        this.prevDx = 0;
+        this.prevDy = 0;
+        this.player;
 
 
     }
 
     distanceToPLayer(){
         if(entityManager._player[0]) {
-            const p = entityManager._player[0];
+            this.player = entityManager._player[0];
+            // const p = {x:20,y:616};
         // console.log(p);
-        return util.distSq(this.x,this.y,p.x,p.y);
+            let d = util.distSq(this.x,this.y,this.player.x,this.player.y);
+            // console.log(d);
+        return Math.sqrt(d);
         }
-        return false;
+        // return false;
     }
 
-    findPlayer(du, dir){
-        let d = this.dtp;
-        // console.log(this.dtp);
-        if(this.distanceToPLayer() > this.dtp){
-            this.move(du,DIRECTION.RIGHT);
-        }else{
-            this.move(du,DIRECTION.LEFT);
-        }
-
-        if(this.distanceToPLayer() > this.dtp){
-            // this.move(du,DIRECTION.DOWN);
-        }else{
-            // this.move(du,DIRECTION.UP);
-        }
-
-
-        this.dtp = this.distanceToPLayer();
-        if(this.dtp < d){
-            this.move(du,DIRECTION.LEFT);
-            // console.log("right path");
-        }else{
-            this.move(du,DIRECTION.RIGHT);
-            // console.log("wrong path");
-        } 
+    moveDown(du){
+        this.move(du,DIRECTION.DOWN);
     }
+    moveUp(du){
+        this.move(du,DIRECTION.UP);
+    }
+
+    moveSideways(du){
+        this.move(du,DIRECTION.LEFT);
+    }
+
+    findPlayer(du){
+        if(this.y < this.player.y) {
+            console.log("go down");
+            if(this.state == STATE.ONBLOCK ||
+               this.state == STATE.INROPE){
+                this.moveSideways(du);
+            }else{
+                this.moveDown(du);
+            }
+        }else{
+            console.log("go up");
+            if(this.state == STATE.ONBLOCK ||
+               this.state == STATE.INROPE){
+                this.moveSideways(du);
+            }else{
+                this.moveUp(du);
+            }
+        }
+   }
 
     update(du){
-        // spatialManager.unregister(this);
+        spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
-        const d = this.dir * this.dirPrev;
+        // const d = this.dir * this.dirPrev;
         // if(this.isDirectionChange()) this.correctPosition();
-        //track previous direction
+        this.dtp = this.distanceToPLayer();
+        this.prevDx = this.dx;
+        this.prevDy = this.dy;
+        // console.log(this.dtp);
         this.dirPrev = this.dir;
 
+        this.prevState = this.state;
+
         this.blocks = this.surroundingBlocks(this.row,this.column);
-        if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
+
+        if(this.state == STATE.FALLING) this.fallingDown(du);
+        // if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
         if(this._isFalling) this.fallingDown(du);
         // if(this.canMove(DIRECTION.LEFT)) this.move(du,DIRECTION.LEFT);
         // this.move(du,DIRECTION.LEFT);
-        this.findPlayer(du, DIRECTION.LEFT);
+        this.dx = this.x - this.player.x;
+        this.dy = this.y - this.player.y;
+        this.findPlayer(du);
+        this.state = this.checkState();
+        this.correctPosition();
+
         Entity.prototype.setPos(this.x,this.y);
 
-        this.row = Math.ceil(this.y/GRID_BLOCK_H);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
         // determine column from center of actor
-        this.column = Math.ceil((this.x)/GRID_BLOCK_W);
-        // spatialManager.register(this);
+        this.column = Math.round((this.x)/GRID_BLOCK_W);
+        spatialManager.register(this);
+        // this.debug();
+        this.debugGuards();
+    }
+
+    debugGuards(){
+        console.log(`Distance to player: ${this.dtp}, x: ${this.dx}, y: ${this.dy}
+GuardY: ${this.y}, State: ${Object.keys(STATE)[ this.state ]}
+PlayerY: ${this.player.y}`);
     }
 }
