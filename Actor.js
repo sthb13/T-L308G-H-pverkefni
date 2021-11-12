@@ -9,13 +9,15 @@ class Actor extends Entity{
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
-        this.stateChange = false;
+        this.spriteChange = false;
 
         this.above = this.blocks[0][1];  //
         this.center = this.blocks[1][1]; //
         this.below = this.blocks[2][1];  // convenience fields to avoid
         this.left = this.blocks[1][0];   // logic errors
         this.right = this.blocks[1][2];  //
+        this.maxX = 0;
+        this.correctionNeeded = false;
     }
 
     move(du,dir){
@@ -23,26 +25,41 @@ class Actor extends Entity{
         this.dir = dir;
         switch(dir){
         case DIRECTION.RIGHT:
-            if(this.right == BLOCKTYPE.BREAKABLE) return;
+            if(this.right == BLOCKTYPE.BREAKABLE){
+                if(this.x > this.column * GRID_BLOCK_W ) return;
+            }
             if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
             if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
             this.x += this.speed * du;
+            
             break;
         case DIRECTION.LEFT:
-            if(this.left == BLOCKTYPE.BREAKABLE) return;
+            if(this.left == BLOCKTYPE.BREAKABLE) {
+                if(this.x < this.column * GRID_BLOCK_W ) return;
+            }
+
             if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
             if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
             this.x -= this.speed * du;
             break;
         case DIRECTION.DOWN:
+            if(this.state == STATE.CANCLIMB &&
+               this.below == BLOCKTYPE.BREAKABLE){
+                if(this.y > this.row*GRID_BLOCK_H) return;
+            }else{
             if(this.state == STATE.ONBLOCK ||
                this.below == BLOCKTYPE.BREAKABLE) return;
+            }
             this.spriteAnim(this.ANIM.DOWN);
             this.x = this.column * GRID_BLOCK_W;
             this.y += this.speed * du;
             break;
         case DIRECTION.UP:
-            if(this.state != STATE.CANCLIMB) return;
+            if(this.state == STATE.ONLADDER){
+                if(this.y < this.row * GRID_BLOCK_H) return;
+            }else{
+                if(this.state != STATE.CANCLIMB) return;
+            }
             this.spriteAnim(this.ANIM.UP);
             this.x = this.column * GRID_BLOCK_W;
             this.y -= this.speed * du;
@@ -66,9 +83,8 @@ class Actor extends Entity{
         if(this.below == BLOCKTYPE.LADDER &&
            this.center == BLOCKTYPE.AIR) return STATE.ONLADDER;
 
-        // catching the rope
         if(this.center == BLOCKTYPE.AIR &&
-           this.below ==BLOCKTYPE.ROPE) return STATE.FALLING;
+           this.below == BLOCKTYPE.ROPE) return STATE.FALLING;
 
         if(this.center == BLOCKTYPE.ROPE) return STATE.INROPE;
         if(this.below == BLOCKTYPE.BREAKABLE) return STATE.ONBLOCK;
@@ -76,7 +92,10 @@ class Actor extends Entity{
     }
 
     fallingDown(du){
-
+        if(this.state == STATE.ONBLOCK &&
+           this.below == BLOCKTYPE.BREAKABLE){
+            if(this.y > this.row*GRID_BLOCK_H) return;
+        }
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -99,7 +118,7 @@ class Actor extends Entity{
     isStateChange(){
         if(this.prevState != this.state) {
             console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
-            this.stateChange = true;
+            this.spriteChange = true;
             return true;
         }
         return false;
@@ -108,7 +127,7 @@ class Actor extends Entity{
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
             console.log(`Direction has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`);
-            this.stateChange = true;
+            this.spriteChange = true;
             return true;
         }
         return false;
@@ -157,10 +176,10 @@ class Actor extends Entity{
 
     // handles cycling through the spite frames and updates sprite object
     spriteAnim(frames){
-        if(this.stateChange) {
+        if(this.spriteChange) {
             this.csf = 0;
             this.sprites = [];
-            this.stateChange = false;
+            this.spriteChange = false;
         }
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
@@ -180,14 +199,14 @@ class Actor extends Entity{
     }
 
     debug(){
-        console.log(`X: ${this.x}, Y: ${this.y}, Row: ${this.row}, Column: ${this.column}, Direction: ${Object.keys(DIRECTION)[ this.dir ]}
+        console.log(`X: ${this.x}, Y: ${this.y}, Row: ${this.row*GRID_BLOCK_H}, Column: ${this.column*GRID_BLOCK_W}, Direction: ${Object.keys(DIRECTION)[ this.dir ]}
 Above: ${Object.keys(BLOCKTYPE)[this.above]}
 Center: ${Object.keys(BLOCKTYPE)[this.center]}
 Below: ${Object.keys(BLOCKTYPE)[this.below]}
 Left: ${Object.keys(BLOCKTYPE)[this.left]}
 Right: ${Object.keys(BLOCKTYPE)[this.right]}
-State: ${Object.keys(STATE)[this.state]}
-`);
+State: ${Object.keys(STATE)[this.state]} 
+`)
     }
 
 

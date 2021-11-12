@@ -52,5 +52,4 @@ var STATE = {
     CANCLIMB : 2,
     FALLING : 3,
     INROPE : 4
-
 }

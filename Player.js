@@ -18,9 +18,6 @@ class Player extends Actor{
         this.KEY_DOWN = 'S'.charCodeAt(0);
         this.KEY_HOLE_LEFT = 'Z'.charCodeAt(0);
         this.KEY_HOLE_RIGHT = 'X'.charCodeAt(0);
-        this.PASSES = {SIDEWAYS:[0,2,4,5,6,8], //air,ladder,rope...
-                       UP:[0,2,4,5,6],
-                       DOWN:[0,2,4,5,6]};
         this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8], ROPE_RIGHT:[9,10,11], ROPE_LEFT:[12,13,14]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);
         this.csf = 0; //currentSpriteFrame
@@ -49,31 +46,15 @@ class Player extends Actor{
         if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
         if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
         this.state = this.checkState();
-        this.correctPosition();
+         this.correctPosition();
         Entity.prototype.setPos(this.x,this.y);
+        // this.row = Math.floor(this.y/GRID_BLOCK_H);
+        // this.column = Math.floor(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
+        // this.row = Math.ceil(this.y/GRID_BLOCK_H);
+        // this.column = Math.ceil(this.x/GRID_BLOCK_W);
         spatialManager.register(this);
-        // this.debug();
+         this.debug();
     }
-
 }
-
-
-/*
-
-  player moves 240px/s at speed 4 (60 x 4)
-  sprite is 40px wide
-  we need 6 updates to cover that distance
-  60/6 = 10 so should update every 10th of a second
-
-  4 * 60 = 240
-  240 / 40 = 6
-  60/6 = 10
-
-  60 / 4 * 60 / 40
-
-  SECS_TO_NOMINALS/((speed*SECS_TO_NOMINALS)/sprite.width
-
-
-*/
