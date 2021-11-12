@@ -40,8 +40,18 @@ var BLOCKTYPE = {
 }
 
 var DIRECTION = {
-    LEFT: -1,
+    LEFT: 0,
     RIGHT: 1,
-    UP: -2,
-    DOWN: 2
+    UP: 2,
+    DOWN: 3
+}
+
+var STATE = {
+    ONBLOCK : 0,
+    ONLADDER : 1,
+    INLADDER : 2,
+    BOTTOMLADDER : 3,
+    FALLING : 4
+
+
 }

@@ -2,55 +2,75 @@ class Actor extends Entity{
     constructor(){
         super();
 
-        this._isFalling = false;
-        this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
-        this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
-        this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
+        // this._isFalling = false;
+        // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
+        // this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
+        // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
         this.blocks = this.surroundingElements(this.row,this.column);
         this.prevX = this.x;
         this.prevY = this.x;
-        this.prevX = this.x;
-        this.prevY = this.y;
+        this.state = STATE.ONBLOCK; //check if this is true
+        this.prevState = this.state;
+
+        this.above = this.blocks[0][1];  //
+        this.center = this.blocks[1][1]; //
+        this.below = this.blocks[2][1];  // convenience fields to avoid
+        this.left = this.blocks[1][0];   // logic errors
+        this.right = this.blocks[1][2];  //
     }
 
-    canMove(where){
-        //check 9 blocks around itself
-        //      13,14,15
-        // 13 [[ 0, 0, 0]    
-        // 14  [ 0, 6, 0] // blocks[1][1] is current pos 
-        // 15  [ 1, 1, 1]]
-        
-        const cx = this.getPos().posX;
-        // console.log(cx, this.x);
-        this.blocks = this.surroundingElements(this.row, this.column);
-        // console.log(blocks[1][0], this.PASSES.SIDEWAYS);
-        // if(where == DIRECTION.LEFT && this.PASSES.SIDEWAYS.includes(this.blocks[1][0])) return true;
-        // if(where == DIRECTION.RIGHT && this.PASSES.SIDEWAYS.includes(this.blocks[1][2])) return true;
-        // if(where == DIRECTION.UP
-          // && this.PASSES.UP.includes(this.blocks[0][1])
-           // && (this.blocks[1][1] == BLOCKTYPE.LADDER
-               // ||  this.blocks[1][1] == BLOCKTYPE.ROPE)) return true;
+    move(du,dir){
+        if(this.state == STATE.FALLING) return;
+        this.dir = dir;
+        switch(dir){
+        case DIRECTION.RIGHT:
+            if(this.right == BLOCKTYPE.BREAKABLE) return;
+            this.spriteAnim(this.ANIM.RIGHT);
+            this.x += this.speed * du;
+            break;
+        case DIRECTION.LEFT:
+            if(this.left == BLOCKTYPE.BREAKABLE) return;
+            this.spriteAnim(this.ANIM.LEFT);
+            this.x -= this.speed * du;
+            break;
+        case DIRECTION.DOWN:
+            if(this.state == STATE.ONBLOCK) return;
+            this.spriteAnim(this.ANIM.DOWN);
+            this.y += this.speed * du;
+            break;
+        case DIRECTION.UP:
+            this.spriteAnim(this.ANIM.UP);
+            this.y -= this.speed * du;
+            break;
+        }
+    }
 
-        // if(where == DIRECTION.DOWN
-           // && this.PASSES.DOWN.includes(this.blocks[0][1])
-           // && (this.blocks[1][1] == BLOCKTYPE.LADDER
-               // || this.blocks[2][1] == BLOCKTYPE.LADDER)) return true;
-        return true;
+    checkState(){
+        // more specific states need to be on top
+
+        if(this.above == BLOCKTYPE.BREAKABLE &&
+           this.center == BLOCKTYPE.LADDER) return STATE.BOTTOMLADDER;
+        if(this.below == BLOCKTYPE.BREAKABLE) return STATE.ONBLOCK;
+        if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
     }
 
     correctPosition(){
-        // const d = this.dirPrev - this.dir;
-        // if(d % 2 !== 0){
-        if(this.x != this.prevX){
-            console.log("moving to: " + this.column * GRID_BLOCK_W);
-            // this.x = this.column * GRID_BLOCK_W;
-            // this.y = this.row * GRID_BLOCK_H;
+        if(this.isDirectionChange()){
+            this.y = this.row * GRID_BLOCK_H;
         }
-        // if(this.y != this.prevY) this.x = this.column * GRID_BLOCK_H;
+    }
+    
+
+    isStateChange(){
+        if(this.prevState != this.state) {
+            console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.State]}`)
+            return true
+        };
+        return false;
     }
 
     surroundingElements(r,c){
-        const blocks = [[],[],[]];
+        const blocks = [[1,1,1],[,1,1,1],[1,1,1]];
         // console.log(c,blocks);
          if(r > 0 && r < 15){
              this.updateElement(blocks,r,c,-1,2);
@@ -59,6 +79,11 @@ class Actor extends Entity{
          } else if (r == 15) {
              this.updateElement(blocks,r,c,-1,1);
          }
+        this.above = blocks[0][1];
+        this.center = blocks[1][1];
+        this.below = blocks[2][1];
+        this.left = blocks[1][0];
+        this.right = blocks[1][2];
         return blocks;
     }
 
@@ -68,80 +93,19 @@ class Actor extends Entity{
                 if(typeof gLevel[r+j][c+i] !== 'undefined') {
                     blocks[j+1][i+1] = gLevel[r+j][c+i];
                 } else {
-                    blocks[j+1][i+1] = undefined;
+                    blocks[j+1][i+1] = BLOCKTYPE.BREAKABLE;
                 }
             }
         }
     }
 
-    move(du,dir){
-        if(this._isFalling) return;
-        if(!spatialManager.checkCollision(this.x,this.y) &&
-           spatialManager.checkExtremeties(this.x,this.y)){
-            if(dir == DIRECTION.RIGHT || dir == DIRECTION.LEFT) this.prevX = this.x;
-            if(dir == DIRECTION.UP || dir == DIRECTION.DOWN) this.prevY = this.y;
-            this.dir = dir;
-            switch(dir){
-            case DIRECTION.RIGHT:
-                this.spriteAnim(this.ANIM.RIGHT);
-                this.x += this.speed * du;
-                break;
-            case DIRECTION.LEFT:
-                this.spriteAnim(this.ANIM.LEFT);
-                this.x -= this.speed * du;
-                break;
-            case DIRECTION.DOWN:
-                this.spriteAnim(this.ANIM.DOWN);
-                this.y += this.speed * du;
-                break;
-            case DIRECTION.UP:
-                //on ladder
-                if(this.blocks[1][1] == BLOCKTYPE.LADDER ||
-                   this.blocks[2][1] == BLOCKTYPE.LADDER ){
-                   // this.blocks[0][1] == BLOCKTYPE.AIR) {
-                // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
-                    this.x = (this.column ) * GRID_BLOCK_W;
-                    this.spriteAnim(this.ANIM.UP);
-                    this.y -= this.speed * du;
-                }
-                //above ladder
-                if(this.blocks[2][1] == BLOCKTYPE.LADDER &&
-                   this.blocks[0][1] == BLOCKTYPE.AIR ){
-                    // this.blocks[0][1] == BLOCKTYPE.AIR) {
-                    // if(this.blocks[1][1] == BLOCKTYPE.LADDER){
-                    this.y = this.row  * GRID_BLOCK_H;
-                    this.spriteAnim(this.ANIM.UP);
-                    this.y -= this.speed * du;
-                }
-                // this.correctPosition();
-                break;
-            }
-            // this.correctPosition();
-            // this.blocks = this.surroundingElements(this.row,this.column);
-            
-        }else{
-            if(dir == DIRECTION.RIGHT || dir == DIRECTION.LEFT) this.x = this.prevX;
-            if(dir == DIRECTION.UP || dir == DIRECTION.DOWN) this.x = this.prevX;
-        }
-    }
-  
+
     fallingDown(du){
-        // this.correctPosition();
-        // this.x = this.prevX;
-        if(!spatialManager.checkCollision(this.x,this.y) &&
-           spatialManager.checkExtremeties(this.x,this.y)){
 
-            this._isFalling = true;
             this.dir = DIRECTION.DOWN;
             this.spriteAnim(this.ANIM.FALL);
             this.y += this.speed * du;
 
-        }else{
-        // if(this.y == this.prevY){
-            this.y = (this.row-1) * GRID_BLOCK_H;
-            this._isFalling = false;
-            // this.move(du,DIRECTION.RIGHT);
-        }
     }
     
 // moveDown(du){
@@ -160,8 +124,7 @@ class Actor extends Entity{
 
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
-            // TODO should be called somewhere else
-            // this.correctPosition();
+            console.log(`State has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`)
             return true;
         }
         return false;
@@ -199,6 +162,17 @@ class Actor extends Entity{
         // this.sprite.drawAt(ctx, this.x, this.y);
         // console.log(this.sprite);
         this.sprite.drawFromSpriteSheetAt(ctx, this.x,this.y);
+    }
+
+    debug(){
+        console.log(`X: ${this.x}, Y:{this.y}, Row: ${this.row}, Column: ${this.column}, Direction: ${Object.keys(DIRECTION)[ this.dir ]}
+Above: ${Object.keys(BLOCKTYPE)[this.above]}
+Center: ${Object.keys(BLOCKTYPE)[this.center]}
+Below: ${Object.keys(BLOCKTYPE)[this.below]}
+Left: ${Object.keys(BLOCKTYPE)[this.left]}
+Right: ${Object.keys(BLOCKTYPE)[this.right]}
+State: ${Object.keys(STATE)[this.state]}
+`);
     }
 
 

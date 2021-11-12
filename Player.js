@@ -67,29 +67,32 @@ class Player extends Actor{
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
+        this.prevState = this.state;
         // console.log(this.blocks);
           this.prevX = this.x;
          this.prevY = this.y;
         
         //     if(this.blocks[2][1] == BLOCKTYPE.AIR) this.fallingDown(du);
-        console.log(this.x,this.column,this.blocks[0][1],this.blocks[1][1],this.blocks[2][1]);
         // console.log(this.blocks);
         
         this.blocks = this.surroundingElements(this.row,this.column);
-        
-        if(this.blocks[2][1] == BLOCKTYPE.AIR) this._isFalling = true;
-        if(this._isFalling) this.fallingDown(du);
+
+        if(this.state == STATE.FALLING) this.fallingDown(du);
+
         if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
         if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
         if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
         if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+        this.correctPosition();
+        this.state = this.checkState();
         Entity.prototype.setPos(this.x,this.y);
-        this.row = Math.ceil(this.y/GRID_BLOCK_H);
-        this.column = Math.ceil((this.x)/GRID_BLOCK_W);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
+        this.column = Math.round(this.x/GRID_BLOCK_W);
         spatialManager.register(this);
         // console.log(this.x,this.prevX);
-
+        this.debug();
     }
+
 }
 
 
