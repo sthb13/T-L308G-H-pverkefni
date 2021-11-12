@@ -35,7 +35,8 @@ class Actor extends Entity{
             this.x -= this.speed * du;
             break;
         case DIRECTION.DOWN:
-            if(this.state == STATE.ONBLOCK) return;
+            if(this.state == STATE.ONBLOCK ||
+               this.below == BLOCKTYPE.BREAKABLE) return;
             this.spriteAnim(this.ANIM.DOWN);
             this.x = this.column * GRID_BLOCK_W;
             this.y += this.speed * du;
@@ -87,6 +88,7 @@ class Actor extends Entity{
         //TODO correct position when colliding with BLOCKTYPE.BREAKABLE
         // which is offset by half the image size
 
+        // hack to put actor on ground after falling or transition to or from ladder
         if(this.isDirectionChange()){
             this.y = this.row * GRID_BLOCK_H;
         }
