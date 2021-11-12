@@ -175,7 +175,7 @@ class Actor extends Entity{
     }
 
     debug(){
-        console.log(`X: ${this.x}, Y:{this.y}, Row: ${this.row}, Column: ${this.column}, Direction: ${Object.keys(DIRECTION)[ this.dir ]}
+        console.log(`X: ${this.x}, Y: ${this.y}, Row: ${this.row}, Column: ${this.column}, Direction: ${Object.keys(DIRECTION)[ this.dir ]}
 Above: ${Object.keys(BLOCKTYPE)[this.above]}
 Center: ${Object.keys(BLOCKTYPE)[this.center]}
 Below: ${Object.keys(BLOCKTYPE)[this.below]}
