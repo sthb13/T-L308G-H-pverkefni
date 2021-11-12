@@ -49,9 +49,8 @@ var DIRECTION = {
 var STATE = {
     ONBLOCK : 0,
     ONLADDER : 1,
-    INLADDER : 2,
-    BOTTOMLADDER : 3,
-    FALLING : 4
+    CANCLIMB : 2,
+    FALLING : 3
 
 
 }

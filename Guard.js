@@ -70,7 +70,7 @@ class Guard extends Actor{
         //track previous direction
         this.dirPrev = this.dir;
 
-        this.blocks = this.surroundingElements(this.row,this.column);
+        this.blocks = this.surroundingBlocks(this.row,this.column);
         if(this.blocks[2][0] == BLOCKTYPE.AIR) this._isFalling = true;
         if(this._isFalling) this.fallingDown(du);
         // if(this.canMove(DIRECTION.LEFT)) this.move(du,DIRECTION.LEFT);

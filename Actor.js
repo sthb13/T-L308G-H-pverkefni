@@ -6,9 +6,7 @@ class Actor extends Entity{
         // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
         // this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
         // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
-        this.blocks = this.surroundingElements(this.row,this.column);
-        this.prevX = this.x;
-        this.prevY = this.x;
+        this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
 
@@ -39,6 +37,7 @@ class Actor extends Entity{
             this.y += this.speed * du;
             break;
         case DIRECTION.UP:
+            if(this.state != STATE.CANCLIMB) return;
             this.spriteAnim(this.ANIM.UP);
             this.y -= this.speed * du;
             break;
@@ -48,37 +47,61 @@ class Actor extends Entity{
     checkState(){
         // more specific states need to be on top
 
-        if(this.above == BLOCKTYPE.BREAKABLE &&
-           this.center == BLOCKTYPE.LADDER) return STATE.BOTTOMLADDER;
+        if(this.below == BLOCKTYPE.BREAKABLE &&
+           this.center == BLOCKTYPE.LADDER) return STATE.CANCLIMB;
+        if(this.center == BLOCKTYPE.LADDER &&
+           (this.above == BLOCKTYPE.LADDER ||
+            this.above == BLOCKTYPE.AIR)) return STATE.CANCLIMB;
         if(this.below == BLOCKTYPE.BREAKABLE) return STATE.ONBLOCK;
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
     }
 
+    fallingDown(du){
+
+        this.dir = DIRECTION.DOWN;
+        this.spriteAnim(this.ANIM.FALL);
+
+        this.x = this.column * GRID_BLOCK_W;
+        this.y += this.speed * du;
+
+    }
     correctPosition(){
+        //TODO correct position when colliding with BLOCKTYPE.BREAKABLE
+        // which is offset by half the image size
         if(this.isDirectionChange()){
             this.y = this.row * GRID_BLOCK_H;
         }
+        if(this.isStateChange()){
+        }
     }
-    
 
     isStateChange(){
         if(this.prevState != this.state) {
-            console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.State]}`)
-            return true
-        };
+            console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
+            return true;
+        }
         return false;
     }
 
-    surroundingElements(r,c){
+    isDirectionChange(){
+        if(this.dir != this.dirPrev) {
+            console.log(`Direction has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`);
+            return true;
+        }
+        return false;
+    }
+
+    // tracks 9 blocks around actor
+    surroundingBlocks(r,c){
         const blocks = [[1,1,1],[,1,1,1],[1,1,1]];
         // console.log(c,blocks);
-         if(r > 0 && r < 15){
-             this.updateElement(blocks,r,c,-1,2);
-         } else if (r == 0){
-             this.updateElement(blocks,r,c,0,2);
-         } else if (r == 15) {
-             this.updateElement(blocks,r,c,-1,1);
-         }
+        if(r > 0 && r < 15){
+            this.updateElement(blocks,r,c,-1,2);
+        } else if (r == 0){
+            this.updateElement(blocks,r,c,0,2);
+        } else if (r == 15) {
+            this.updateElement(blocks,r,c,-1,1);
+        }
         this.above = blocks[0][1];
         this.center = blocks[1][1];
         this.below = blocks[2][1];
@@ -98,38 +121,6 @@ class Actor extends Entity{
             }
         }
     }
-
-
-    fallingDown(du){
-
-            this.dir = DIRECTION.DOWN;
-            this.spriteAnim(this.ANIM.FALL);
-            this.y += this.speed * du;
-
-    }
-    
-// moveDown(du){
-//     //if we can climb we climb, if we cannot climb only then do we try dropping
-//     if(this._canClimb) {
-//         this.dir = DIRECTION.DOWN;
-//         this.spriteAnim(this.ANIM.DOWN);
-//         this._velY = this._speed * du;
-//     } else if(this._canDrop) {
-//         this.dir = DIRECTION.DOWN;
-//         this.spriteAnim(this.ANIM.FALL);
-//         this._velY = this._speed * du;
-//     }
-
-// };
-
-    isDirectionChange(){
-        if(this.dir != this.dirPrev) {
-            console.log(`State has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`)
-            return true;
-        }
-        return false;
-    }
-
     // returns array of sprite frames
     generateSprites(frames){
         let sprites = [];
