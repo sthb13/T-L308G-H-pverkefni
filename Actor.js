@@ -9,6 +9,7 @@ class Actor extends Entity{
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
+        this.stateChange = false;
 
         this.above = this.blocks[0][1];  //
         this.center = this.blocks[1][1]; //
@@ -96,6 +97,7 @@ class Actor extends Entity{
     isStateChange(){
         if(this.prevState != this.state) {
             console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
+            this.stateChange = true;
             return true;
         }
         return false;
@@ -104,6 +106,7 @@ class Actor extends Entity{
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
             console.log(`Direction has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`);
+            this.stateChange = true;
             return true;
         }
         return false;
@@ -152,10 +155,10 @@ class Actor extends Entity{
 
     // handles cycling through the spite frames and updates sprite object
     spriteAnim(frames){
-        // TODO fix change on stateChange, currently only DirectionChange?
-        if(this.isDirectionChange() || this.isStateChange()) {
+        if(this.stateChange) {
             this.csf = 0;
             this.sprites = [];
+            this.stateChange = false;
         }
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
