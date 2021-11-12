@@ -39,7 +39,7 @@ class Player extends Actor{
         // track surroung blocks
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
-        if(this.state == STATE.FALLING) this.fallingDown(du);
+        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
 
         if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
         if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
@@ -55,6 +55,6 @@ class Player extends Actor{
         // this.row = Math.ceil(this.y/GRID_BLOCK_H);
         // this.column = Math.ceil(this.x/GRID_BLOCK_W);
         spatialManager.register(this);
-         this.debug();
+         // this.debug();
     }
 }

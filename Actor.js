@@ -31,7 +31,7 @@ class Actor extends Entity{
             if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
             if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
             this.x += this.speed * du;
-            
+
             break;
         case DIRECTION.LEFT:
             if(this.left == BLOCKTYPE.BREAKABLE) {
@@ -43,19 +43,22 @@ class Actor extends Entity{
             this.x -= this.speed * du;
             break;
         case DIRECTION.DOWN:
-            if(this.state == STATE.CANCLIMB &&
+            if(this.state == STATE.CANCLIMB &
                this.below == BLOCKTYPE.BREAKABLE){
                 if(this.y > this.row*GRID_BLOCK_H) return;
             }else{
             if(this.state == STATE.ONBLOCK ||
                this.below == BLOCKTYPE.BREAKABLE) return;
             }
+
             this.spriteAnim(this.ANIM.DOWN);
             this.x = this.column * GRID_BLOCK_W;
             this.y += this.speed * du;
             break;
         case DIRECTION.UP:
-            if(this.state == STATE.ONLADDER){
+            if(this.state == STATE.ONLADDER ||
+               (this.state == STATE.INROPE &&
+               this.below == BLOCKTYPE.LADDER)){
                 if(this.y < this.row * GRID_BLOCK_H) return;
             }else{
                 if(this.state != STATE.CANCLIMB) return;
@@ -73,8 +76,9 @@ class Actor extends Entity{
         // close to the top of the ladder
         if(this.center == BLOCKTYPE.LADDER &&
            (this.above == BLOCKTYPE.LADDER ||
-            this.above == BLOCKTYPE.AIR)) return STATE.CANCLIMB;
-        
+            this.above == BLOCKTYPE.AIR ||
+            this.above == BLOCKTYPE.ROPE)) return STATE.CANCLIMB;
+
         // climbing in the ladder
         if(this.below == BLOCKTYPE.BREAKABLE &&
            this.center == BLOCKTYPE.LADDER) return STATE.CANCLIMB;
@@ -87,15 +91,17 @@ class Actor extends Entity{
            this.below == BLOCKTYPE.ROPE) return STATE.FALLING;
 
         if(this.center == BLOCKTYPE.ROPE) return STATE.INROPE;
+
+        if(this.below == BLOCKTYPE.BREAKABLE && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
         if(this.below == BLOCKTYPE.BREAKABLE) return STATE.ONBLOCK;
+
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
     }
 
     fallingDown(du){
-        if(this.state == STATE.ONBLOCK &&
-           this.below == BLOCKTYPE.BREAKABLE){
-            if(this.y > this.row*GRID_BLOCK_H) return;
-        }
+        // TODO if time implement RIGHT_FALL and LEFT_FALL, change
+        // actor into correct direction position
+        
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -104,10 +110,9 @@ class Actor extends Entity{
 
     }
     correctPosition(){
-        //TODO correct position when colliding with BLOCKTYPE.BREAKABLE
-        // which is offset by half the image size
 
-        // hack to put actor on ground after falling or transition to or from ladder
+        // hack to put actor on ground after falling or transitioning
+        // to or from ladder
         if(this.isDirectionChange()){
             this.y = this.row * GRID_BLOCK_H;
         }
@@ -205,7 +210,7 @@ Center: ${Object.keys(BLOCKTYPE)[this.center]}
 Below: ${Object.keys(BLOCKTYPE)[this.below]}
 Left: ${Object.keys(BLOCKTYPE)[this.left]}
 Right: ${Object.keys(BLOCKTYPE)[this.right]}
-State: ${Object.keys(STATE)[this.state]} 
+State: ${Object.keys(STATE)[this.state]}
 `)
     }
 
