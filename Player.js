@@ -49,11 +49,11 @@ class Player extends Actor{
          this.correctPosition();
         Entity.prototype.setPos(this.x,this.y);
 
-        if(keys[this.KEY_HOLE_LEFT]) {
+        if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == 1) {
                 entityManager._holes.push(new Hole(this.column-1,this.row+1));
                 }
     
-        if(keys[this.KEY_HOLE_RIGHT]) {
+        if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == 1) {
                 entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
 

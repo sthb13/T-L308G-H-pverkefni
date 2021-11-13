@@ -20,11 +20,11 @@ class Hole extends Entity{
 
     update(du){
         console.log("hole?", this.column, this.row);
-        this.spriteAnim(this.ANIM.RIGHT)
+        this.spriteAnim(this.ANIM.RIGHT);
         this.nextSpriteCounter -= du;
         gLevel[this.column][this.row] = 0;
         this.digLifeSpan -= du;
-        if (this.digLifeSpan < 0) return gLevel[this.column][this.row] = 0;
+        if (this.digLifeSpan < 0) return gLevel[this.column][this.row] = 1;
 
     }
 
@@ -41,15 +41,15 @@ class Hole extends Entity{
 
     // handles cycling through the spite frames and updates sprite object
     spriteAnim(frames){
-        // if(this.isDirectionChange()) this.sprites = [];
-        //if(this.nextSpriteCounter < 0){
-            if(this.sprites.length === 0) this.sprites = this.generateSprites(frames);
+        if(this.nextSpriteCounter < 0){
+            if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
+            // console.log(this.csf);
             this.sprite = this.sprites[this.csf];
-            ++this.csf;
+            this.csf++;
 
             if(this.csf === this.sprites.length) this.csf = 7;
-        //}
+        }
     }
 
     render(ctx){
