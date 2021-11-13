@@ -36,7 +36,8 @@ var BLOCKTYPE = {
     GOLD_SPAWN: 5,
     PLAYER_SPAWN: 6,
     FALSE_BREAKABLE: 7,
-    GUARD_SPAWN: 8
+    GUARD_SPAWN: 8,
+    SOLID: 9
 }
 
 var DIRECTION = {
@@ -48,9 +49,10 @@ var DIRECTION = {
 
 var STATE = {
     ONBLOCK : 0,
-    ONLADDER : 1,
-    CANCLIMB : 2,
-    FALLING : 3,
-    INROPE : 4,
-    LANDING: 5
+    CLIMBING : 1,
+    //ONLADDER : 1,
+    //CANCLIMB : 2,
+    FALLING : 2,
+    INROPE : 3,
+    LANDING: 4
 }

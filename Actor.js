@@ -4,7 +4,7 @@ class Actor extends Entity{
 
         // this._isFalling = false;
         // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
-        // this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE];
+        this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
         // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
@@ -18,51 +18,81 @@ class Actor extends Entity{
         this.right = this.blocks[1][2];  //
         this.maxX = 0;
         this.correctionNeeded = false;
+        this.canClimbUp = false;
+        this.canClimbDown = false;
+        this.isClimbing = false;
     }
 
     move(du,dir){
         if(this.state == STATE.FALLING) return;
+        //console.log(this.below == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H)
+        if(this.isPlayer) {
+            //console.log(this.below == BLOCKTYPE.LADDER);
+        }
+        
+        if(this.below == BLOCKTYPE.LADDER || 
+            this.center == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H) {
+            this.canClimbDown = true;
+        } else {
+            this.canClimbDown = false;
+        }
+
+        if(this.center == BLOCKTYPE.LADDER ||
+            this.below == BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H || 
+            this.above == BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
+                this.canClimbUp = true;
+            }
+        else {
+            this.canClimbUp = false;
+        }
+
+        if(this.state == STATE.INROPE && this.below == BLOCKTYPE.AIR) {
+            this.canDrop = true;
+        } else {
+            this.canDrop = false;
+        }
+
+
         this.dir = dir;
         switch(dir){
         case DIRECTION.RIGHT:
-            if(this.right == BLOCKTYPE.BREAKABLE){
+            this.isClimbing = false;
+            if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.right)){
                 if(this.x > this.column * GRID_BLOCK_W ) return;
             }
             if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
             if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
             this.x += this.speed * du;
-
             break;
         case DIRECTION.LEFT:
-            if(this.left == BLOCKTYPE.BREAKABLE) {
+            this.isClimbing = false;
+            if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.left)) {
                 if(this.x < this.column * GRID_BLOCK_W ) return;
             }
-
             if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
             if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
             this.x -= this.speed * du;
             break;
         case DIRECTION.DOWN:
-            if(this.state == STATE.CANCLIMB &
-               this.below == BLOCKTYPE.BREAKABLE){
-                if(this.y > this.row*GRID_BLOCK_H) return;
-            }else{
-            if(this.state == STATE.ONBLOCK ||
-               this.below == BLOCKTYPE.BREAKABLE) return;
+            if(!this.canClimbDown) {
+                if(this.canDrop) {
+                    this.x = this.column * GRID_BLOCK_W;
+                    this.y += this.speed * du;
+                }
+                return;
             }
 
+            this.isClimbing = true;
             this.spriteAnim(this.ANIM.DOWN);
             this.x = this.column * GRID_BLOCK_W;
             this.y += this.speed * du;
             break;
         case DIRECTION.UP:
-            if(this.state == STATE.ONLADDER ||
-               (this.state == STATE.INROPE &&
-               this.below == BLOCKTYPE.LADDER)){
-                if(this.y < this.row * GRID_BLOCK_H) return;
-            }else{
-                if(this.state != STATE.CANCLIMB) return;
+            if(!this.canClimbUp) {
+                return;
             }
+            
+            this.isClimbing = true;
             this.spriteAnim(this.ANIM.UP);
             this.x = this.column * GRID_BLOCK_W;
             this.y -= this.speed * du;
@@ -74,28 +104,50 @@ class Actor extends Entity{
         // more specific states need to be on top
 
         // close to the top of the ladder
+        /*
         if(this.center == BLOCKTYPE.LADDER &&
            (this.above == BLOCKTYPE.LADDER ||
             this.above == BLOCKTYPE.AIR ||
             this.above == BLOCKTYPE.ROPE)) return STATE.CANCLIMB;
+        
 
         // climbing in the ladder
         if(this.below == BLOCKTYPE.BREAKABLE &&
            this.center == BLOCKTYPE.LADDER) return STATE.CANCLIMB;
+        */
+
+        if(this.isClimbing) {
+            return this.CLIMBING;
+        }
+
+        //TODO: Remove this Debug statement
+        if(this.isPlayer) {
+            console.log(this.center);
+        }
+        //End of DEBUG
+
+        if(this.center == BLOCKTYPE.LADDER) {
+            this.ONBLOCK;            
+        }
 
         // standing on top of the ladder
         if(this.below == BLOCKTYPE.LADDER &&
-           this.center == BLOCKTYPE.AIR) return STATE.ONLADDER;
+           this.center == BLOCKTYPE.AIR) {
+                //return STATE.ONLADDER;
+                return this.ONBLOCK;
+           } 
 
         if(this.center == BLOCKTYPE.AIR &&
            this.below == BLOCKTYPE.ROPE) return STATE.FALLING;
 
-        if(this.center == BLOCKTYPE.ROPE) return STATE.INROPE;
+        if(this.center == BLOCKTYPE.ROPE &&
+            this.y >= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
-        if(this.below == BLOCKTYPE.BREAKABLE && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
-        if(this.below == BLOCKTYPE.BREAKABLE) return STATE.ONBLOCK;
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
+        //console.log("No State?");
     }
 
     fallingDown(du){
@@ -122,7 +174,7 @@ class Actor extends Entity{
 
     isStateChange(){
         if(this.prevState != this.state) {
-            console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
+            //console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
             this.spriteChange = true;
             return true;
         }
@@ -131,7 +183,7 @@ class Actor extends Entity{
 
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
-            console.log(`Direction has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`);
+            //console.log(`Direction has changed from ${Object.keys(DIRECTION)[this.dirPrev]} to ${Object.keys(DIRECTION)[this.dir]}`);
             this.spriteChange = true;
             return true;
         }

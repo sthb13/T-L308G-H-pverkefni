@@ -27,6 +27,9 @@ class Player extends Actor{
                              // got this value by visual trial and error
                              // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
+        
+        //TODO: Remove this debug stuff
+        this.isPlayer = true;
     }
 
 
@@ -41,12 +44,24 @@ class Player extends Actor{
 
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
 
-        if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
-        if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
-        if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
-        if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+        if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
+            if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
+                //Do Nothing
+            } else {
+                if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
+                if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+            }
+        } else {
+            if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
+                //Do nothing
+            }
+            if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+            if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+        }
+
+
         this.state = this.checkState();
-         this.correctPosition();
+        this.correctPosition();
         Entity.prototype.setPos(this.x,this.y);
 
         if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == 1) {

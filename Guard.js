@@ -4,8 +4,8 @@ class Guard extends Actor{
         super.setup();
         this.x = x;
         this.y = y;
-        this.row = x;
-        this.column = y;
+        this.row = Math.round(this.x/GRID_BLOCK_W);
+        this.col = Math.round(this.y/GRID_BLOCK_H);
         // this.pos = pos;
         this.speed = 2; 
         this.image = g_images.guard;
@@ -28,6 +28,9 @@ class Guard extends Actor{
         this.prevDx = 0;
         this.prevDy = 0;
         this.player;
+
+        //TODO: Remove this, debug stuff
+        this.isPlayer = false;
 
 
     }
@@ -52,27 +55,46 @@ class Guard extends Actor{
     }
 
     moveSideways(du){
-        this.move(du,DIRECTION.LEFT);
+        if(this.x < this.player.x) {
+            this.move(du,DIRECTION.RIGHT);
+        } else if (this.x > this.player.x) {
+            this.move(du, DIRECTION.LEFT);
+        }
+        
     }
 
     findPlayer(du){
-        if(this.y < this.player.y) {
-            console.log("go down");
+        if(this.y + GRID_BLOCK_H/4 < this.player.y) {
+            //console.log("go down");
             if(this.state == STATE.ONBLOCK ||
-               this.state == STATE.INROPE){
+               this.state == STATE.INROPE ||
+               this.state == STATE.CANCLIMB && !this.PASSES.DOWN.includes(this.below)){
                 this.moveSideways(du);
             }else{
                 this.moveDown(du);
             }
-        }else{
-            console.log("go up");
+        }else if (this.y - GRID_BLOCK_H/4 > this.player.y){
+            //console.log("go up");
             if(this.state == STATE.ONBLOCK ||
-               this.state == STATE.INROPE){
+               this.state == STATE.INROPE ||
+               this.state == STATE.CANCLIMB && this.center != BLOCKTYPE.LADDER){
                 this.moveSideways(du);
             }else{
                 this.moveUp(du);
             }
+        } else {
+            //console.log("Right Height");
+            this.moveSideways(du);
         }
+   }
+
+   findClosestWayUp() {
+       //TODO: Implement
+   }
+
+   findClosestWayDown() {
+       //TODO: Implement
+
    }
 
     update(du){
@@ -108,7 +130,7 @@ class Guard extends Actor{
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
         // this.debug();
-        this.debugGuards();
+        //this.debugGuards();
     }
 
     debugGuards(){
