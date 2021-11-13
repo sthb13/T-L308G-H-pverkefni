@@ -14,7 +14,7 @@ class Hole extends Entity{
         this.ANIM = {LEFT:[0,1,2,3,4,5,6,7],RIGHT:[9,10,11,12,13,14,15,16]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);
         this.csf = 0; //currentSpriteFrame
-        this.SPRITEFREQ = 10; // requests next sprite every 3rd update
+        this.SPRITEFREQ = 5; // requests next sprite every 3rd update
         this.nextSpriteCounter = this.SPRITEFREQ;
     }
 
@@ -24,7 +24,10 @@ class Hole extends Entity{
         this.nextSpriteCounter -= du;
         gLevel[this.column][this.row] = 0;
         this.digLifeSpan -= du;
-        if (this.digLifeSpan < 0) return gLevel[this.column][this.row] = 1;
+        if (this.digLifeSpan < 0) {
+            this.sprite = g_sprites.brick;
+            return gLevel[this.column][this.row] = 1;
+        }
 
     }
 
@@ -41,6 +44,7 @@ class Hole extends Entity{
 
     // handles cycling through the spite frames and updates sprite object
     spriteAnim(frames){
+
         if(this.nextSpriteCounter < 0){
             if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
@@ -48,7 +52,7 @@ class Hole extends Entity{
             this.sprite = this.sprites[this.csf];
             this.csf++;
 
-            if(this.csf === this.sprites.length) this.csf = 7;
+            if(this.csf === this.sprites.length) this.csf = this.sprites.length-1;
         }
     }
 
