@@ -59,9 +59,7 @@ class Level {
                 const y = this.y+offsetY;
                 switch (e){
                 case BLOCKTYPE.BREAKABLE:
-                    // console.log(j+offsetX);
                     entityManager._blocks.push(new Wall(x,y));
-                   // entityManager.generateBlock(e,x,y);
                     break;
                 case BLOCKTYPE.LADDER:
                     entityManager._blocks.push(new Ladder(x,y));
@@ -71,12 +69,15 @@ class Level {
                     break;
                 case BLOCKTYPE.GOLD_SPAWN:
                       entityManager._gold.push(new Gold(x,y));
+                        this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.PLAYER_SPAWN:
-                      entityManager._player.push(new Player(x,y));
+                       entityManager._player.push(new Player(x,y));
+                        this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
                       entityManager._guards.push(new Guard(x,y));
+                    this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:
                       entityManager._holes.push(new Hole(x,y));
