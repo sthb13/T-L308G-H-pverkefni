@@ -122,7 +122,7 @@ class Actor extends Entity{
 
         //TODO: Remove this Debug statement
         if(this.isPlayer) {
-            console.log(this.center);
+            // console.log(this.center);
         }
         //End of DEBUG
 
@@ -190,6 +190,15 @@ class Actor extends Entity{
         return false;
     }
 
+
+    checkGold(){
+        const obj = spatialManager.checkCollision(this.x,this.y,this.type);
+        if(this.type == BLOCKTYPE.PLAYER_SPAWN){
+             if(obj.type == BLOCKTYPE.GOLD_SPAWN) scoreManager.goldPoints();
+        }
+        if(obj) obj._isDeadNow = true;
+    }
+   
     // tracks 9 blocks around actor
     surroundingBlocks(r,c){
         const blocks = [[1,1,1],[,1,1,1],[1,1,1]];
@@ -198,7 +207,7 @@ class Actor extends Entity{
             this.updateElement(blocks,r,c,-1,2);
         } else if (r == 0){
             this.updateElement(blocks,r,c,0,2);
-        } else if (r == 15) {
+         } else if (r == 15) {
             this.updateElement(blocks,r,c,-1,1);
         }
         this.above = blocks[0][1];

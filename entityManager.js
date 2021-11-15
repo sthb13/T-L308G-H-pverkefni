@@ -107,15 +107,14 @@ update: function(du) {
         // console.log(this._blocks);
         while (i < aCategory.length) {
             var status = aCategory[i].update(du);
-            // console.log(status);
-            // if (status === this.KILL_ME_NOW) {
+            if (status === this.KILL_ME_NOW) {
                 // remove the dead guy, and shuffle the others down to
                 // prevent a confusing gap from appearing in the array
-                // aCategory.splice(i,1);
+                aCategory.splice(i,1);
             // }
-            // else {
+            } else {
                 ++i;
-            // }
+            }
         }
     }
     

@@ -28,6 +28,7 @@ class Guard extends Actor{
         this.prevDx = 0;
         this.prevDy = 0;
         this.player;
+        this.type = BLOCKTYPE.GUARD_SPAWN;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
@@ -129,6 +130,7 @@ class Guard extends Actor{
         // determine column from center of actor
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
+        this.checkGold();
         // this.debug();
         //this.debugGuards();
     }

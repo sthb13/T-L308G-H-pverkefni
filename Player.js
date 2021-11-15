@@ -2,7 +2,6 @@ class Player extends Actor{
     constructor(x,y){
         super();
         super.setup();
-
         this.x = x;
         this.y = y;
         
@@ -23,10 +22,11 @@ class Player extends Actor{
         this.csf = 0; //currentSpriteFrame
         this.dir = DIRECTION.RIGHT;
         this.dirPrev = DIRECTION.RIGHT;
-        this.SPRITEFREQ = 10; // requests next sprite every 3rd update
+        this.SPRITEFREQ = 3; // requests next sprite every 3rd update
                              // got this value by visual trial and error
                              // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
+        this.type = BLOCKTYPE.PLAYER_SPAWN;
         
         //TODO: Remove this debug stuff
         this.isPlayer = true;
@@ -34,6 +34,7 @@ class Player extends Actor{
 
 
     update(du){
+
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
@@ -78,7 +79,14 @@ class Player extends Actor{
         this.column = Math.round(this.x/GRID_BLOCK_W);
         // this.row = Math.ceil(this.y/GRID_BLOCK_H);
         // this.column = Math.ceil(this.x/GRID_BLOCK_W);
-        spatialManager.register(this);
+
+         spatialManager.register(this);
+
+        this.checkGold();
+        // console.log(spatialManager.checkCollision(this.x,this.y));
          // this.debug();
     }
+
+
+
 }

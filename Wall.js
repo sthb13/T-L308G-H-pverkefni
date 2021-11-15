@@ -2,7 +2,7 @@ class Wall extends Entity{
     constructor(x,y){
         super();
         super.setup();
-        Entity.prototype.setPos(x,y);
+        // Entity.prototype.setPos(x,y);
         this.x = x;
         this.y = y;
         this.breakable = true;
@@ -13,9 +13,9 @@ class Wall extends Entity{
 
     update(du){
         
-        Entity.prototype.setPos(this.x,this.y);
+        // Entity.prototype.setPos(this.x,this.y);
         // console.log(this.x);
-        spatialManager.register(this); 
+        // spatialManager.register(this); 
     }
 
     render(ctx){

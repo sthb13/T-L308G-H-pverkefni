@@ -76,7 +76,7 @@ class Level {
                         this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
-                      entityManager._guards.push(new Guard(x,y));
+                     entityManager._guards.push(new Guard(x,y));
                     this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:

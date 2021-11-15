@@ -82,9 +82,12 @@ render: function(ctx) {
     var oldStyle = ctx.strokeStyle;
     ctx.strokeStyle = "red";
     
-    for (var ID in this._entities) {
-        var e = this._entities[ID];
-        util.fillBox(ctx, e.posX, e.posY, 40,44,'red');
+    // for (var ID in this._entities) {
+     for (let i=0;i<this._entities.length;i++) {
+        const e = this._entities[i];
+        if(e) {
+            console.log(e);
+            util.fillBox(ctx, e.posX, e.posY, 40,44,'red') };
     }
     ctx.strokeStyle = oldStyle;
 },
@@ -115,18 +118,21 @@ render: function(ctx) {
         return false;
     },
 
-checkCollision: function(x,y){
-    for (let i=0;i<this._entities.length;i++) {
-        const e = this._entities[i];
-        // console.log(e);
-        if(e){
-          if  (x < e.posX + e.width &&
-               x + e.width > e.posX &&
-               y < e.posY + e.height &&
-               e.height + y > e.posY) return e.entity;
+    checkCollision: function(x,y,type){
+    const t = 30; //tolerance
+        for (let i=0;i<this._entities.length;i++) {
+            const e = this._entities[i];
+            if(e){
+                //don't check collision with itself
+                if (e.entity.type != type){
+                    if  (x < e.posX + e.width - t &&
+                         x + e.width - t> e.posX &&
+                         y < e.posY + e.height &&
+                         e.height + y > e.posY) return e.entity;
+                }
+            }
+            
         }
-        
-    }
     return false;
 },
     isInAir: function(x,y){
