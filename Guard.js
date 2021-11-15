@@ -90,7 +90,7 @@ class Guard extends Actor{
         }
    }
 
-   findClosestWayUp() {
+    findClosestWayUp() {
        //TODO: Implement
    }
 
@@ -132,6 +132,7 @@ class Guard extends Actor{
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
         this.checkGold();
+
         // this.debug();
         //this.debugGuards();
     }

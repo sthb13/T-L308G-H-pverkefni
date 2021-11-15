@@ -151,6 +151,7 @@ function requestPreloads() {
         player  : "./images/runner.png", //spriteSheet
         // player : "./images/runner1.png",
         guard   : "./images/guard.png",
+        guardRed   : "./images/redhat.png",
         empty   : "./images/empty.png",
         hole    : "./images/hole.png"
     };
@@ -170,6 +171,7 @@ function preloadDone() {
     g_sprites.gold = new Sprite(g_images.gold);
     g_sprites.player = new Sprite(g_images.player);
     g_sprites.guard = new Sprite(g_images.guard);
+    g_sprites.guardRed = new Sprite(g_images.guardRed);
     g_sprites.empty = new Sprite(g_images.empty);
     g_sprites.hole = new Sprite(g_images.hole);
 

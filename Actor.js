@@ -201,6 +201,9 @@ class Actor extends Entity{
                            }
             if(this.type == BLOCKTYPE.GUARD_SPAWN &&
                this.carriesGold == false) {
+                this.image = g_images.guardRed;
+                this.sprite = g_sprites.guardRed;
+                this.spriteChange = true;
                 this.carriesGold = true;
                 obj._isDeadNow = true;
             }
