@@ -80,7 +80,7 @@ var KEY_MIXED   = keyCode('M');;
 // var KEY_AVE_VEL = keyCode('V');
 var KEY_SPATIAL = keyCode('X');
 
-var KEY_HALT  = keyCode('H');
+// var KEY_HALT  = keyCode('H');
 var KEY_RESET = keyCode('R');
 
 // var KEY_0 = keyCode('0');
@@ -101,7 +101,7 @@ function processDiagnostics() {
 
     if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
 
-    if (eatKey(KEY_HALT)) entityManager.haltShips();
+    // if (eatKey(KEY_HALT)) entityManager.haltShips();
 
   //  if (eatKey(KEY_RESET)) entityManager.resetShips();
 

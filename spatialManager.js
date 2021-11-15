@@ -42,12 +42,12 @@ register: function(entity) {
     var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
     var width = 40;
-    var height = 42;
+    var height = 44;
     // var width = entity.getWidth();
     // var height = entity.getHeight()
     
     // DONE: YOUR STUFF HERE!
-    this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity};
+    this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity}
     
     
 },
@@ -86,8 +86,8 @@ render: function(ctx) {
      for (let i=0;i<this._entities.length;i++) {
         const e = this._entities[i];
         if(e) {
-            console.log(e);
-            util.fillBox(ctx, e.posX, e.posY, 40,44,'red') };
+            console.log(e.entity);
+            util.fillBox(ctx, e.posX, e.posY, 40,44,"rgba(255,0,0,0.5)") };
     }
     ctx.strokeStyle = oldStyle;
 },
@@ -118,7 +118,7 @@ render: function(ctx) {
         return false;
     },
 
-    checkCollision: function(x,y,type){
+    boxCollision: function(x,y,type){
     const t = 30; //tolerance
         for (let i=0;i<this._entities.length;i++) {
             const e = this._entities[i];
@@ -135,9 +135,5 @@ render: function(ctx) {
         }
     return false;
 },
-    isInAir: function(x,y){
-        
-        return false;
-    }
 
 }

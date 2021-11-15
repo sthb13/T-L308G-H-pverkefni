@@ -30,6 +30,8 @@ class Guard extends Actor{
         this.player;
         this.type = BLOCKTYPE.GUARD_SPAWN;
         this.carriesGold = false;
+        this.trapped = false;
+        this.trapLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
@@ -37,6 +39,9 @@ class Guard extends Actor{
 
     }
 
+    tryEscape(){
+        
+    }
     distanceToPLayer(){
         if(entityManager._player[0]) {
             this.player = entityManager._player[0];
@@ -102,6 +107,13 @@ class Guard extends Actor{
     update(du){
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
+        if(this.trapped) this.trapLifeSpan -= du;
+        if(this.trapLifeSpan < 0){
+            this.kill();
+            entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
+             return entityManager.KILL_ME_NOW;
+          
+        }
         // const d = this.dir * this.dirPrev;
         // if(this.isDirectionChange()) this.correctPosition();
         this.dtp = this.distanceToPLayer();
@@ -131,7 +143,7 @@ class Guard extends Actor{
         // determine column from center of actor
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
-        this.checkGold();
+        this.checkCollision();
 
         // this.debug();
         //this.debugGuards();
