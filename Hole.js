@@ -4,6 +4,7 @@ class Hole extends Entity{
         super.setup();
         this.x = x * GRID_BLOCK_W;
         this.y = y * GRID_BLOCK_H;
+        Entity.prototype.setPos(this.x,this.y);
         this.row = x;
         this.column = y;
         this.image = g_images.hole;
@@ -16,17 +17,24 @@ class Hole extends Entity{
         this.csf = 0; //currentSpriteFrame
         this.SPRITEFREQ = 5; // requests next sprite every 3rd update
         this.nextSpriteCounter = this.SPRITEFREQ;
+        this.type = BLOCKTYPE.HOLE;
+
+        spatialManager.register(this);
     }
 
     update(du){
-        console.log("hole?", this.column, this.row);
+        // console.log("hole?", this.column, this.row);
+
         this.spriteAnim(this.ANIM.RIGHT);
         this.nextSpriteCounter -= du;
         gLevel[this.column][this.row] = 0;
         this.digLifeSpan -= du;
         if (this.digLifeSpan < 0) {
+            this.kill();
             this.sprite = g_sprites.brick;
-            return gLevel[this.column][this.row] = 1;
+            gLevel[this.column][this.row] = 1;
+            spatialManager.unregister(this);
+            return entityManager.KILL_ME_NOW;
         }
 
     }

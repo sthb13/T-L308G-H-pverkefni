@@ -191,8 +191,9 @@ class Actor extends Entity{
     }
 
 
-    checkGold(){
-        const obj = spatialManager.checkCollision(this.x,this.y,this.type);
+    checkCollision(){
+        const obj = spatialManager.boxCollision(this.x,this.y,this.type);
+        // catching gold
         if(obj.type == BLOCKTYPE.GOLD_SPAWN){
 
             if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
@@ -208,6 +209,22 @@ class Actor extends Entity{
                 obj._isDeadNow = true;
             }
 
+        }
+
+        // falling in hole
+        if(obj.type == BLOCKTYPE.HOLE){
+            if(this.type == BLOCKTYPE.GUARD_SPAWN){
+                this.trapped = true;
+                this.x = obj.x;
+                this.y = obj.y;
+                if(this.carriesGold) {
+
+                    console.log(this.column,this.row);
+                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
+                    this.carriesGold = false;
+                }
+                
+            }
         }
     }
 

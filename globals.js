@@ -37,7 +37,8 @@ var BLOCKTYPE = {
     PLAYER_SPAWN: 6,
     FALSE_BREAKABLE: 7,
     GUARD_SPAWN: 8,
-    SOLID: 9
+    SOLID: 9,
+    HOLE: 10
 }
 
 var DIRECTION = {

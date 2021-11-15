@@ -4,7 +4,7 @@ class Gold extends Entity{
         super.setup();
         this.x = x ;
         this.y = y ;
-
+        console.log(this.x,this.y);
         // this.image = g_images.gold;
         this.sprite = g_sprites.gold;
         this.type = BLOCKTYPE.GOLD_SPAWN;

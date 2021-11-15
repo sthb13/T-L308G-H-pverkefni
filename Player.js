@@ -82,7 +82,7 @@ class Player extends Actor{
 
          spatialManager.register(this);
 
-        this.checkGold();
+        this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
          // this.debug();
     }
