@@ -117,6 +117,19 @@ update: function(du) {
             }
         }
     }
+
+    if(this._gold.length == 0) {
+        let guardCarriesGold = false;
+        for(let i = 0; i < this._guards.length; i++) {
+            if(this._guards[i].carriesGold) {
+                guardHasGold = true;
+                break;
+            }
+        }
+        if(!guardCarriesGold) {
+            this._level[0].revealLadders();
+        }
+    }
     
     // if (this._rocks.length === 0) this._generateRocks();
     // console.log(this._categories);

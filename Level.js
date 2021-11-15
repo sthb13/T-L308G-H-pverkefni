@@ -112,7 +112,7 @@ class Level {
     initialize() {
         for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
             for(let j = 0; j < NUM_ROWS_OF_BLOCKS; j++) {
-                block = this.level[j][i];
+                let block = this.level[j][i];
                 switch(block){
                     case BLOCKTYPE.GOLD_SPAWN:
                         spawnGold(i, j);
@@ -133,11 +133,15 @@ class Level {
 
     //reveals hidden ladders by changing the block type to ladder.
     revealLadders() {
-        for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
-            for(let j = 0; j < NUM_ROWS_OF_BLOCKS; j++) {
-                block = this.level[j][i];
+        for(let i = 0; i < this.level[0].length; i++) {
+            for(let j = 0; j < this.level.length; j++) {
+                console.log("i: ", i, " j: ", j);
+                let block = this.level[j][i];
                 if(block === BLOCKTYPE.HIDDEN_LADDER) {
-                    level[j][i] = BLOCKTYPE.LADDER;
+                    this.level[j][i] = BLOCKTYPE.LADDER;
+                    const x = this.x+i*GRID_BLOCK_W;
+                    const y = this.y+j*GRID_BLOCK_H;
+                    entityManager._blocks.push(new Ladder(x,y));
                 }
             }
         }
