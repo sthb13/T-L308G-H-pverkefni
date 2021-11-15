@@ -29,6 +29,7 @@ class Guard extends Actor{
         this.prevDy = 0;
         this.player;
         this.type = BLOCKTYPE.GUARD_SPAWN;
+        this.carriesGold = false;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;

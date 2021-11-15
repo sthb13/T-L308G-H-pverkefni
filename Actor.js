@@ -29,8 +29,8 @@ class Actor extends Entity{
         if(this.isPlayer) {
             //console.log(this.below == BLOCKTYPE.LADDER);
         }
-        
-        if(this.below == BLOCKTYPE.LADDER || 
+
+        if(this.below == BLOCKTYPE.LADDER ||
             this.center == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H) {
             this.canClimbDown = true;
         } else {
@@ -38,7 +38,7 @@ class Actor extends Entity{
         }
 
         if(this.center == BLOCKTYPE.LADDER ||
-            this.below == BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H || 
+            this.below == BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H ||
             this.above == BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
                 this.canClimbUp = true;
             }
@@ -91,7 +91,7 @@ class Actor extends Entity{
             if(!this.canClimbUp) {
                 return;
             }
-            
+
             this.isClimbing = true;
             this.spriteAnim(this.ANIM.UP);
             this.x = this.column * GRID_BLOCK_W;
@@ -109,7 +109,7 @@ class Actor extends Entity{
            (this.above == BLOCKTYPE.LADDER ||
             this.above == BLOCKTYPE.AIR ||
             this.above == BLOCKTYPE.ROPE)) return STATE.CANCLIMB;
-        
+
 
         // climbing in the ladder
         if(this.below == BLOCKTYPE.BREAKABLE &&
@@ -127,7 +127,7 @@ class Actor extends Entity{
         //End of DEBUG
 
         if(this.center == BLOCKTYPE.LADDER) {
-            this.ONBLOCK;            
+            this.ONBLOCK;
         }
 
         // standing on top of the ladder
@@ -135,7 +135,7 @@ class Actor extends Entity{
            this.center == BLOCKTYPE.AIR) {
                 //return STATE.ONLADDER;
                 return this.ONBLOCK;
-           } 
+           }
 
         if(this.center == BLOCKTYPE.AIR &&
            this.below == BLOCKTYPE.ROPE) return STATE.FALLING;
@@ -153,7 +153,7 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-        
+
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -193,12 +193,21 @@ class Actor extends Entity{
 
     checkGold(){
         const obj = spatialManager.checkCollision(this.x,this.y,this.type);
-        if(this.type == BLOCKTYPE.PLAYER_SPAWN){
-             if(obj.type == BLOCKTYPE.GOLD_SPAWN) scoreManager.goldPoints();
+        if(obj.type == BLOCKTYPE.GOLD_SPAWN){
+
+            if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+                scoreManager.goldPoints();
+                obj._isDeadNow = true;
+                           }
+            if(this.type == BLOCKTYPE.GUARD_SPAWN &&
+               this.carriesGold == false) {
+                this.carriesGold = true;
+                obj._isDeadNow = true;
+            }
+
         }
-        if(obj) obj._isDeadNow = true;
     }
-   
+
     // tracks 9 blocks around actor
     surroundingBlocks(r,c){
         const blocks = [[1,1,1],[,1,1,1],[1,1,1]];
