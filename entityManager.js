@@ -122,7 +122,7 @@ update: function(du) {
         let guardCarriesGold = false;
         for(let i = 0; i < this._guards.length; i++) {
             if(this._guards[i].carriesGold) {
-                guardHasGold = true;
+                guardCarriesGold = true;
                 break;
             }
         }
