@@ -116,8 +116,12 @@ class Actor extends Entity{
            this.center == BLOCKTYPE.LADDER) return STATE.CANCLIMB;
         */
 
+        if(this.state == STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
+            return STATE.DIGGING
+        }
+
         if(this.isClimbing) {
-            return this.CLIMBING;
+            return STATE.CLIMBING;
         }
 
         //TODO: Remove this Debug statement
@@ -127,14 +131,14 @@ class Actor extends Entity{
         //End of DEBUG
 
         if(this.center == BLOCKTYPE.LADDER) {
-            this.ONBLOCK;
+            STATE.ONBLOCK;
         }
 
         // standing on top of the ladder
         if(this.below == BLOCKTYPE.LADDER &&
            this.center == BLOCKTYPE.AIR) {
                 //return STATE.ONLADDER;
-                return this.ONBLOCK;
+                return STATE.ONBLOCK;
            }
 
         if(this.center == BLOCKTYPE.AIR &&

@@ -27,6 +27,8 @@ var GRID_BLOCK_H = 44;
 var NUM_COLUMNS_OF_BLOCKS = 28;
 var NUM_ROWS_OF_BLOCKS = 17;
 
+var TIME_TO_DIG_HOLE = 40; //8 Sprites, 5 Frames per Sprite
+
 var BLOCKTYPE = {
     AIR: 0,
     BREAKABLE: 1,
@@ -54,5 +56,6 @@ var STATE = {
     //CANCLIMB : 2,
     FALLING : 2,
     INROPE : 3,
-    LANDING: 4
+    LANDING: 4,
+    DIGGING: 5
 }

@@ -27,6 +27,7 @@ class Player extends Actor{
                              // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.type = BLOCKTYPE.PLAYER_SPAWN;
+        this.timeDigging = 0;
         
         //TODO: Remove this debug stuff
         this.isPlayer = true;
@@ -48,31 +49,41 @@ class Player extends Actor{
         if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
             if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
                 //Do Nothing
-            } else {
+            } else if(this.state != STATE.DIGGING) {
                 if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
                 if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
             }
         } else {
             if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
                 //Do nothing
+            } else if(this.state != STATE.DIGGING) {
+                if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+                if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
             }
-            if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
-            if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+            
         }
 
+        if(this.state = STATE.DIGGING) {this.timeDigging += du}
 
         this.state = this.checkState();
         this.correctPosition();
         Entity.prototype.setPos(this.x,this.y);
 
-        if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == 1) {
+        if(this.state != STATE.DIGGING && this != STATE.FALLING) {
+            if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == BLOCKTYPE.BREAKABLE) {
+                this.state = STATE.DIGGING;
+                this.timeDigging = 0;
                 entityManager._holes.push(new Hole(this.column-1,this.row+1));
                 }
     
-        if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == 1) {
+            if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE) {
+                this.state = STATE.DIGGING;
+                this.timeDigging = 0;
                 entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
+        }
 
+        
         // this.row = Math.floor(this.y/GRID_BLOCK_H);
         // this.column = Math.floor(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
