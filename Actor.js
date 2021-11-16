@@ -23,13 +23,7 @@ class Actor extends Entity{
         this.isClimbing = false;
     }
 
-    move(du,dir){
-        if(this.state == STATE.FALLING) return;
-        //console.log(this.below == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H)
-        if(this.isPlayer) {
-            //console.log(this.below == BLOCKTYPE.LADDER);
-        }
-
+    setClimbingOptions(){
         if(this.below == BLOCKTYPE.LADDER ||
             this.center == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H) {
             this.canClimbDown = true;
@@ -51,107 +45,92 @@ class Actor extends Entity{
         } else {
             this.canDrop = false;
         }
+    }
 
+    move(du,dir){
+        if(this.state == STATE.FALLING) return;
 
         this.dir = dir;
         switch(dir){
-        case DIRECTION.RIGHT:
-            this.isClimbing = false;
-            if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.right)){
-                if(this.x > this.column * GRID_BLOCK_W ) return;
-            }
-            if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
-            if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
-            this.x += this.speed * du;
-            break;
-        case DIRECTION.LEFT:
-            this.isClimbing = false;
-            if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.left)) {
-                if(this.x < this.column * GRID_BLOCK_W ) return;
-            }
-            if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
-            if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
-            this.x -= this.speed * du;
-            break;
-        case DIRECTION.DOWN:
-            if(!this.canClimbDown) {
-                if(this.canDrop) {
-                    this.x = this.column * GRID_BLOCK_W;
-                    this.y += this.speed * du;
+            case DIRECTION.RIGHT:
+                this.isClimbing = false;
+                if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.right)){
+                    if(this.x > this.column * GRID_BLOCK_W ) return;
                 }
-                return;
-            }
-
-            this.isClimbing = true;
-            this.spriteAnim(this.ANIM.DOWN);
-            this.x = this.column * GRID_BLOCK_W;
-            this.y += this.speed * du;
-            break;
-        case DIRECTION.UP:
-            if(!this.canClimbUp) {
-                return;
-            }
-
-            this.isClimbing = true;
-            this.spriteAnim(this.ANIM.UP);
-            this.x = this.column * GRID_BLOCK_W;
-            this.y -= this.speed * du;
-            break;
+                if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
+                if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
+                this.x += this.speed * du;
+                break;
+            case DIRECTION.LEFT:
+                this.isClimbing = false;
+                if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.left)) {
+                    if(this.x < this.column * GRID_BLOCK_W ) return;
+                }
+                if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
+                if(this.state === STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
+                this.x -= this.speed * du;
+                break;
+            case DIRECTION.DOWN:
+                if(!this.canClimbDown) {
+                    if(this.canDrop) {
+                        this.x = this.column * GRID_BLOCK_W;
+                        this.y += this.speed * du;
+                    }
+                    return;
+                }
+                this.isClimbing = true;
+                this.spriteAnim(this.ANIM.DOWN);
+                this.x = this.column * GRID_BLOCK_W;
+                this.y += this.speed * du;
+                break;
+            case DIRECTION.UP:
+                if(!this.canClimbUp) {
+                    return;
+                }
+                this.isClimbing = true;
+                this.spriteAnim(this.ANIM.UP);
+                this.x = this.column * GRID_BLOCK_W;
+                this.y -= this.speed * du;
+                break;
         }
     }
 
     checkState(){
-        // more specific states need to be on top
-
-        // close to the top of the ladder
-        /*
-        if(this.center == BLOCKTYPE.LADDER &&
-           (this.above == BLOCKTYPE.LADDER ||
-            this.above == BLOCKTYPE.AIR ||
-            this.above == BLOCKTYPE.ROPE)) return STATE.CANCLIMB;
-
-
-        // climbing in the ladder
-        if(this.below == BLOCKTYPE.BREAKABLE &&
-           this.center == BLOCKTYPE.LADDER) return STATE.CANCLIMB;
-        */
-
-        if(this.state == STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
+        //We're digging until the hole is finished or we're interrupted
+        //TODO: manage the case where we're interrupted
+        if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
             return STATE.DIGGING
         }
 
+        //if we are climbing the we're in climbing state. isClimbing is set when attempting to move up/down
         if(this.isClimbing) {
             return STATE.CLIMBING;
         }
 
-        //TODO: Remove this Debug statement
-        if(this.isPlayer) {
-            // console.log(this.center);
-        }
-        //End of DEBUG
-
-        if(this.center == BLOCKTYPE.LADDER) {
-            STATE.ONBLOCK;
+        //if in a stair block, and not climbing then we're standing.
+        if(this.center === BLOCKTYPE.LADDER) {
+            return STATE.ONBLOCK;
         }
 
         // standing on top of the ladder
         if(this.below == BLOCKTYPE.LADDER &&
            this.center == BLOCKTYPE.AIR) {
-                //return STATE.ONLADDER;
                 return STATE.ONBLOCK;
            }
 
-        if(this.center == BLOCKTYPE.AIR &&
-           this.below == BLOCKTYPE.ROPE) return STATE.FALLING;
+        if(this.center === BLOCKTYPE.AIR &&
+           (this.below === BLOCKTYPE.ROPE || 
+            this.below === BLOCKTYPE.AIR)) return STATE.FALLING;
 
-        if(this.center == BLOCKTYPE.ROPE &&
-            this.y >= this.row * GRID_BLOCK_H) return STATE.INROPE;
+        if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
-        //console.log("No State?");
+
+        //State remains unchanged
+        return this.state;
     }
 
     fallingDown(du){
@@ -161,12 +140,20 @@ class Actor extends Entity{
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
-        this.x = this.column * GRID_BLOCK_W;
         this.y += this.speed * du;
 
     }
+    
     correctPosition(){
+        if(this.state === STATE.ONBLOCK || this.state === STATE.INROPE) {
+            this.y = this.row * GRID_BLOCK_H;
+        }
+        
+        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING) {
+            this.x = this.column * GRID_BLOCK_W;
+        }
 
+        /* Old code
         // hack to put actor on ground after falling or transitioning
         // to or from ladder
         if(this.isDirectionChange()){
@@ -174,16 +161,24 @@ class Actor extends Entity{
         }
         if(this.isStateChange()){
         }
+        */
     }
 
+    updateSprite(){
+        if(this.dir != this.dirPrev || this.state != this.prevState) {
+            this.spriteChange = true;
+        }
+    }
+
+    /* Deprecated, use updateSprite instead
     isStateChange(){
         if(this.prevState != this.state) {
-            //console.log(`State has changed from ${Object.keys(STATE)[this.prevState]} to ${Object.keys(STATE)[this.state]}`);
             this.spriteChange = true;
             return true;
         }
         return false;
     }
+    */
 
     isDirectionChange(){
         if(this.dir != this.dirPrev) {

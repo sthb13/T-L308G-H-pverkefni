@@ -27,12 +27,12 @@ var entityManager = {
 
 // "PRIVATE" DATA
 
-_holes   : [],
+_holes : [],
 _gold : [],
-_guards   : [],
-_player: [],
-_level: [],
-_blocks: [],
+_guards : [],
+_player : [], //Change from array to single var
+_level : [], //Change from array to single var
+_blocks : [],
 
 
 _forEachOf: function(aCategory, fn) {
@@ -58,10 +58,13 @@ deferredSetup : function () {
 init: function() {
     this._level.push(new Level(gLevel));
     this._level[0].init();
-    // this.initLevel(gLevel);
-    // this.generatePlayer();
-    // this.generateGuards();
-    // this.generateGold();
+
+    /* Moved to level class. Done level constructor
+    this.initLevel(gLevel);
+    this.generatePlayer();
+    this.generateGuards();
+    this.generateGold();
+    */
 
 },
 
@@ -76,28 +79,6 @@ init: function() {
 //     }
 //     return entities;
 // },
-
-//     generatePlayer : function(x,y){
-//     // const init = this.findInitalPositionOfEntity(BLOCKTYPE.PLAYER_SPAWN);
-//         this._player.push(new Player(x,y));
-// },
-
-//     generateGuard : function(x,y) {
-//     // const init = this.findInitalPositionOfEntity(BLOCKTYPE.GUARD_SPAWN);
-//     // for(let i=0;i<init.length;i++){
-//     //     this._guards.push(new Guard(init[i].x,init[i].y));
-//     // }
-//     this._guards.push(new Guard(x,y));
-// },
-
-//     generateGold : function(x,y) {
-//         this._gold.push(new Gold(x,y));
-// },
-
-//     generateBlock : function(e,x,y){
-//         this._blocks.push(e,x,y);
-//     },
-
 
 update: function(du) {
     for (var c = 0; c < this._categories.length; ++c) {
@@ -130,9 +111,6 @@ update: function(du) {
             this._level[0].revealLadders();
         }
     }
-    
-    // if (this._rocks.length === 0) this._generateRocks();
-    // console.log(this._categories);
 },
 
 render: function(ctx) {
@@ -143,18 +121,19 @@ render: function(ctx) {
 
         var aCategory = this._categories[c];
 
-        // if (!this._bShowRocks && 
-        //     aCategory == this._rocks)
-        //     continue;
-
         for (var i = 0; i < aCategory.length; ++i) {
-
             aCategory[i].render(ctx);
-            //debug.text(".", debugX + i * 10, debugY);
-
         }
         debugY += 10;
     }
+},
+
+//Feeds the guards a reference to player, called in level when all guards and player have been initialized
+initGuardPlayerInfo: function() {
+    this._guards.forEach(guard => {
+        guard.player = this._player[0];
+        console.log(guard.player);
+    });
 }
 
 }
