@@ -56,6 +56,10 @@ deferredSetup : function () {
 },
 
 init: function() {
+    // gLevel is now initialized in globals.js, we can't change the
+    // structure of gLevel without refactoring
+    gLevel = levelData[0];
+    // console.log(gLevel);
     this._level.push(new Level(gLevel));
     this._level[0].init();
 
