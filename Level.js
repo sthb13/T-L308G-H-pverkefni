@@ -6,6 +6,9 @@ class Level {
         this.width = GRID_BLOCK_W;
         this.height = GRID_BLOCK_H;
         this.sprite = g_sprites.empty;
+
+        this.soundPass = new Audio("sounds/pass.ogg");
+        this.soundPassPlayer = false;
     }
 
     update (du){
@@ -117,6 +120,9 @@ class Level {
                 }
             }
         }
+
+        if(!this.soundPassPlayed) this.soundPass.play();
+        this.soundPassPlayed = true;
     }
 
     getBlockType(x, y) {

@@ -35,6 +35,14 @@ class Player extends Actor{
         
         //TODO: Remove this debug stuff
         this.isPlayer = true;
+        this.soundFalling = new Audio("sounds/fall.ogg");
+        this.soundDig = new Audio("sounds/dig.ogg");
+        this.soundGold = new Audio("sounds/getGold.ogg");
+        this.soundDead = new Audio("sounds/dead.ogg");
+        this.soundBorn = new Audio("sounds/born.ogg");
+        // TODO: needs interaction first, like press space
+        this.soundBorn.play();
+
     }
 
 
@@ -50,6 +58,10 @@ class Player extends Actor{
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
+        if(this.state == STATE.LANDING || this.state == STATE.INROPE) {
+            this.soundFalling.pause();
+            this.soundFalling.currentTime = 0;
+        }
         if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
             if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
                 //Do Nothing
@@ -80,12 +92,14 @@ class Player extends Actor{
             if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == BLOCKTYPE.BREAKABLE) {
                 this.state = STATE.DIGGING;
                 this.timeDigging = 0;
+                this.soundDig.play();
                 entityManager._holes.push(new Hole(this.column-1,this.row+1));
                 }
     
             if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE) {
                 this.state = STATE.DIGGING;
                 this.timeDigging = 0;
+                this.soundDig.play();
                 entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
         }

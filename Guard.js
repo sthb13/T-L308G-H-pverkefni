@@ -38,6 +38,7 @@ class Guard extends Actor{
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
 
+        this.soundTrap = new Audio("sounds/trap.ogg");
 
     }
 
@@ -169,6 +170,7 @@ class Guard extends Actor{
 
         //Trap Handling Logic
         if(this.trapped) this.trapLifeSpan -= du;
+        
         if(this.trapLifeSpan < 0){
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));

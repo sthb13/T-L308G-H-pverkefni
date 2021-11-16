@@ -124,14 +124,9 @@ class Actor extends Entity{
 
         if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H){
-            
-            return STATE.LANDING;
-        } 
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)){
-            
-            return STATE.ONBLOCK;
-        } 
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
+        
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
 
@@ -142,7 +137,7 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-
+        if(this.type == BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -201,6 +196,7 @@ class Actor extends Entity{
         if(obj.type == BLOCKTYPE.GOLD_SPAWN){
 
             if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+                this.soundGold.play();
                 scoreManager.goldPoints();
                 obj._isDeadNow = true;
                            }
@@ -218,6 +214,8 @@ class Actor extends Entity{
         // falling in hole
         if(obj.type == BLOCKTYPE.HOLE){
             if(this.type == BLOCKTYPE.GUARD_SPAWN){
+                if(!this.trapped) this.soundTrap.play();
+                // TODO guard getting out of hole must set this back to false
                 this.trapped = true;
                 this.x = obj.x;
                 this.y = obj.y;
