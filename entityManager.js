@@ -136,7 +136,6 @@ render: function(ctx) {
 initGuardPlayerInfo: function() {
     this._guards.forEach(guard => {
         guard.player = this._player[0];
-        console.log(guard.player);
     });
 }
 

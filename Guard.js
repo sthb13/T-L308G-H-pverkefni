@@ -29,8 +29,8 @@ class Guard extends Actor{
         this.dy = 0;
         this.prevDx = 0;
         this.prevDy = 0;
-        this.player;
-       
+        this.player; //To Find Player
+
         this.carriesGold = false;
         this.trapped = false;
         this.trapLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
@@ -66,21 +66,14 @@ class Guard extends Actor{
 
     moveSideways(du){
         if(this.x < this.player.x) {
-            this.move(du,DIRECTION.RIGHT);
+            this.move(du, DIRECTION.RIGHT);
         } else if (this.x > this.player.x) {
             this.move(du, DIRECTION.LEFT);
         }
-        
     }
 
-    findPlayer(du){
-        //Player Tracking Logic
-        //this.dtp = this.distanceToPLayer();
-        //this.prevDx = this.dx;
-        //this.prevDy = this.dy;
-        //this.dx = this.x - this.player.x;
-        //this.dy = this.y - this.player.y;
-        
+    /*
+    oldFindPlayer(du){
         if(this.y < this.player.y) {
             //console.log("go down");
             if((this.state === STATE.ONBLOCK && this.canClimbDown) ||
@@ -103,18 +96,72 @@ class Guard extends Actor{
             this.moveSideways(du);
         }
    }
+   */
 
-    findClosestWayUp() {
-       //TODO: Implement
+   findPlayer(du) {
+       if(this.player.row == this.row) {
+           this.moveSideways(du);
+       } else {
+           if(this.player.row > this.row) {
+               if(this.canClimbDown || this.canDrop) {
+                   this.moveDown(du);
+               } else {
+                    this.move(du, this.findBestWayDown());
+               }
+           } else {
+               if(this.canClimbUp) {
+                   this.moveUp(du);
+               } else {
+                   this.move(du, this.findBestWayUp());
+               }
+           }
+       }
    }
 
-   findClosestWayDown() {
-       //TODO: Implement
-
+    findBestWayUp() {
+        let targetDir = NaN;
+        let closestDist = Infinity; //inf
+        
+        for(let i = 0; i < gLevel[0].length; i++) {
+             if(gLevel[this.row][i] === BLOCKTYPE.LADDER) {
+                 let distance = Math.abs(this.column - i) + Math.abs(this.player.column - i);
+                 if(distance < closestDist) {
+                     closestDist = distance;
+                     if(i > this.column) {
+                         targetDir = DIRECTION.RIGHT;
+                     } else {
+                         targetDir = DIRECTION.LEFT;
+                     }
+                 }
+             }
+         }
+         return targetDir;
    }
+
+   findBestWayDown() {
+       let targetDir = NaN;
+       let closestDist = Infinity; //inf
+       
+       for(let i = 0; i < gLevel[0].length; i++) {
+            if(!this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row + 1][i])) {
+                let distance = Math.abs(this.column - i) + Math.abs(this.player.column - i);
+                if(distance < closestDist) {
+                    closestDist = distance;
+                    if(i > this.column) {
+                        targetDir = DIRECTION.RIGHT;
+                    } else {
+                        targetDir = DIRECTION.LEFT;
+                    }
+                }
+            }
+        }
+        
+        return targetDir;
+    }
 
     update(du){
 
+        //console.log(this.column, ":", this.row);
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
