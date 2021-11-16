@@ -9,42 +9,11 @@ class Level {
     }
 
     update (du){
-        
+        //Should not be called
     }
     
     render (ctx){
-        // let offsetY = 0;
-        // //row
-        // for(let j=0;j<this.level.length;j++){
-        //     let offsetX = 0;
-        //     //column
-        //     for(let i=0;i<this.level[j].length;i++){
-        //         const e = this.level[j][i];
-        //             switch (e){
-                    // case 1:
-                    //     // this.sprite = g_sprites.brick;
-                    //     break;
-                    // case 2:
-                    //      this.sprite = g_sprites.ladder;
-                    //     break;
-                    // case 3:
-                    //      this.sprite = g_sprites.ladder;
-                    //     break;
-                    // case 4:
-                    //      this.sprite = g_sprites.rope;
-                    //     break;
-                    // default:
-                    //     this.sprite = g_sprites.empty;
-                    //     break;
-                    // }
-
-        //         this.sprite.drawAt(ctx, this.x+offsetX, this.y+offsetY);
-
-        //         offsetX += this.width;
-        //     }
-
-        //     offsetY += this.height;
-        // }
+        //Should not be called
     }
     
     init(){
@@ -76,7 +45,7 @@ class Level {
                         this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
-                     entityManager._guards.push(new Guard(x,y));
+                    entityManager._guards.push(new Guard(x,y));
                     this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:
@@ -106,8 +75,11 @@ class Level {
 
         offsetY += this.height;
         }
+        entityManager.initGuardPlayerInfo();
+
     }
 
+    /* USE INIT instead
     //initializes the level by spawning objects, and changing the level data to be empty tiles in those places.
     initialize() {
         for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
@@ -130,12 +102,12 @@ class Level {
             }
         }
     }
+    */
 
     //reveals hidden ladders by changing the block type to ladder.
     revealLadders() {
         for(let i = 0; i < this.level[0].length; i++) {
             for(let j = 0; j < this.level.length; j++) {
-                console.log("i: ", i, " j: ", j);
                 let block = this.level[j][i];
                 if(block === BLOCKTYPE.HIDDEN_LADDER) {
                     this.level[j][i] = BLOCKTYPE.LADDER;

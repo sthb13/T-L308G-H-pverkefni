@@ -53,8 +53,6 @@ var DIRECTION = {
 var STATE = {
     ONBLOCK : 0,
     CLIMBING : 1,
-    //ONLADDER : 1,
-    //CANCLIMB : 2,
     FALLING : 2,
     INROPE : 3,
     LANDING: 4,
