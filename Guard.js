@@ -4,11 +4,10 @@ class Guard extends Actor{
         super.setup();
         this.x = x;
         this.y = y;
-       
-        this.row = Math.round(this.x/GRID_BLOCK_W);
-        this.col = Math.round(this.y/GRID_BLOCK_H);
+        this.column = Math.round(this.x/GRID_BLOCK_W);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
         //TODO: Remove Logging
-        console.log("Guard Spawned at: X:" , x, " Y:", y)
+        
 
         this.speed = 2; 
         this.image = g_images.guard;
@@ -45,7 +44,7 @@ class Guard extends Actor{
     tryEscape(){
         
     }
-    
+
     distanceToPLayer(){
         if(entityManager._player[0]) {
             this.player = entityManager._player[0];
@@ -82,7 +81,7 @@ class Guard extends Actor{
         //this.dx = this.x - this.player.x;
         //this.dy = this.y - this.player.y;
         
-        if(this.y + GRID_BLOCK_H/4 < this.player.y) {
+        if(this.y < this.player.y) {
             //console.log("go down");
             if((this.state === STATE.ONBLOCK && this.canClimbDown) ||
                (this.state === STATE.INROPE && this.canDrop) ||
@@ -91,7 +90,7 @@ class Guard extends Actor{
             } else {
                 this.moveSideways(du)
             }
-        }else if (this.y - GRID_BLOCK_H/4 > this.player.y){
+        }else if (this.y > this.player.y){
             //console.log("go up");
             if(this.state === STATE.ONBLOCK && this.canClimbUp ||
               (this.isClimbing && this.canClimbUp)){
@@ -115,6 +114,7 @@ class Guard extends Actor{
    }
 
     update(du){
+
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
@@ -126,14 +126,12 @@ class Guard extends Actor{
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;
-          
         }
         
         //State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
-        if(this.state === STATE.FALLING || this.STATE === STATE.LANDING) this.fallingDown(du);
-        if(this._isFalling) this.fallingDown(du); //What's this for?
+        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
         //This also handles movement and state logic
@@ -142,16 +140,14 @@ class Guard extends Actor{
         this.state = this.checkState();
         this.correctPosition();
         this.updateSprite();
-
         Entity.prototype.setPos(this.x,this.y);
 
         this.row = Math.round(this.y/GRID_BLOCK_H);
-        // determine column from center of actor
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
         this.checkCollision();
 
-        // this.debug();
+        //this.debug();
         //this.debugGuards();
     }
 

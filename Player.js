@@ -5,8 +5,8 @@ class Player extends Actor{
         this.x = x;
         this.y = y;
         
-        this.row = Math.round(this.x/GRID_BLOCK_W);
-        this.column = Math.round(this.y/GRID_BLOCK_H);
+        this.column = Math.round(this.x/GRID_BLOCK_W);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
         
         this.speed = 4; // ~240 px/s
         this.image = g_images.player;
@@ -46,7 +46,7 @@ class Player extends Actor{
         
         // State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
-
+     
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
@@ -90,19 +90,14 @@ class Player extends Actor{
                 }
         }
 
-        
-        // this.row = Math.floor(this.y/GRID_BLOCK_H);
-        // this.column = Math.floor(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
-        // this.row = Math.ceil(this.y/GRID_BLOCK_H);
-        // this.column = Math.ceil(this.x/GRID_BLOCK_W);
 
-         spatialManager.register(this);
+        spatialManager.register(this);
 
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
-         // this.debug();
+        // this.debug();
     }
 
 

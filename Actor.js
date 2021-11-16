@@ -48,7 +48,7 @@ class Actor extends Entity{
     }
 
     move(du,dir){
-        if(this.state == STATE.FALLING) return;
+        if(this.state === STATE.FALLING || this.state === STATE.LANDING) return;
 
         this.dir = dir;
         switch(dir){
@@ -124,8 +124,14 @@ class Actor extends Entity{
 
         if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H){
+            
+            return STATE.LANDING;
+        } 
+        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)){
+            
+            return STATE.ONBLOCK;
+        } 
 
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
 
@@ -141,7 +147,6 @@ class Actor extends Entity{
         this.spriteAnim(this.ANIM.FALL);
 
         this.y += this.speed * du;
-
     }
     
     correctPosition(){
@@ -149,7 +154,7 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
         
-        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING) {
+        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
 
