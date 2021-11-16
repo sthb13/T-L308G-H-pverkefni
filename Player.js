@@ -58,7 +58,7 @@ class Player extends Actor{
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
-        if(this.state == STATE.LANDING) {
+        if(this.state == STATE.LANDING || this.state == STATE.INROPE) {
             this.soundFalling.pause();
             this.soundFalling.currentTime = 0;
         }
