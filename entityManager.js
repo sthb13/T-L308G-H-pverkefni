@@ -56,6 +56,8 @@ deferredSetup : function () {
 },
 
 init: function() {
+    gLevel = levelData[5];
+    console.log(gLevel);
     this._level.push(new Level(gLevel));
     this._level[0].init();
 
