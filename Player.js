@@ -40,7 +40,6 @@ class Player extends Actor{
         this.soundGold = new Audio("sounds/getGold.ogg");
         this.soundDead = new Audio("sounds/dead.ogg");
         this.soundBorn = new Audio("sounds/born.ogg");
-        this.soundPass = new Audio("sounds/pass.ogg");
         // TODO: needs interaction first, like press space
         this.soundBorn.play();
 
