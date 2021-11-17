@@ -221,7 +221,7 @@ class Actor extends Entity{
                 this.y = obj.y;
                 if(this.carriesGold) {
 
-                    console.log(this.column,this.row);
+                    //console.log(this.column,this.row);
                     entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
                     this.carriesGold = false;
                 }

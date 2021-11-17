@@ -133,10 +133,8 @@ render: function(ctx) {
 },
 
 //Feeds the guards a reference to player, called in level when all guards and player have been initialized
-initGuardPlayerInfo: function() {
-    this._guards.forEach(guard => {
-        guard.player = this._player[0];
-    });
+initPlayerInfo: function() {
+    gPlayer = this._player[0];
 }
 
 }

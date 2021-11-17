@@ -78,7 +78,7 @@ class Level {
 
         offsetY += this.height;
         }
-        entityManager.initGuardPlayerInfo();
+        entityManager.initPlayerInfo();
 
     }
 
