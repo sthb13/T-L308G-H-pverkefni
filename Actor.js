@@ -119,6 +119,13 @@ class Actor extends Entity{
                 return STATE.ONBLOCK;
            }
 
+        // if(this.below == BLOCKTYPE.AIR && this.onHead) return STATE.ONBLOCK;
+        if(this.center === BLOCKTYPE.AIR &&
+           (this.below === BLOCKTYPE.ROPE || 
+            this.below === BLOCKTYPE.AIR) &&
+            this.onHead) return STATE.HOLE;
+
+        
         if(this.center === BLOCKTYPE.AIR &&
            (this.below === BLOCKTYPE.ROPE || 
             this.below === BLOCKTYPE.AIR)) return STATE.FALLING;
@@ -128,8 +135,6 @@ class Actor extends Entity{
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
         
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
-        // TODO this never gets called, why not?
-        if(this.below == BLOCKTYPE.AIR && this.onHead) console.log("should be over guard");
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
 
         //State remains unchanged
@@ -240,8 +245,7 @@ class Actor extends Entity{
         }
 
         // running over guard
-        if(obj.type == BLOCKTYPE.GUARD_SPAWN) 
-          {
+        if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
             console.log("Over Guard");
               this.onHead = true;
               // this.state == STATE.ONHEAD;
