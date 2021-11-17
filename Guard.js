@@ -113,7 +113,7 @@ class Guard extends Actor{
                             } else { //No way down either! We're Stuck!
                                 this.move(du, DIRECTION.RIGHT) //LOST
                                 //TODO: Remove this debug line
-                                console.log("A Guard doesn't know how to reach the player!");
+                                // console.log("A Guard doesn't know how to reach the player!");
                             }
                         }
                     }

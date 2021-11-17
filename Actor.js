@@ -21,6 +21,7 @@ class Actor extends Entity{
         this.canClimbUp = false;
         this.canClimbDown = false;
         this.isClimbing = false;
+        this.onHead = false;
     }
 
     setClimbingOptions(){
@@ -128,6 +129,7 @@ class Actor extends Entity{
         
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
+        if(this.below == BLOCKTYPE.AIR && this.onHead) return STATE.ONBLOCK;
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
 
         //State remains unchanged
@@ -137,6 +139,14 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
+        if(this.onHead) return;
+        // if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+        //     if(spatialManager.onTopCollision(this.x,this.y,this.type)) {
+        //         console.log("@@@@@@@@@@@@");
+        //         this.state == STATE.LANDING;
+        //         return;
+        //     }
+        // }
         if(this.type == BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
@@ -228,6 +238,12 @@ class Actor extends Entity{
                 
             }
         }
+        if(obj.type == BLOCKTYPE.GUARD_SPAWN) 
+          {
+            console.log("####");
+              this.onHead = true;
+              // this.state == STATE.ONHEAD;
+        }
     }
 
     // tracks 9 blocks around actor
@@ -303,6 +319,7 @@ Below: ${Object.keys(BLOCKTYPE)[this.below]}
 Left: ${Object.keys(BLOCKTYPE)[this.left]}
 Right: ${Object.keys(BLOCKTYPE)[this.right]}
 State: ${Object.keys(STATE)[this.state]}
+OnHead?: ${this.onHead}
 `)
     }
 

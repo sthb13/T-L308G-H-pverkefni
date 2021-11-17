@@ -54,8 +54,9 @@ class Player extends Actor{
         
         // State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
-     
+        if(!this.onHead){
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
+        }
         this.setClimbingOptions();
 
         if(this.state == STATE.LANDING || this.state == STATE.INROPE) {
@@ -111,7 +112,7 @@ class Player extends Actor{
 
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
-        // this.debug();
+        this.debug();
     }
 
 
