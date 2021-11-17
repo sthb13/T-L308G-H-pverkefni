@@ -99,6 +99,7 @@ class Actor extends Entity{
         //We're digging until the hole is finished or we're interrupted
         //TODO: manage the case where we're interrupted
         if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
+            this.x = this.column * GRID_BLOCK_W;
             return STATE.DIGGING
         }
 

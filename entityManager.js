@@ -60,7 +60,7 @@ deferredSetup : function () {
 init: function() {
     // gLevel is now initialized in globals.js, we can't change the
     // structure of gLevel without refactoring
-    gLevel = levelData[0];
+    gLevel = levelData[1];
     // console.log(gLevel);
     this._level = new Level(gLevel);
     this._level.init();
@@ -140,6 +140,11 @@ update: function(du) {
     if(this.readyToAdvance && gPlayer.row == 0) {
         this.nextLevel();
     }
+},
+
+nextLevel: function() {
+    this.reset();
+    spatialManager.reset();
 },
 
 render: function(ctx) {
