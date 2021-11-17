@@ -74,6 +74,7 @@ reset: function() {
     this._forEachOf(this._player, Player.prototype.reset);
     this._forEachOf(this._guards, Guard.prototype.reset);
     this._forEachOf(this._gold, Gold.prototype.reset);
+    //Level.prototype.init();
 },
 
     // TODO better have this in Player class?

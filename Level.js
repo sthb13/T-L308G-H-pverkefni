@@ -11,11 +11,11 @@ class Level {
     update (du){
         //Should not be called
     }
-    
+
     render (ctx){
         //Should not be called
     }
-    
+
     init(){
         let offsetY = 0;
         //row
@@ -63,11 +63,11 @@ class Level {
                 //     // this.sprite = g_sprites.rope;
                 //     break;
                 default:
-                    
+
                     // console.log("defaultinit?");
                     // this.sprite = g_sprites.empty;
                     break;
-                    
+
             }
 
             offsetX += this.width;

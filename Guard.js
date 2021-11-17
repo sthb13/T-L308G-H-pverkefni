@@ -54,7 +54,7 @@ class Guard extends Actor{
     }
 
     halt() {
-      this.x = this.x;
+      this.speed = 0;
     }
 
     setPos(x, y, r, c) {
