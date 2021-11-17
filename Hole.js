@@ -10,7 +10,7 @@ class Hole extends Entity{
         this.image = g_images.hole;
         this.sprite = g_sprites.hole;
 
-        this.digLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL; // dig timer.
+        this.digLifeSpan = 6000 / NOMINAL_UPDATE_INTERVAL; // dig timer.
 
         this.ANIM = {LEFT:[0,1,2,3,4,5,6,7],RIGHT:[9,10,11,12,13,14,15,16]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);

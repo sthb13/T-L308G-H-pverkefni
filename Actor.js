@@ -2,10 +2,8 @@ class Actor extends Entity{
     constructor(){
         super();
 
-        // this._isFalling = false;
-        // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
+        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER]
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -25,7 +23,8 @@ class Actor extends Entity{
 
     setClimbingOptions(){
         if(this.below == BLOCKTYPE.LADDER ||
-            this.center == BLOCKTYPE.LADDER && this.y < this.row * GRID_BLOCK_H) {
+            this.center == BLOCKTYPE.LADDER &&
+                (this.y < this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.below))) {
             this.canClimbDown = true;
         } else {
             this.canClimbDown = false;
@@ -40,7 +39,7 @@ class Actor extends Entity{
             this.canClimbUp = false;
         }
 
-        if(this.state == STATE.INROPE && this.below == BLOCKTYPE.AIR) {
+        if(this.state == STATE.INROPE && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
             this.canDrop = true;
         } else {
             this.canDrop = false;
@@ -100,7 +99,7 @@ class Actor extends Entity{
         //TODO: manage the case where we're interrupted
         if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
             this.x = this.column * GRID_BLOCK_W;
-            return STATE.DIGGING
+            return STATE.DIGGING;
         }
 
         //if we are climbing the we're in climbing state. isClimbing is set when attempting to move up/down
@@ -114,14 +113,15 @@ class Actor extends Entity{
         }
 
         // standing on top of the ladder
-        if(this.below == BLOCKTYPE.LADDER &&
-           this.center == BLOCKTYPE.AIR) {
+        if(this.below === BLOCKTYPE.LADDER && 
+            this.INCORPOREAL_BLOCK_TYPES.includes(this.center)) {
                 return STATE.ONBLOCK;
            }
 
-        if(this.center === BLOCKTYPE.AIR &&
-           (this.below === BLOCKTYPE.ROPE || 
-            this.below === BLOCKTYPE.AIR)) return STATE.FALLING;
+        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
+           (this.below === BLOCKTYPE.ROPE || this.INCORPOREAL_BLOCK_TYPES.includes(this.below))) {
+            return STATE.FALLING;
+           } 
 
         if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
@@ -129,7 +129,7 @@ class Actor extends Entity{
         
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
-        if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
+        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) return STATE.FALLING;
 
         //State remains unchanged
         return this.state;
@@ -153,16 +153,6 @@ class Actor extends Entity{
         if(this.state === STATE.CLIMBING || this.state === STATE.FALLING || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
-
-        /* Old code
-        // hack to put actor on ground after falling or transitioning
-        // to or from ladder
-        if(this.isDirectionChange()){
-            this.y = this.row * GRID_BLOCK_H;
-        }
-        if(this.isStateChange()){
-        }
-        */
     }
 
     updateSprite(){
