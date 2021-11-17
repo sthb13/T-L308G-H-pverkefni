@@ -31,7 +31,7 @@ class Level {
                 const y = this.y+offsetY;
                 switch (e){
                 case BLOCKTYPE.BREAKABLE:
-                    entityManager._blocks.push(new Wall(x,y));
+                    entityManager._blocks.push(new Wall(x,y, true));
                     break;
                 case BLOCKTYPE.LADDER:
                     entityManager._blocks.push(new Ladder(x,y));
@@ -53,6 +53,10 @@ class Level {
                     break;
                 case BLOCKTYPE.HOLE:
                       entityManager._holes.push(new Hole(x,y));
+                    break;
+
+                case BLOCKTYPE.SOLID:
+                    entityManager._blocks.push(new Wall(x,y,false));
                     break;
 
                 // case 2:

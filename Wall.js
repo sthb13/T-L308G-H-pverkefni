@@ -1,11 +1,11 @@
 class Wall extends Entity{
-    constructor(x,y){
+    constructor(x,y,breakable){
         super();
         super.setup();
         // Entity.prototype.setPos(x,y);
         this.x = x;
         this.y = y;
-        this.breakable = true;
+        this.breakable = breakable;
         this.visible = true;
         this.sprite = this.breakable ? g_sprites.brick : g_sprites.block;
         
