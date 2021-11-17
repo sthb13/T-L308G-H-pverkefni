@@ -58,3 +58,5 @@ var STATE = {
     LANDING: 4,
     DIGGING: 5
 }
+
+var g_hasMoved = false;

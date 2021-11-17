@@ -4,19 +4,20 @@ class Guard extends Actor{
         super.setup();
         this.x = x;
         this.y = y;
-       
+
         this.row = Math.round(this.x/GRID_BLOCK_W);
         this.col = Math.round(this.y/GRID_BLOCK_H);
         //TODO: Remove Logging
         console.log("Guard Spawned at: X:" , x, " Y:", y)
 
-        this.speed = 2; 
+
+        this.speed = 2;
         this.image = g_images.guard;
         this.sprite = g_sprites.guard;
         this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8], ROPE_RIGHT:[9,10,11], ROPE_LEFT:[12,13,14]};
         this.sprites = this.generateSprites(this.ANIM.LEFT);
         this.csf = 0; //currentSpriteFrame
-        
+
         this.dir = DIRECTION.LEFT;
         this.dirPrev = DIRECTION.LEFT;
         this.SPRITEFREQ = 3; // requests next sprite every 3rd update
@@ -24,14 +25,20 @@ class Guard extends Actor{
         // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.type = BLOCKTYPE.GUARD_SPAWN;
-        
+
         this.dtp = this.distanceToPLayer();
         this.dx = 0;
         this.dy = 0;
         this.prevDx = 0;
         this.prevDy = 0;
         this.player;
-       
+
+        // Remember my reset positions
+        this.reset_x = this.x;
+        this.reset_y = this.y;
+        this.reset_row = this.row;
+        this.reset_col = this.col;
+
         this.carriesGold = false;
         this.trapped = false;
         this.trapLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
@@ -43,9 +50,49 @@ class Guard extends Actor{
     }
 
     tryEscape(){
-        
+
     }
-    
+
+    halt() {
+      this.x = this.x;
+    }
+
+    setPos(x, y, r, c) {
+    this.x = x;
+    this.y = y;
+    this.row = r;
+    this.col = c;
+}
+
+    reset() {
+      g_hasMoved = false;
+      this.setPos(this.reset_x, this.reset_y, this.reset_row, this.reset_col);
+      // this._isFalling = false;
+      // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
+      this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
+      // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
+      this.blocks = this.surroundingBlocks(this.row,this.column);
+      this.state = STATE.ONBLOCK; //check if this is true
+      this.prevState = this.state;
+      this.spriteChange = false;
+
+      this.above = this.blocks[0][1];  //
+      this.center = this.blocks[1][1]; //
+      this.below = this.blocks[2][1];  // convenience fields to avoid
+      this.left = this.blocks[1][0];   // logic errors
+      this.right = this.blocks[1][2];  //
+      this.maxX = 0;
+      this.correctionNeeded = false;
+      this.canClimbUp = false;
+      this.canClimbDown = false;
+      this.isClimbing = false;
+      this.dtp = this.distanceToPLayer();
+      this.dx = 0;
+      this.dy = 0;
+      this.prevDx = 0;
+      this.prevDy = 0;
+    }
+
     distanceToPLayer(){
         if(entityManager._player[0]) {
             this.player = entityManager._player[0];
@@ -71,7 +118,7 @@ class Guard extends Actor{
         } else if (this.x > this.player.x) {
             this.move(du, DIRECTION.LEFT);
         }
-        
+
     }
 
     findPlayer(du){
@@ -81,30 +128,30 @@ class Guard extends Actor{
         //this.prevDy = this.dy;
         //this.dx = this.x - this.player.x;
         //this.dy = this.y - this.player.y;
-        
-        if(this.y + GRID_BLOCK_H/4 < this.player.y) {
-            //console.log("go down");
-            if((this.state === STATE.ONBLOCK && this.canClimbDown) ||
-               (this.state === STATE.INROPE && this.canDrop) ||
-               (this.isClimbing)) {
-                    this.moveDown(du);
-            } else {
-                this.moveSideways(du)
-            }
-        }else if (this.y - GRID_BLOCK_H/4 > this.player.y){
-            //console.log("go up");
-            if(this.state === STATE.ONBLOCK && this.canClimbUp ||
-              (this.isClimbing && this.canClimbUp)){
-                this.moveUp(du);
-            }else{
-                this.moveSideways(du);
-            }
-        } else {
-            //console.log("Right Height");
-            this.moveSideways(du);
-        }
+        if(g_hasMoved) {
+          if(this.y + GRID_BLOCK_H/4 < this.player.y) {
+              //console.log("go down");
+              if((this.state === STATE.ONBLOCK && this.canClimbDown) ||
+                 (this.state === STATE.INROPE && this.canDrop) ||
+                 (this.isClimbing)) {
+                      this.moveDown(du);
+              } else {
+                  this.moveSideways(du)
+              }
+          }else if (this.y - GRID_BLOCK_H/4 > this.player.y){
+              //console.log("go up");
+              if(this.state === STATE.ONBLOCK && this.canClimbUp ||
+                (this.isClimbing && this.canClimbUp)){
+                  this.moveUp(du);
+              }else{
+                  this.moveSideways(du);
+              }
+          } else {
+              //console.log("Right Height");
+              this.moveSideways(du);
+          }
+     }
    }
-
     findClosestWayUp() {
        //TODO: Implement
    }
@@ -126,9 +173,9 @@ class Guard extends Actor{
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;
-          
+
         }
-        
+
         //State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
@@ -138,7 +185,7 @@ class Guard extends Actor{
 
         //This also handles movement and state logic
         this.findPlayer(du);
-        
+
         this.state = this.checkState();
         this.correctPosition();
         this.updateSprite();

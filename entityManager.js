@@ -17,7 +17,7 @@ with suitable 'data' and 'methods'.
 
 
 // Tell jslint not to complain about my use of underscore prefixes (nomen),
-// my flattening of some indentation (white), or my use of incr/decr ops 
+// my flattening of some indentation (white), or my use of incr/decr ops
 // (plusplus).
 //
 /*jslint nomen: true, white: true, plusplus: true*/
@@ -56,7 +56,7 @@ deferredSetup : function () {
 },
 
 init: function() {
-    gLevel = levelData[5];
+    gLevel = levelData[0];
     console.log(gLevel);
     this._level.push(new Level(gLevel));
     this._level[0].init();
@@ -68,6 +68,12 @@ init: function() {
     this.generateGold();
     */
 
+},
+
+reset: function() {
+    this._forEachOf(this._player, Player.prototype.reset);
+    this._forEachOf(this._guards, Guard.prototype.reset);
+    this._forEachOf(this._gold, Gold.prototype.reset);
 },
 
     // TODO better have this in Player class?
@@ -142,4 +148,3 @@ initGuardPlayerInfo: function() {
 
 // Some deferred setup which needs the object to have been created first
 entityManager.deferredSetup();
-

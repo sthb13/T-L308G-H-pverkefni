@@ -48,6 +48,7 @@ class Actor extends Entity{
     }
 
     move(du,dir){
+        g_hasMoved = true;
         if(this.state == STATE.FALLING) return;
 
         this.dir = dir;
@@ -119,7 +120,7 @@ class Actor extends Entity{
            }
 
         if(this.center === BLOCKTYPE.AIR &&
-           (this.below === BLOCKTYPE.ROPE || 
+           (this.below === BLOCKTYPE.ROPE ||
             this.below === BLOCKTYPE.AIR)) return STATE.FALLING;
 
         if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
@@ -143,12 +144,12 @@ class Actor extends Entity{
         this.y += this.speed * du;
 
     }
-    
+
     correctPosition(){
         if(this.state === STATE.ONBLOCK || this.state === STATE.INROPE) {
             this.y = this.row * GRID_BLOCK_H;
         }
-        
+
         if(this.state === STATE.CLIMBING || this.state === STATE.FALLING) {
             this.x = this.column * GRID_BLOCK_W;
         }
@@ -210,6 +211,20 @@ class Actor extends Entity{
 
         }
 
+        // Player touching a guard
+        if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
+          if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+            lifeManager.looseLife();
+            if(lifeManager.lifeNumber > 0) {
+              entityManager.reset();
+              //g_isUpdatePaused = true;  // use halt() instead TODO
+            }else{
+              console.log("Game Over");
+              main._isGameOver = true;
+            }
+          }
+        }
+
         // falling in hole
         if(obj.type == BLOCKTYPE.HOLE){
             if(this.type == BLOCKTYPE.GUARD_SPAWN){
@@ -222,7 +237,7 @@ class Actor extends Entity{
                     entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
                     this.carriesGold = false;
                 }
-                
+
             }
         }
     }
