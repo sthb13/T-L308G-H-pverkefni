@@ -39,7 +39,7 @@ class Actor extends Entity{
             this.canClimbUp = false;
         }
 
-        if(this.state == STATE.INROPE && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
+        if((this.state == STATE.INROPE || this.state == STATE.CLIMBING) && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
             this.canDrop = true;
         } else {
             this.canDrop = false;
@@ -74,6 +74,7 @@ class Actor extends Entity{
                     if(this.canDrop) {
                         this.x = this.column * GRID_BLOCK_W;
                         this.y += this.speed * du;
+                        this.isClimbing = false;
                     }
                     return;
                 }
