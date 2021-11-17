@@ -128,8 +128,8 @@ class Actor extends Entity{
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
         
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
-
-        if(this.below == BLOCKTYPE.AIR && this.onHead) return STATE.ONBLOCK;
+        // TODO this never gets called, why not?
+        if(this.below == BLOCKTYPE.AIR && this.onHead) console.log("should be over guard");
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
 
         //State remains unchanged
@@ -139,7 +139,7 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-        if(this.onHead) return;
+        // if(this.onHead) return;
         // if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
         //     if(spatialManager.onTopCollision(this.x,this.y,this.type)) {
         //         console.log("@@@@@@@@@@@@");
@@ -238,9 +238,11 @@ class Actor extends Entity{
                 
             }
         }
+
+        // running over guard
         if(obj.type == BLOCKTYPE.GUARD_SPAWN) 
           {
-            console.log("####");
+            console.log("Over Guard");
               this.onHead = true;
               // this.state == STATE.ONHEAD;
         }

@@ -55,7 +55,7 @@ class Player extends Actor{
         // State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
         if(!this.onHead){
-        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
+            if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         }
         this.setClimbingOptions();
 
@@ -78,7 +78,7 @@ class Player extends Actor{
                 if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
             }
             
-        }
+       }
 
         //Should be changed before this.checkState() is called.
         if(this.state === STATE.DIGGING) {this.timeDigging += du}
@@ -112,7 +112,7 @@ class Player extends Actor{
 
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
-        this.debug();
+        // this.debug();
     }
 
 
