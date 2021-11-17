@@ -229,7 +229,7 @@ class Guard extends Actor{
         this.checkCollision();
 
         //this.debug();
-        //this.debugGuards();
+        // this.debugGuards();
     }
 
     debugGuards(){

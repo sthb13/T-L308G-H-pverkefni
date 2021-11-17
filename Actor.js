@@ -59,7 +59,8 @@ class Actor extends Entity{
                     if(this.x > this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
-                if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
+                if(this.state == STATE.ONBLOCK ||
+                   this.state == STATE.ONHEAD) this.spriteAnim(this.ANIM.RIGHT);
                 this.x += this.speed * du;
                 break;
             case DIRECTION.LEFT:
@@ -68,7 +69,8 @@ class Actor extends Entity{
                     if(this.x < this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
-                if(this.state === STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
+                if(this.state === STATE.ONBLOCK ||
+                   this.state === STATE.ONHEAD) this.spriteAnim(this.ANIM.LEFT);
                 this.x -= this.speed * du;
                 break;
             case DIRECTION.DOWN:
@@ -111,7 +113,7 @@ class Actor extends Entity{
         //if in a stair block, and not climbing then we're standing.
         if(this.center === BLOCKTYPE.LADDER) {
             return STATE.ONBLOCK;
-        }
+       a }
 
         // standing on top of the ladder
         if(this.below == BLOCKTYPE.LADDER &&
@@ -123,7 +125,7 @@ class Actor extends Entity{
         if(this.center === BLOCKTYPE.AIR &&
            (this.below === BLOCKTYPE.ROPE || 
             this.below === BLOCKTYPE.AIR) &&
-            this.onHead) return STATE.HOLE;
+            this.onHead) return STATE.ONHEAD;
 
         
         if(this.center === BLOCKTYPE.AIR &&
@@ -144,14 +146,6 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-        // if(this.onHead) return;
-        // if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
-        //     if(spatialManager.onTopCollision(this.x,this.y,this.type)) {
-        //         console.log("@@@@@@@@@@@@");
-        //         this.state == STATE.LANDING;
-        //         return;
-        //     }
-        // }
         if(this.type == BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
@@ -164,7 +158,7 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
         
-        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING || this.state === STATE.LANDING) {
+        if(this.state === STATE.CLIMBING || (this.state === STATE.FALLING && !this.onHead) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
 
@@ -207,7 +201,7 @@ class Actor extends Entity{
 
     checkCollision(){
         const obj = spatialManager.boxCollision(this.x,this.y,this.type);
-        // catching gold
+        // catching gold TODO Bug with onHead
         if(obj.type == BLOCKTYPE.GOLD_SPAWN){
 
             if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
@@ -244,13 +238,19 @@ class Actor extends Entity{
             }
         }
 
-        // running over guard
         if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
-            console.log("Over Guard");
-              this.onHead = true;
-              // this.state == STATE.ONHEAD;
+            //running over guard
+            if(this.row < obj.row) this.onHead = true;
+            // player dies
+            if(this.row == obj.row) console.log("Player died");
+
+            
+        }else{
+            // must be set
+            this.onHead = false;
         }
-    }
+        // console.log(this.onHead);
+    }aaa
 
     // tracks 9 blocks around actor
     surroundingBlocks(r,c){

@@ -119,39 +119,21 @@ render: function(ctx) {
     },
 
     boxCollision: function(x,y,type){
-    const t = 30; //tolerance
+    const t = 15; //tolerance
         for (let i=0;i<this._entities.length;i++) {
             const e = this._entities[i];
             if(e){
+                //determine pixels that colide
                 //don't check collision with itself
                 if (e.entity.type != type){
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
-                         y < e.posY + t + e.height &&
-                         y + e.height + t > e.posY) return e.entity;
+                         y < e.posY + e.height  &&
+                         y + e.height + 2 > e.posY) return e.entity
                 }
             }
             
         }
     return false;
-},
-    onTopCollision: function(x,y,type){
-        const t = 5; //tolerance
-        for (let i=0;i<this._entities.length;i++) {
-            const e = this._entities[i];
-            if(e){
-                //don't check collision with itself
-                if (e.entity.type != type){
-                    if  (x < e.posX + e.width + t&&
-                         x + e.width + t > e.posX &&
-                         y < e.posY + e.height + t &&
-                         y + e.height + t > e.posY) return true;
-                }
-            }
-            
-        }
-        return false;
-
-
 }
-}
+   }

@@ -48,18 +48,26 @@ class Player extends Actor{
 
     update(du){
         spatialManager.unregister(this);
+        
+        console.log(`
+        State: ${Object.keys(STATE)[this.state]}
+        OnHead?: ${this.onHead}
+`);
+
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
         this.prevState = this.state;
         
         // State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
-        // if(!this.onHead){
-            if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
-        // }
+        
+        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
+
         this.setClimbingOptions();
 
-        if(this.state == STATE.LANDING || this.state == STATE.INROPE) {
+        if(this.state == STATE.LANDING ||
+           this.state == STATE.INROPE ||
+           this.state == STATE.ONHEAD) {
             this.soundFalling.pause();
             this.soundFalling.currentTime = 0;
         }
@@ -111,8 +119,13 @@ class Player extends Actor{
         spatialManager.register(this);
 
         this.checkCollision();
-        // console.log(spatialManager.checkCollision(this.x,this.y));
-        this.debug();
+
+            // console.log(spatialManager.checkCollision(this.x,this.y));
+         // this.debug();
+        console.log(`
+        State: ${Object.keys(STATE)[this.state]}
+        OnHead?: ${this.onHead}
+`);
     }
 
 
