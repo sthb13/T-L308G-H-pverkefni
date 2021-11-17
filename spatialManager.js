@@ -60,6 +60,12 @@ unregister: function(entity) {
 
 },
 
+//TODO: Test and Fix
+reset: function() {
+    this._nextSpatialID = 1;
+    this._entities = [];
+},
+
 findEntityInRange: function(posX, posY, radius) {
     // DONE: YOUR STUFF HERE!
     for (let i=0;i<this._entities.length;i++) {

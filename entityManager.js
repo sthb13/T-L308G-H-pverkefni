@@ -31,8 +31,10 @@ _holes : [],
 _gold : [],
 _guards : [],
 _player : [], //Change from array to single var
-_level : [], //Change from array to single var
+_level : null, //Change from array to single var
 _blocks : [],
+readyToAdvance : false,
+currentLevel : 0,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -52,7 +54,7 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._gold, this._level, this._blocks, this._holes, this._guards, this._player];
+    this._categories = [this._gold, this._blocks, this._holes, this._guards, this._player];
 },
 
 init: function() {
@@ -60,18 +62,36 @@ init: function() {
     // structure of gLevel without refactoring
     gLevel = levelData[0];
     // console.log(gLevel);
-    this._level.push(new Level(gLevel));
-    this._level[0].init();
-
-    /* Moved to level class. Done level constructor
-    this.initLevel(gLevel);
-    this.generatePlayer();
-    this.generateGuards();
-    this.generateGold();
-    */
+    this._level = new Level(gLevel);
+    this._level.init();
 
 },
 
+nextLevel: function() {
+    /* TODO: FIX THIS FUNCTION
+    this.currentLevel++;
+    //TODO: Maybe we shouldn't just loop levels
+    //this.currentLevel %= levelData.length - 1;
+    spatialManager.reset();
+    this.reset();
+    console.log(this._blocks);
+    //TODO: Win screen if we run out of levels;
+    gPlayer = NaN;
+    gLevel = levelData[this.currentLevel];
+    this._level = new Level(gLevel);
+    this._level.init();
+    */
+},
+
+reset: function() {
+    this._holes = [];
+    this._gold = [];
+    this._guards = [];
+    this._player = []; //Change from array to single var
+    this._level = null;
+    this._blocks = [];
+    this.readyToAdvance = false;
+},
     // TODO better have this in Player class?
 // findInitalPositionOfEntity : function(entity){
 //     let entities = [];
@@ -112,8 +132,13 @@ update: function(du) {
             }
         }
         if(!guardCarriesGold) {
-            this._level[0].revealLadders();
+            this._level.revealLadders();
+            this.readyToAdvance = true;
         }
+    }
+
+    if(this.readyToAdvance && gPlayer.row == 0) {
+        this.nextLevel();
     }
 },
 
