@@ -27,12 +27,12 @@ class Hole extends Entity{
 
         this.spriteAnim(this.ANIM.RIGHT);
         this.nextSpriteCounter -= du;
-        gLevel[this.column][this.row] = 0;
+        gLevel[this.column][this.row] = BLOCKTYPE.HOLE;
         this.digLifeSpan -= du;
         if (this.digLifeSpan < 0) {
             this.kill();
             this.sprite = g_sprites.brick;
-            gLevel[this.column][this.row] = 1;
+            gLevel[this.column][this.row] = BLOCKTYPE.BREAKABLE;
             spatialManager.unregister(this);
             return entityManager.KILL_ME_NOW;
         }
