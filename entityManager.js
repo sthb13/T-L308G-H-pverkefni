@@ -67,7 +67,7 @@ init: function() {
 
 },
 
-initLevel: function() {
+resetLevel: function() {
     //TODO: FIX THIS FUNCTION
     //TODO: Maybe we shouldn't just loop levels
     //this.currentLevel %= levelData.length - 1;
@@ -146,7 +146,7 @@ update: function(du) {
 
     if(this.readyToAdvance && gPlayer.row === 0) {
         this.currentLevel++;
-        this.initLevel();
+        this.resetLevel();
     }
 },
 
