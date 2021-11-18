@@ -34,7 +34,7 @@ _blocks : [],
 _player : null,
 _level : null,
 readyToAdvance : false,
-currentLevel : 0,
+currentLevel : 1,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -153,6 +153,17 @@ update: function(du) {
 nextLevel: function() {
     this.reset();
     spatialManager.reset();
+},
+
+revealBlock: function(column, row) {
+    let blocks = this._categories[1]
+
+    for (let i = 0; i < blocks.length; i++) {
+        if(blocks[i].x === column*GRID_BLOCK_W && blocks[i].y === row*GRID_BLOCK_H)  {
+            console.log(blocks[i]);
+            blocks[i].revealBlock();
+        }
+    }
 },
 
 render: function(ctx) {

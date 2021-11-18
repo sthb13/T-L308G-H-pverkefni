@@ -3,7 +3,7 @@ class Actor extends Entity{
         super();
 
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER];
+        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -23,24 +23,24 @@ class Actor extends Entity{
     }
 
     setClimbingOptions(){
-        if(this.below == BLOCKTYPE.LADDER ||
-            this.center == BLOCKTYPE.LADDER &&
+        if(this.below === BLOCKTYPE.LADDER ||
+            this.center === BLOCKTYPE.LADDER &&
                 (this.y < this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.below))) {
             this.canClimbDown = true;
         } else {
             this.canClimbDown = false;
         }
 
-        if((this.center == BLOCKTYPE.LADDER && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
-            this.below == BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H ||
-            this.above == BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
+        if((this.center === BLOCKTYPE.LADDER && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
+            this.below === BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H ||
+            this.above === BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
                 this.canClimbUp = true;
             }
         else {
             this.canClimbUp = false;
         }
 
-        if((this.state == STATE.INROPE || this.state == STATE.CLIMBING) && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
+        if((this.state === STATE.INROPE || this.state === STATE.CLIMBING) && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
             this.canDrop = true;
         } else {
             this.canDrop = false;
@@ -48,7 +48,12 @@ class Actor extends Entity{
     }
 
     move(du,dir){
-        if(this.state === STATE.FALLING || this.state === STATE.LANDING) return;
+        if(this.state === STATE.FALLING || this.state === STATE.LANDING) {
+            if(this.isPlayer && this.below === BLOCKTYPE.FALSE_BREAKABLE) {
+                entityManager.revealBlock(this.column, this.row + 1);
+            }
+            return;
+        } 
 
         this.dir = dir;
         switch(dir){
@@ -57,9 +62,9 @@ class Actor extends Entity{
                 if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.right)){
                     if(this.x > this.column * GRID_BLOCK_W ) return;
                 }
-                if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
-                if(this.state == STATE.ONBLOCK ||
-                   this.state == STATE.ONHEAD) this.spriteAnim(this.ANIM.RIGHT);
+                if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
+                if(this.state === STATE.ONBLOCK ||
+                   this.state === STATE.ONHEAD) this.spriteAnim(this.ANIM.RIGHT);
                 this.x += this.speed * du;
                 break;
             case DIRECTION.LEFT:
@@ -131,7 +136,7 @@ class Actor extends Entity{
             return STATE.FALLING;
            } 
 
-        if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
+        if(this.center === BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
         
@@ -146,7 +151,7 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-        if(this.type == BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
+        if(this.type === BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -192,15 +197,15 @@ class Actor extends Entity{
     checkCollision(){
         const obj = spatialManager.boxCollision(this.x,this.y,this.type);
         // catching gold
-        if(obj.type == BLOCKTYPE.GOLD_SPAWN){
+        if(obj.type === BLOCKTYPE.GOLD_SPAWN){
 
-            if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+            if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
                 this.soundGold.play();
                 scoreManager.goldPoints();
                 obj._isDeadNow = true;
                            }
-            if(this.type == BLOCKTYPE.GUARD_SPAWN &&
-               this.carriesGold == false) {
+            if(this.type === BLOCKTYPE.GUARD_SPAWN &&
+               this.carriesGold === false) {
                 this.image = g_images.guardRed;
                 this.sprite = g_sprites.guardRed;
                 this.spriteChange = true;
@@ -211,8 +216,8 @@ class Actor extends Entity{
         }
 
         // falling in hole
-        if(obj.type == BLOCKTYPE.HOLE){
-            if(this.type == BLOCKTYPE.GUARD_SPAWN){
+        if(obj.type === BLOCKTYPE.HOLE){
+            if(this.type === BLOCKTYPE.GUARD_SPAWN){
                 if(!this.trapped) this.soundTrap.play();
                 // TODO guard getting out of hole must set this back to false
                 this.trapped = true;
@@ -228,11 +233,11 @@ class Actor extends Entity{
             }
         }
 
-        if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
+        if(obj.type === BLOCKTYPE.GUARD_SPAWN) {
             //running over guard
             if(this.row < obj.row) this.onHead = true;
             // player dies
-            if(this.row == obj.row) console.log("Player died");
+            if(this.row === obj.row) console.log("Player died");
             
         }else{
             // must be set
@@ -248,9 +253,9 @@ class Actor extends Entity{
         // console.log(c,blocks);
         if(r > 0 && r < 15){
             this.updateElement(blocks,r,c,-1,2);
-        } else if (r == 0){
+        } else if (r === 0){
             this.updateElement(blocks,r,c,0,2);
-         } else if (r == 15) {
+         } else if (r === 15) {
             this.updateElement(blocks,r,c,-1,1);
         }
         this.above = blocks[0][1];
@@ -291,7 +296,7 @@ class Actor extends Entity{
             this.spriteChange = false;
         }
         if(this.nextSpriteCounter < 0){
-            if(this.sprites.length == 0) this.sprites = this.generateSprites(frames);
+            if(this.sprites.length === 0) this.sprites = this.generateSprites(frames);
             this.nextSpriteCounter = this.SPRITEFREQ;
             // console.log(this.csf);
             this.sprite = this.sprites[this.csf];

@@ -89,7 +89,7 @@ class Player extends Actor{
 
         //Digging Logic
         if(this.state != STATE.DIGGING && this.state != STATE.FALLING && this.state != STATE.LANDING && this.state != STATE.INROPE) {
-            console.log("X: " , this.x, "Column X", this.column*GRID_BLOCK_W)
+            //console.log("X: " , this.x, "Column X", this.column*GRID_BLOCK_W)
             if(keys[this.KEY_HOLE_LEFT] && 
                 gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
                 this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
@@ -118,10 +118,7 @@ class Player extends Actor{
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
         // this.debug();
-         console.log(`
-State: ${Object.keys(STATE)[this.state]}
- OnHead?: ${this.onHead}
-`);
+        //console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
 
     }
 
