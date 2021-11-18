@@ -27,8 +27,9 @@ class Guard extends Actor{
         gPlayer; //To Find Player
 
         this.carriesGold = false;
-        this.trapped = false;
-        this.trapLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+        //this.trapped = false;
+        //this.trapDeath = false;
+        this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
@@ -38,7 +39,10 @@ class Guard extends Actor{
     }
 
     tryEscape(){
-        
+        //this.column ++;
+        this.trapped = false;
+        this.row ++;
+
     }
 
     moveDown(du){
@@ -201,16 +205,30 @@ class Guard extends Actor{
         this.prevState = this.state;
 
         //Trap Handling Logic
-        if(this.trapped) this.trapLifeSpan -= du;
+        if(this.trapped == true) {
+           // this.trapLifeSpan -= du;
+            this.escapeLifeSpan -= du;
+            if (this.escapeLifeSpan < 0) {
+                //this.tryEscape();
+                //this.row += 2;
+                //this.column += 2;
+                this.blocks[1][1] = this.blocks[2][1];
+                this.trapped = false;
+                console.log("ESCAPE");
+                this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+            }
+        } 
         
-        if(this.trapLifeSpan < 0){
+        //State and movement management
+        this.blocks = this.surroundingBlocks(this.row,this.column);
+
+
+        //Guard death
+        if(this.blocks[1][1] === BLOCKTYPE.BREAKABLE){
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;
         }
-        
-        //State and movement management
-        this.blocks = this.surroundingBlocks(this.row,this.column);
 
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();

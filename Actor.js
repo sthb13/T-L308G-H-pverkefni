@@ -11,6 +11,8 @@ class Actor extends Entity{
         this.prevState = this.state;
         this.spriteChange = false;
 
+        this.topLeft = this.blocks[0][0];
+        this.topRight = this.blocks[0][2];
         this.above = this.blocks[0][1];  //
         this.center = this.blocks[1][1]; //
         this.below = this.blocks[2][1];  // convenience fields to avoid
@@ -21,6 +23,7 @@ class Actor extends Entity{
         this.canClimbUp = false;
         this.canClimbDown = false;
         this.isClimbing = false;
+        this.trapped = false;
     }
 
     setClimbingOptions(){
@@ -129,7 +132,7 @@ class Actor extends Entity{
         
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
-        if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
+        if(this.below == BLOCKTYPE.AIR || this.below == BLOCKTYPE.HOLE) return STATE.FALLING;
 
         //State remains unchanged
         return this.state;

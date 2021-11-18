@@ -33,7 +33,6 @@ _guards : [],
 _player : [], //Change from array to single var
 _level : [], //Change from array to single var
 _blocks : [],
-_readyToAdvance = false,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -114,19 +113,9 @@ update: function(du) {
         }
         if(!guardCarriesGold) {
             this._level[0].revealLadders();
-            this._readyToAdvance = true;
         }
     }
-
-    if(this._readyToAdvance && player.row == 0) {
-        nextLevel();
-    }
 },
-
-nextLevel: function() {
-    this.reset();
-    spatialManager.reset();
-}
 
 render: function(ctx) {
 
