@@ -44,7 +44,7 @@ class Level {
                         this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.PLAYER_SPAWN:
-                       entityManager._player.push(new Player(x,y));
+                       entityManager._player = (new Player(x,y));
                         this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
