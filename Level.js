@@ -40,39 +40,29 @@ class Level {
                      entityManager._blocks.push(new Rope(x,y));
                     break;
                 case BLOCKTYPE.GOLD_SPAWN:
-                      entityManager._gold.push(new Gold(x,y));
-                        this.level[j][i] = BLOCKTYPE.AIR;
+                    entityManager._gold.push(new Gold(x,y));
+                    this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.PLAYER_SPAWN:
-                       entityManager._player.push(new Player(x,y));
-                        this.level[j][i] = BLOCKTYPE.AIR;
+                    entityManager._player = (new Player(x,y));
+                    this.level[j][i] = BLOCKTYPE.AIR;
+                    break;
+                case BLOCKTYPE.FALSE_BREAKABLE:
+                    console.log("Creating False Wall");
+                    entityManager._blocks.push(new FalseWall(x,y));
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
                     entityManager._guards.push(new Guard(x,y));
                     this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:
-                      entityManager._holes.push(new Hole(x,y));
+                    entityManager._holes.push(new Hole(x,y));
                     break;
-
                 case BLOCKTYPE.SOLID:
                     entityManager._blocks.push(new Wall(x,y,false));
                     break;
-
-                // case 2:
-
-                //     // this.sprite = g_sprites.ladder;
-                //     break;
-                // case 3:
-                //      // this.sprite = g_sprites.ladder;
-                //     break;
-                // case 4:
-                //     // this.sprite = g_sprites.rope;
-                //     break;
                 default:
-                    
-                    // console.log("defaultinit?");
-                    // this.sprite = g_sprites.empty;
+                    console.log("defaultinit?");
                     break;
                     
             }
@@ -85,31 +75,6 @@ class Level {
         entityManager.initPlayerInfo();
 
     }
-
-    /* USE INIT instead
-    //initializes the level by spawning objects, and changing the level data to be empty tiles in those places.
-    initialize() {
-        for(let i = 0; i < NUM_COLUMNS_OF_BLOCKS; i++) {
-            for(let j = 0; j < NUM_ROWS_OF_BLOCKS; j++) {
-                let block = this.level[j][i];
-                switch(block){
-                    case BLOCKTYPE.GOLD_SPAWN:
-                        spawnGold(i, j);
-                        this.level[j][i] = BLOCKTYPE.empty;
-                        break;
-                    case BLOCKTYPE.GUARD_SPAWN:
-                        spawnGuard(i, j);
-                        this.level[j][i] = BLOCKTYPE.empty;
-                        break;
-                    case BLOCKTYPE.PLAYER_SPAWN:
-                        spawnPlayer(i, j);
-                        this.level[j][i] = BLOCKTYPE.empty;
-                        break;
-                }
-            }
-        }
-    }
-    */
 
     //reveals hidden ladders by changing the block type to ladder.
     revealLadders() {
@@ -129,9 +94,12 @@ class Level {
         this.soundPassPlayed = true;
     }
 
+    //Deprecated, gLevel used instead
+    /*
     getBlockType(x, y) {
         return this.level[y][x];
     }
+    */
 
     renderElement (ctx,x,y,w,h, col){
         // if(this.sprite !== g_sprites.empty){

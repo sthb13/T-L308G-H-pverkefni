@@ -60,6 +60,12 @@ unregister: function(entity) {
 
 },
 
+//TODO: Test and Fix
+reset: function() {
+    this._nextSpatialID = 1;
+    this._entities = [];
+},
+
 findEntityInRange: function(posX, posY, radius) {
     // DONE: YOUR STUFF HERE!
     for (let i=0;i<this._entities.length;i++) {
@@ -119,7 +125,7 @@ render: function(ctx) {
     },
 
     boxCollision: function(x,y,type){
-    const t = 30; //tolerance
+    const t = 15; //tolerance
         for (let i=0;i<this._entities.length;i++) {
             const e = this._entities[i];
             if(e){
@@ -128,7 +134,7 @@ render: function(ctx) {
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
                          y < e.posY + e.height &&
-                         e.height + y > e.posY) return e.entity;
+                         y + e.height + 2 > e.posY) return e.entity;
                 }
             }
             

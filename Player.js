@@ -58,7 +58,7 @@ class Player extends Actor{
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
-        if(this.state == STATE.LANDING || this.state == STATE.INROPE) {
+        if(this.state == STATE.LANDING || this.state == STATE.INROPE || this.state == STATE.ONHEAD) {
             this.soundFalling.pause();
             this.soundFalling.currentTime = 0;
         }
@@ -88,19 +88,25 @@ class Player extends Actor{
         Entity.prototype.setPos(this.x,this.y);
 
         //Digging Logic
-        if(this.state != STATE.DIGGING && this != STATE.FALLING) {
-            if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == BLOCKTYPE.BREAKABLE) {
-                this.state = STATE.DIGGING;
-                this.timeDigging = 0;
-                this.soundDig.play();
-                entityManager._holes.push(new Hole(this.column-1,this.row+1));
-                }
+        if(this.state != STATE.DIGGING && this.state != STATE.FALLING && this.state != STATE.LANDING && this.state != STATE.INROPE) {
+            //console.log("X: " , this.x, "Column X", this.column*GRID_BLOCK_W)
+            if(keys[this.KEY_HOLE_LEFT] && 
+                gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
+                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
+                this.x >= this.column * GRID_BLOCK_W) {
+                    this.state = STATE.DIGGING;
+                    this.timeDigging = 0;
+                    this.soundDig.play();
+                    entityManager._holes.push(new Hole(this.column-1,this.row+1));
+            }
     
-            if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE) {
-                this.state = STATE.DIGGING;
-                this.timeDigging = 0;
-                this.soundDig.play();
-                entityManager._holes.push(new Hole(this.column+1,this.row+1));
+            if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE &&
+                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column+1]) &&
+                this.x <= this.column * GRID_BLOCK_W) {
+                    this.state = STATE.DIGGING;
+                    this.timeDigging = 0;
+                    this.soundDig.play();
+                    entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
         }
 
@@ -112,6 +118,8 @@ class Player extends Actor{
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
         // this.debug();
+        //console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
+
     }
 
 

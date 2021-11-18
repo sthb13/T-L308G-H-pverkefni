@@ -30,9 +30,11 @@ var entityManager = {
 _holes : [],
 _gold : [],
 _guards : [],
-_player : [], //Change from array to single var
-_level : [], //Change from array to single var
 _blocks : [],
+_player : null,
+_level : null,
+readyToAdvance : false,
+currentLevel : 1,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -52,26 +54,48 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._gold, this._level, this._blocks, this._holes, this._guards, this._player];
+    this._categories = [this._gold, this._blocks, this._holes, this._guards];
 },
 
 init: function() {
     // gLevel is now initialized in globals.js, we can't change the
     // structure of gLevel without refactoring
-    gLevel = levelData[1];
+    gLevel = levelData[this.currentLevel];
     // console.log(gLevel);
-    this._level.push(new Level(gLevel));
-    this._level[0].init();
-
-    /* Moved to level class. Done level constructor
-    this.initLevel(gLevel);
-    this.generatePlayer();
-    this.generateGuards();
-    this.generateGold();
-    */
+    this._level = new Level(gLevel);
+    this._level.init();
 
 },
 
+resetLevel: function() {
+    //TODO: FIX THIS FUNCTION
+    //TODO: Maybe we shouldn't just loop levels
+    //this.currentLevel %= levelData.length - 1;
+    spatialManager.reset();
+    this.reset();
+    //TODO: Win screen if we run out of levels;
+    this._player = null;
+    gLevel = levelData[this.currentLevel];
+    this._level = new Level(gLevel);
+    this._level.init();
+    this.deferredSetup();
+},
+
+reset: function() {
+    /*
+    for (var c = 0; c < this._categories.length; ++c) {
+        this._categories[c] = [];+
+    }
+    */
+    this._holes = [];
+    this._gold = [];
+    this._guards = [];
+    this._blocks = [];
+
+    this._player = null;
+    this._level = null;
+    this.readyToAdvance = false;
+},
     // TODO better have this in Player class?
 // findInitalPositionOfEntity : function(entity){
 //     let entities = [];
@@ -102,8 +126,11 @@ update: function(du) {
             }
         }
     }
+    if(this._player != null) {
+        this._player.update(du);
+    }
 
-    if(this._gold.length == 0) {
+    if(this._gold.length === 0) {
         let guardCarriesGold = false;
         for(let i = 0; i < this._guards.length; i++) {
             if(this._guards[i].carriesGold) {
@@ -111,8 +138,30 @@ update: function(du) {
                 break;
             }
         }
-        if(!guardCarriesGold) {
-            this._level[0].revealLadders();
+        if(!guardCarriesGold && this._level != null) {
+            this._level.revealLadders();
+            this.readyToAdvance = true;
+        }
+    }
+
+    if(this.readyToAdvance && gPlayer.row === 0) {
+        this.currentLevel++;
+        this.resetLevel();
+    }
+},
+
+nextLevel: function() {
+    this.reset();
+    spatialManager.reset();
+},
+
+revealBlock: function(column, row) {
+    let blocks = this._categories[1]
+
+    for (let i = 0; i < blocks.length; i++) {
+        if(blocks[i].x === column*GRID_BLOCK_W && blocks[i].y === row*GRID_BLOCK_H)  {
+            console.log(blocks[i]);
+            blocks[i].revealBlock();
         }
     }
 },
@@ -130,11 +179,15 @@ render: function(ctx) {
         }
         debugY += 10;
     }
+    if(this._player != null) {
+        this._player.render(ctx);
+    }
+    
 },
 
 //Feeds the guards a reference to player, called in level when all guards and player have been initialized
 initPlayerInfo: function() {
-    gPlayer = this._player[0];
+    gPlayer = this._player;
 }
 
 }
