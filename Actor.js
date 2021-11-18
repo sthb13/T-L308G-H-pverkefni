@@ -19,6 +19,7 @@ class Actor extends Entity{
         this.canClimbUp = false;
         this.canClimbDown = false;
         this.isClimbing = false;
+        this.onHead = false;
     }
 
     setClimbingOptions(){
@@ -57,7 +58,8 @@ class Actor extends Entity{
                     if(this.x > this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state == STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
-                if(this.state == STATE.ONBLOCK) this.spriteAnim(this.ANIM.RIGHT);
+                if(this.state == STATE.ONBLOCK ||
+                   this.state == STATE.ONHEAD) this.spriteAnim(this.ANIM.RIGHT);
                 this.x += this.speed * du;
                 break;
             case DIRECTION.LEFT:
@@ -70,7 +72,7 @@ class Actor extends Entity{
                 this.x -= this.speed * du;
                 break;
             case DIRECTION.DOWN:
-                if(!this.canClimbDown) {
+                if(!this.canClimbDown) { 
                     if(this.canDrop) {
                         this.x = this.column * GRID_BLOCK_W;
                         this.y += this.speed * du;
@@ -120,6 +122,11 @@ class Actor extends Entity{
            }
 
         if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
+           (this.below === BLOCKTYPE.ROPE ||
+            this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) &&
+            this.onHead) return STATE.ONHEAD;
+            
+        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
            (this.below === BLOCKTYPE.ROPE || this.INCORPOREAL_BLOCK_TYPES.includes(this.below))) {
             return STATE.FALLING;
            } 
@@ -151,7 +158,7 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
         
-        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING || this.state === STATE.LANDING) {
+        if(this.state === STATE.CLIMBING || (this.state === STATE.FALLING && !this.onHead) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
     }
@@ -220,6 +227,19 @@ class Actor extends Entity{
                 
             }
         }
+
+        if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
+            //running over guard
+            if(this.row < obj.row) this.onHead = true;
+            // player dies
+            if(this.row == obj.row) console.log("Player died");
+            
+        }else{
+            // must be set
+            this.onHead = false;
+        }
+        // console.log(this.onHead)
+
     }
 
     // tracks 9 blocks around actor
