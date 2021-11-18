@@ -30,7 +30,7 @@ class Actor extends Entity{
             this.canClimbDown = false;
         }
 
-        if(this.center == BLOCKTYPE.LADDER ||
+        if((this.center == BLOCKTYPE.LADDER && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
             this.below == BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H ||
             this.above == BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
                 this.canClimbUp = true;
