@@ -38,13 +38,6 @@ class Guard extends Actor{
 
     }
 
-    tryEscape(){
-        //this.column ++;
-        this.trapped = false;
-        this.row ++;
-
-    }
-
     moveDown(du){
         this.move(du,DIRECTION.DOWN);
     }
@@ -70,6 +63,16 @@ class Guard extends Actor{
             return true;
         }
         return false;
+    }
+
+    tryEscape(du) {
+        this.escapeLifeSpan -= du;
+        if (this.escapeLifeSpan < 0) {
+            this.escapePosition();
+            console.log("ESCAPE");
+            this.trapped = false;
+            this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+        }
     }
 
    findPlayer(du) {
@@ -206,17 +209,7 @@ class Guard extends Actor{
 
         //Trap Handling Logic
         if(this.trapped == true) {
-           // this.trapLifeSpan -= du;
-            this.escapeLifeSpan -= du;
-            if (this.escapeLifeSpan < 0) {
-                //this.tryEscape();
-                //this.row += 2;
-                //this.column += 2;
-                this.blocks[1][1] = this.blocks[2][1];
-                this.trapped = false;
-                console.log("ESCAPE");
-                this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
-            }
+            this.tryEscape(du);
         } 
         
         //State and movement management

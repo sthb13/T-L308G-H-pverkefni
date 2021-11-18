@@ -9,8 +9,6 @@ class Actor extends Entity{
         this.prevState = this.state;
         this.spriteChange = false;
 
-        this.topLeft = this.blocks[0][0];
-        this.topRight = this.blocks[0][2];
         this.above = this.blocks[0][1];  //
         this.center = this.blocks[1][1]; //
         this.below = this.blocks[2][1];  // convenience fields to avoid
@@ -172,6 +170,11 @@ class Actor extends Entity{
         }
     }
 
+    escapePosition(){
+        this.y = (this.row + 2) * GRID_BLOCK_H;
+        //this.x = (this.column + 5) * GRID_BLOCK_W;
+    }
+
     updateSprite(){
         if(this.dir != this.dirPrev || this.state != this.prevState) {
             this.spriteChange = true;
@@ -225,8 +228,8 @@ class Actor extends Entity{
                 if(!this.trapped) this.soundTrap.play();
                 // TODO guard getting out of hole must set this back to false
                 this.trapped = true;
-                this.x = obj.x;
-                this.y = obj.y;
+                if(this.trapped) this.y = obj.y;
+
                 if(this.carriesGold) {
 
                     //console.log(this.column,this.row);
