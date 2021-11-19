@@ -3,7 +3,7 @@ class Actor extends Entity{
         super();
 
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.PLAYER_SPAWN, BLOCKTYPE.GOLD_SPAWN, BLOCKTYPE.GUARD_SPAWN, BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -49,12 +49,13 @@ class Actor extends Entity{
     }
 
     move(du,dir){
+        g_hasMoved = true;
         if(this.state === STATE.FALLING || this.state === STATE.LANDING) {
             if(this.isPlayer && this.below === BLOCKTYPE.FALSE_BREAKABLE) {
                 entityManager.revealBlock(this.column, this.row + 1);
             }
             return;
-        } 
+        }
 
         this.dir = dir;
         switch(dir){
@@ -78,7 +79,7 @@ class Actor extends Entity{
                 this.x -= this.speed * du;
                 break;
             case DIRECTION.DOWN:
-                if(!this.canClimbDown) { 
+                if(!this.canClimbDown) {
                     if(this.canDrop) {
                         this.x = this.column * GRID_BLOCK_W;
                         this.y += this.speed * du;
@@ -106,6 +107,8 @@ class Actor extends Entity{
     checkState(){
         //We're digging until the hole is finished or we're interrupted
         //TODO: manage the case where we're interrupted
+
+
         if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
             this.x = this.column * GRID_BLOCK_W;
             return STATE.DIGGING;
@@ -121,8 +124,10 @@ class Actor extends Entity{
             return STATE.ONBLOCK;
         }
 
+        // INCORPOREAL = AIR, HOLE, HIDDEN_LADDER, FALSE_BREAKABLE
+
         // standing on top of the ladder
-        if(this.below === BLOCKTYPE.LADDER && 
+        if(this.below === BLOCKTYPE.LADDER &&
             this.INCORPOREAL_BLOCK_TYPES.includes(this.center)) {
                 return STATE.ONBLOCK;
            }
@@ -131,16 +136,16 @@ class Actor extends Entity{
            (this.below === BLOCKTYPE.ROPE ||
             this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) &&
             this.onHead) return STATE.ONHEAD;
-            
+
         if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
            (this.below === BLOCKTYPE.ROPE || this.INCORPOREAL_BLOCK_TYPES.includes(this.below))) {
             return STATE.FALLING;
-           } 
+           }
 
         if(this.center === BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
-        
+
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR || this.below == BLOCKTYPE.HOLE) return STATE.FALLING;
@@ -159,12 +164,12 @@ class Actor extends Entity{
 
         this.y += this.speed * du;
     }
-    
+
     correctPosition(){
         if(this.state === STATE.ONBLOCK || this.state === STATE.INROPE) {
             this.y = this.row * GRID_BLOCK_H;
         }
-        
+
         if(this.state === STATE.CLIMBING || ((this.state === STATE.FALLING && !this.onHead)) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
@@ -205,7 +210,6 @@ class Actor extends Entity{
         const obj = spatialManager.boxCollision(this.x,this.y,this.type);
         // catching gold
         if(obj.type === BLOCKTYPE.GOLD_SPAWN){
-
             if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
                 this.soundGold.play();
                 scoreManager.goldPoints();
@@ -222,6 +226,13 @@ class Actor extends Entity{
 
         }
 
+        // Player touching a guard
+       /*if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
+         if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+
+         }
+       }*/
+
         // falling in hole
         if(obj.type === BLOCKTYPE.HOLE){
             if(this.type === BLOCKTYPE.GUARD_SPAWN){
@@ -236,21 +247,30 @@ class Actor extends Entity{
                     entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
                     this.carriesGold = false;
                 }
-                
+
             }
         }
 
         if(obj.type === BLOCKTYPE.GUARD_SPAWN) {
             //running over guard
-            if(this.row < obj.row) this.onHead = true;
+            if(this.row != obj.row) {
+                this.onHead = true;
+            }
             // player dies
-            if(this.row === obj.row) console.log("Player died");
-            
+            if(this.row === obj.row) {
+              console.log("Player died");
+              lifeManager.looseLife();
+              if(lifeManager.lifeNumber > 0) {
+                g_playerDead = true;
+              }else{
+                console.log("Game Over");
+                entityManager.gameOver();
+              }
+            }
         }else{
             // must be set
-            this.onHead = false;
+            if(this.state != STATE.ONHEAD) this.onHead = false;
         }
-        // console.log(this.onHead)
 
     }
 
@@ -327,6 +347,7 @@ Below: ${Object.keys(BLOCKTYPE)[this.below]}
 Left: ${Object.keys(BLOCKTYPE)[this.left]}
 Right: ${Object.keys(BLOCKTYPE)[this.right]}
 State: ${Object.keys(STATE)[this.state]}
+OnHead? ${this.onHead}
 `)
     }
 

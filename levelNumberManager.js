@@ -42,6 +42,10 @@ nextLevel: function() {
   this.levelNumber++;
 },
 
+resetLevel: function() {
+  this.levelNumber = 1;
+},
+
 // get leading zeros like in the original game.
 leadingZeros: function(size, num) {
   var s = num+"";
