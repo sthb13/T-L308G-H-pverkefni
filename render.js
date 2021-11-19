@@ -5,7 +5,7 @@ var g_doBox = false;
 var g_undoBox = false;
 var g_doFlipFlop = false;
 var g_doRender = true;
-var g_doGrid = true;
+var g_doGrid = false;
 
 var g_frameCounter = 1;
 
