@@ -228,47 +228,11 @@ class Actor extends Entity{
         return false;
     }
 
-
     checkCollision(){
-        const obj = spatialManager.boxCollision(this.x,this.y,this.type);
-      //  console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
-        // catching gold
-        if(obj.type === BLOCKTYPE.GOLD_SPAWN){
-            if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
-                this.soundGold.play();
-                scoreManager.goldPoints();
-                obj._isDeadNow = true;
-                           }
-            if(this.type === BLOCKTYPE.GUARD_SPAWN &&
-               this.carriesGold === false) {
-                this.image = g_images.guardRed;
-                this.sprite = g_sprites.guardRed;
-                this.spriteChange = true;
-                this.carriesGold = true;
-                obj._isDeadNow = true;
-            }
-
-        }
-
-        // Player touching a guard
-       /*if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
-         if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
-
-         }
-       }*/
-
-        // falling in hole
-        if(obj.type === BLOCKTYPE.HOLE){
-            if(this.type === BLOCKTYPE.GUARD_SPAWN){
-                if(!this.trapped) this.soundTrap.play();
-                // TODO guard getting out of hole must set this back to false
-                this.trapped = true;
-                if(this.trapped) this.y = obj.y, this.x = obj.x;
-
+        const collisions = spatialManager.boxCollision(this.x,this.y,this.type);
+        this.onHead = false;
         for(let i = 0; i < collisions.length; i++) {
             let obj = collisions[i];
-
-            console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
             // catching gold
             if(obj.type === BLOCKTYPE.GOLD_SPAWN){
                 if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
@@ -277,7 +241,7 @@ class Actor extends Entity{
                     obj._isDeadNow = true;
                 }
                 if(this.type === BLOCKTYPE.GUARD_SPAWN &&
-                   !this.carriesGold &&
+                   !this.carriesGold && 
                    !this.trapped) {
                     this.image = g_images.guardRed;
                     this.sprite = g_sprites.guardRed;
@@ -285,27 +249,23 @@ class Actor extends Entity{
                     this.carriesGold = true;
                     obj._isDeadNow = true;
                 }
-
-            }
-
-            if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
-                //running over guard
-                if(this.row < obj.row) {
-                    this.onHead = true;
-                }
-                // player dies
-                if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
-                    console.log("Player died");
-                    lifeManager.looseLife();
-                    if(lifeManager.lifeNumber > 0) {
-                        g_playerDead = true;
-                    }else{
-                        console.log("Game Over");
-                        entityManager.gameOver();
+                if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
+                    //running over guard
+                    if(this.row < obj.row) {
+                        this.onHead = true;
+                    }
+                    // player dies
+                    if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
+                        console.log("Player died");
+                        lifeManager.looseLife();
+                        if(lifeManager.lifeNumber > 0) {
+                            g_playerDead = true;
+                        }else{
+                            console.log("Game Over");
+                            entityManager.gameOver();
+                        }
                     }
                 }
-            }
-        }
             }
         }
     }
