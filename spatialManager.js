@@ -1,10 +1,7 @@
 /*
-
 spatialManager.js
-
 A module which handles spatial lookup, as required for...
 e.g. general collision detection.
-
 */
 
 "use strict";
@@ -45,11 +42,11 @@ register: function(entity) {
     var height = 44;
     // var width = entity.getWidth();
     // var height = entity.getHeight()
-    
+
     // DONE: YOUR STUFF HERE!
     this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity}
-    
-    
+
+
 },
 
 unregister: function(entity) {
@@ -58,6 +55,12 @@ unregister: function(entity) {
     // DONE: YOUR STUFF HERE!
     delete this._entities[spatialID];
 
+},
+
+//TODO: Test and Fix
+reset: function() {
+    this._nextSpatialID = 1;
+    this._entities = [];
 },
 
 findEntityInRange: function(posX, posY, radius) {
@@ -70,7 +73,7 @@ findEntityInRange: function(posX, posY, radius) {
         const b = util.square(40);
         // if(d < b) return e.entity;
             console.log(d,b);
-            
+
             if(d < b) return true;
         }
     }
@@ -81,7 +84,7 @@ render: function(ctx) {
     // console.log(this._entities);
     var oldStyle = ctx.strokeStyle;
     ctx.strokeStyle = "red";
-    
+
     // for (var ID in this._entities) {
      for (let i=0;i<this._entities.length;i++) {
         const e = this._entities[i];
@@ -112,14 +115,14 @@ render: function(ctx) {
             // return collision;
 
     },
-    // } 
+    // }
     checkExtremeties: function(x,y){
         if(x > 0 && x < 1080 && y > 0 && y < 704) return true;
         return false;
     },
 
     boxCollision: function(x,y,type){
-    const t = 30; //tolerance
+    const t = 15; //tolerance
         for (let i=0;i<this._entities.length;i++) {
             const e = this._entities[i];
             if(e){
@@ -128,10 +131,10 @@ render: function(ctx) {
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
                          y < e.posY + e.height &&
-                         e.height + y > e.posY) return e.entity;
+                         y + e.height + 2 > e.posY) return e.entity;
                 }
             }
-            
+
         }
     return false;
 },

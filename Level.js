@@ -20,7 +20,6 @@ class Level {
     }
 
     init(){
-      //console.log(this.level);
         let offsetY = 0;
         //row
         for(let j=0;j<this.level.length;j++){

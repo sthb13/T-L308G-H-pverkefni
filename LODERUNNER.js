@@ -52,15 +52,10 @@ var g_renderSpatialDebug = false;
 
 var KEY_SPATIAL = keyCode('X');
 
-var KEY_RESET = keyCode('N');
-
 function processDiagnostics() {
 
     if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
 
-    if (eatKey(KEY_RESET)) {
-      entityManager.reset();
-   }
 }
 
 

@@ -48,6 +48,7 @@ class Player extends Actor{
 
 
     update(du){
+      if(!g_gameOver) {
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
@@ -63,29 +64,30 @@ class Player extends Actor{
             this.soundFalling.pause();
             this.soundFalling.currentTime = 0;
         }
-        if(!g_gameOver) {
-          if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
-              if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
-                  //Do Nothing
-              } else if(this.state != STATE.DIGGING) {
-                  if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
-                  if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
-              }
-          } else {
-              if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
-                  //Do nothing
-              } else if(this.state != STATE.DIGGING) {
-                  if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
-                  if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
-              }
+        if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
+            if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
+                //Do Nothing
+            } else if(this.state != STATE.DIGGING) {
+                if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
+                if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+            }
+        } else {
+            if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
+                //Do nothing
+            } else if(this.state != STATE.DIGGING) {
+                if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+                if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+            }
 
-          }
         }
-        if(eatKey([this.KEY_NEWGAME])) {
+      }
+
+      if(eatKey([this.KEY_NEWGAME])) {
           console.log("N");
           g_isUpdatePaused = false;
           entityManager.restartGame();
         }
+
         //Should be changed before this.checkState() is called.
         if(this.state === STATE.DIGGING) {this.timeDigging += du}
 

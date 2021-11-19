@@ -4,9 +4,8 @@ class Guard extends Actor{
         super.setup();
         this.x = x;
         this.y = y;
-
-        this.row = Math.round(this.x/GRID_BLOCK_W);
-        this.col = Math.round(this.y/GRID_BLOCK_H);
+        this.column = Math.round(this.x/GRID_BLOCK_W);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
         //TODO: Remove Logging
 
 
@@ -28,69 +27,15 @@ class Guard extends Actor{
         gPlayer; //To Find Player
 
         this.carriesGold = false;
-        this.trapped = false;
-        this.trapLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+        //this.trapped = false;
+        //this.trapDeath = false;
+        this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
 
+        this.soundTrap = new Audio("sounds/trap.ogg");
 
-    }
-
-    tryEscape(){
-
-    }
-
-    halt() {
-      this.speed = 0;
-    }
-
-    setPos(x, y, r, c) {
-    this.x = x;
-    this.y = y;
-    this.row = r;
-    this.col = c;
-}
-
-    reset() {
-      g_hasMoved = false;
-      this.setPos(this.reset_x, this.reset_y, this.reset_row, this.reset_col);
-      // this._isFalling = false;
-      // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
-      this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-      // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
-      this.blocks = this.surroundingBlocks(this.row,this.column);
-      this.state = STATE.ONBLOCK; //check if this is true
-      this.prevState = this.state;
-      this.spriteChange = false;
-
-      this.above = this.blocks[0][1];  //
-      this.center = this.blocks[1][1]; //
-      this.below = this.blocks[2][1];  // convenience fields to avoid
-      this.left = this.blocks[1][0];   // logic errors
-      this.right = this.blocks[1][2];  //
-      this.maxX = 0;
-      this.correctionNeeded = false;
-      this.canClimbUp = false;
-      this.canClimbDown = false;
-      this.isClimbing = false;
-      this.dtp = this.distanceToPLayer();
-      this.dx = 0;
-      this.dy = 0;
-      this.prevDx = 0;
-      this.prevDy = 0;
-    }
-
-    distanceToPLayer(){
-        if(entityManager._player[0]) {
-            this.player = entityManager._player[0];
-            // const p = {x:20,y:616};
-        // console.log(p);
-            let d = util.distSq(this.x,this.y,this.player.x,this.player.y);
-            // console.log(d);
-        return Math.sqrt(d);
-        }
-        // return false;
     }
 
     moveDown(du){
@@ -101,69 +46,90 @@ class Guard extends Actor{
     }
 
     moveSideways(du){
-        if(this.x < this.player.x) {
-            this.move(du,DIRECTION.RIGHT);
-        } else if (this.x > this.player.x) {
-            this.move(du, DIRECTION.LEFT);
+        if(this.canReach(gPlayer.column)) {
+            if(this.x < gPlayer.x) {
+                if(this.state == STATE.CLIMBING && this.y > this.row*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                    this.moveUp(du);
+                } else {
+                    this.move(du, DIRECTION.RIGHT);
+                }
+            } else if (this.x > gPlayer.x) {
+                if(this.state == STATE.CLIMBING && this.y > this.row*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                    this.moveUp(du);
+                } else {
+                    this.move(du, DIRECTION.LEFT);
+                }
+            }
+            return true;
         }
+        return false;
+    }
 
+    tryEscape(du) {
+        this.escapeLifeSpan -= du;
+        if (this.escapeLifeSpan < 0) {
+            this.escapePosition();
+            console.log("ESCAPE");
+            this.trapped = false;
+            this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+        }
     }
 
    findPlayer(du) {
-     if(g_hasMoved) {
-       //Try to go straight
-        if(gPlayer.row == this.row && this.moveSideways(du)){
-           //All is well.
-        } else {
-           //If player is below us go down, if he's at same height or above go up.
-           if(gPlayer.row > this.row) {
-               if(this.canClimbDown || this.canDrop) {
-                   this.moveDown(du); //Can you go down here? Go for it!
-                } else {
-                    let dir = this.findBestWayDown();
-                    if(!isNaN(dir)) {
-                        this.move(du, dir); //This way to find a ladder, or a drop.
-                    } else { //No way down, try to go up!
-                        if(this.canClimbUp) {
-                            this.moveUp(du); //Can you go up here? Go for it!
-                        } else {
-                            dir = this.findBestWayUp(); //This way to find a ladder
-                            if(!isNaN(dir)) {
-                                this.move(du, dir);
-                            } else { //No way Up either! We're Stuck!
-                                this.move(du, DIRECTION.RIGHT) //LOST
-                                //TODO: Remove this debug line
-                                console.log("A Guard doesn't know how to reach the player!");
-                            }
-                        }
-                    }
-                }
-            } else {
-               if(this.canClimbUp) {
-                   this.moveUp(du); //Can you go up here? Go for it!
-               } else {
-                   let dir = this.findBestWayUp();
-                   if(!isNaN(dir)) {
-                        this.move(du, dir); //This way to find a ladder
-                    } else { //No way up, try to go down!
-                        if(this.canClimbDown || this.canDrop) {
-                            this.moveDown(du); //Can you go down here? Go for it!
-                        } else {
-                            dir = this.findBestWayDown();
-                            if(!isNaN(dir)) {
-                                this.move(du, dir); //This way to find a ladder, or a drop.
-                            } else { //No way down either! We're Stuck!
-                                this.move(du, DIRECTION.RIGHT) //LOST
-                                //TODO: Remove this debug line
-                                console.log("A Guard doesn't know how to reach the player!");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-   }
- }
+        if(g_hasMoved) {
+         //Try to go straight
+          if(gPlayer.row == this.row && this.moveSideways(du)){
+             //All is well.
+          } else {
+             //If player is below us go down, if he's at same height or above go up.
+             if(gPlayer.row > this.row) {
+                 if(this.canClimbDown || this.canDrop) {
+                     this.moveDown(du); //Can you go down here? Go for it!
+                  } else {
+                      let dir = this.findBestWayDown();
+                      if(!isNaN(dir)) {
+                          this.move(du, dir); //This way to find a ladder, or a drop.
+                      } else { //No way down, try to go up!
+                          if(this.canClimbUp) {
+                              this.moveUp(du); //Can you go up here? Go for it!
+                          } else {
+                              dir = this.findBestWayUp(); //This way to find a ladder
+                              if(!isNaN(dir)) {
+                                  this.move(du, dir);
+                              } else { //No way Up either! We're Stuck!
+                                  this.move(du, DIRECTION.RIGHT) //LOST
+                                  //TODO: Remove this debug line
+                                  console.log("A Guard doesn't know how to reach the player!");
+                              }
+                          }
+                      }
+                  }
+              } else {
+                 if(this.canClimbUp) {
+                     this.moveUp(du); //Can you go up here? Go for it!
+                 } else {
+                     let dir = this.findBestWayUp();
+                     if(!isNaN(dir)) {
+                          this.move(du, dir); //This way to find a ladder
+                      } else { //No way up, try to go down!
+                          if(this.canClimbDown || this.canDrop) {
+                              this.moveDown(du); //Can you go down here? Go for it!
+                          } else {
+                              dir = this.findBestWayDown();
+                              if(!isNaN(dir)) {
+                                  this.move(du, dir); //This way to find a ladder, or a drop.
+                              } else { //No way down either! We're Stuck!
+                                  this.move(du, DIRECTION.RIGHT) //LOST
+                                  //TODO: Remove this debug line
+                                  console.log("A Guard doesn't know how to reach the player!");
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+     }
+  }
 
 
    canReach(c) {
@@ -236,6 +202,8 @@ class Guard extends Actor{
     }
 
     update(du){
+
+        //console.log(this.column, ":", this.row);
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
@@ -255,14 +223,9 @@ class Guard extends Actor{
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;
-
         }
 
-        //State and movement management
-        this.blocks = this.surroundingBlocks(this.row,this.column);
-
-        if(this.state === STATE.FALLING || this.STATE === STATE.LANDING) this.fallingDown(du);
-        if(this._isFalling) this.fallingDown(du); //What's this for?
+        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
         //This also handles movement and state logic
@@ -271,22 +234,20 @@ class Guard extends Actor{
         this.state = this.checkState();
         this.correctPosition();
         this.updateSprite();
-
         Entity.prototype.setPos(this.x,this.y);
 
         this.row = Math.round(this.y/GRID_BLOCK_H);
-        // determine column from center of actor
         this.column = Math.round((this.x)/GRID_BLOCK_W);
         spatialManager.register(this);
         this.checkCollision();
 
-        // this.debug();
+        //this.debug();
         //this.debugGuards();
     }
 
     debugGuards(){
         console.log(`Distance to player: ${this.dtp}, x: ${this.dx}, y: ${this.dy}
 GuardY: ${this.y}, State: ${Object.keys(STATE)[ this.state ]}
-PlayerY: ${this.player.y}`);
+PlayerY: ${gPlayer.y}`);
     }
 }

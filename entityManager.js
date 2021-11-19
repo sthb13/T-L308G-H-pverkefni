@@ -56,21 +56,18 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._gold, this._level, this._blocks, this._holes, this._guards, this._player];
+    this._categories = [this._gold, this._blocks, this._holes, this._guards];
 },
 
 init: function() {
-    gLevel = levelData[0];
-    console.log(gLevel);
-    this._level.push(new Level(gLevel));
-    this._level[0].init();
+    // gLevel is now initialized in globals.js, we can't change the
+    // structure of gLevel without refactoring
+    gLevel = levelData[this.currentLevel];
+    // console.log(gLevel);
+    this._level = new Level(gLevel);
+    this._level.init();
 
-    /* Moved to level class. Done level constructor
-    this.initLevel(gLevel);
-    this.generatePlayer();
-    this.generateGuards();
-    this.generateGold();
-    */
+},
 
 resetLevel: function() {
     g_hasMoved = false;
@@ -113,7 +110,7 @@ restartGame: function() {
 reset: function() {
     /*
     for (var c = 0; c < this._categories.length; ++c) {
-        this._categories[c] = [];
+        this._categories[c] = [];+
     }
     */
     this._holes = [];
@@ -156,8 +153,11 @@ update: function(du) {
             }
         }
     }
+    if(this._player != null) {
+        this._player.update(du);
+    }
 
-    if(this._gold.length == 0) {
+    if(this._gold.length === 0) {
         let guardCarriesGold = false;
         for(let i = 0; i < this._guards.length; i++) {
             if(this._guards[i].carriesGold) {
