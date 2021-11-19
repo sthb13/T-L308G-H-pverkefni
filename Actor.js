@@ -50,6 +50,7 @@ class Actor extends Entity{
 
     move(du,dir){
         g_hasMoved = true;
+        g_startGame = true;
         if(this.state === STATE.FALLING || this.state === STATE.LANDING) {
             if(this.isPlayer && this.below === BLOCKTYPE.FALSE_BREAKABLE) {
                 entityManager.revealBlock(this.column, this.row + 1);
@@ -208,7 +209,7 @@ class Actor extends Entity{
 
     checkCollision(){
         const obj = spatialManager.boxCollision(this.x,this.y,this.type);
-        console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
+      //  console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
         // catching gold
         if(obj.type === BLOCKTYPE.GOLD_SPAWN){
             if(this.type === BLOCKTYPE.PLAYER_SPAWN) {

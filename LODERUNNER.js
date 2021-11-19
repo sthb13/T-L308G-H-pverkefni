@@ -76,11 +76,12 @@ function processDiagnostics() {
 // GAME-SPECIFIC RENDERING
 
 function renderSimulation(ctx) {
-
-    entityManager.render(ctx);
-    scoreManager.render(ctx);
+    if(g_startGame) {
+      entityManager.render(ctx);
+      scoreManager.render(ctx);
+      levelNumberManager.render(ctx);
+    }
     lifeManager.render(ctx);
-    levelNumberManager.render(ctx);
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
@@ -107,7 +108,7 @@ function requestPreloads() {
         guardRed   : "./images/redhat.png",
         empty   : "./images/empty.png",
         hole    : "./images/hole.png",
-        gameOver : "./images/over.png",
+        gameOver : "./images/over_black.png",
         welcome : "./images/welcome.png"
     };
 

@@ -35,6 +35,7 @@ _player : null,
 _level : null,
 readyToAdvance : false,
 currentLevel : 0,
+soundBorn : new Audio("sounds/born.ogg"),
 
 
 _forEachOf: function(aCategory, fn) {
@@ -62,7 +63,6 @@ init: function() {
     // structure of gLevel without refactoring
     gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
     // console.log(gLevel);
-    g_levelInfo = gLevel;
     this._level = new Level(gLevel);
     this._level.init();
 
@@ -184,6 +184,8 @@ update: function(du) {
       if(this.readyToAdvance && gPlayer.row === 0) {
         console.log("PLAYER");
           this.currentLevel++;
+          this.soundBorn.play();
+          lifeManager.gainLife();
           levelNumberManager.nextLevel();
           this.resetLevel();
       }

@@ -31,7 +31,7 @@ class Player extends Actor{
         this.KEY_HOLE_LEFT = 'J'.charCodeAt(0);
         this.KEY_HOLE_RIGHT = 'K'.charCodeAt(0);
         this.KEY_NEWGAME = 'N'.charCodeAt(0);
-
+        
         this.timeDigging = 0;
 
         //TODO: Remove this debug stuff

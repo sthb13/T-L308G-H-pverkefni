@@ -69,7 +69,7 @@ class Guard extends Actor{
         this.escapeLifeSpan -= du;
         if (this.escapeLifeSpan < 0) {
             this.escapePosition();
-            console.log("ESCAPE");
+            //console.log("ESCAPE");
             this.trapped = false;
             this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
         }
@@ -99,7 +99,7 @@ class Guard extends Actor{
                               } else { //No way Up either! We're Stuck!
                                   this.move(du, DIRECTION.RIGHT) //LOST
                                   //TODO: Remove this debug line
-                                  console.log("A Guard doesn't know how to reach the player!");
+                                //  console.log("A Guard doesn't know how to reach the player!");
                               }
                           }
                       }
@@ -121,7 +121,7 @@ class Guard extends Actor{
                               } else { //No way down either! We're Stuck!
                                   this.move(du, DIRECTION.RIGHT) //LOST
                                   //TODO: Remove this debug line
-                                  console.log("A Guard doesn't know how to reach the player!");
+                                  //console.log("A Guard doesn't know how to reach the player!");
                               }
                           }
                       }
@@ -246,7 +246,7 @@ class Guard extends Actor{
         this.checkCollision();
 
         //this.debug();
-        this.debugGuards();
+      //  this.debugGuards();
     }
 
     debugGuards(){
