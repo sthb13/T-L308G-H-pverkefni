@@ -41,8 +41,25 @@ getNewSpatialID : function() {
 register: function(entity) {
     var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
-    var width = 40;
-    var height = 44;
+    var pos,spatialID,width, height;
+    switch(entity.type){
+    case BLOCKTYPE.GOLD_SPAWN:
+         pos.posX += 12;
+         pos.posY += 20;
+        width = 20;
+        height = 30;
+        break;
+    case BLOCKTYPE.GUARD_SPAWN:
+        pos.posY -= 2;
+        width = 40;
+        height = 46;
+        break;
+
+    default:
+        width = 40;
+        height = 44;
+        break;
+    }
     // var width = entity.getWidth();
     // var height = entity.getHeight()
     
@@ -93,7 +110,7 @@ render: function(ctx) {
         const e = this._entities[i];
         if(e) {
             console.log(e.entity);
-            util.fillBox(ctx, e.posX, e.posY, 40,44,"rgba(255,0,0,0.5)") };
+            util.fillBox(ctx, e.posX, e.posY, e.width,e.height,"rgba(255,0,0,0.5)") };
     }
     ctx.strokeStyle = oldStyle;
 },
@@ -125,7 +142,7 @@ render: function(ctx) {
     },
 
     boxCollision: function(x,y,type){
-    const t = 15; //tolerance
+    const t = 10; //tolerance
         for (let i=0;i<this._entities.length;i++) {
             const e = this._entities[i];
             if(e){
@@ -134,8 +151,7 @@ render: function(ctx) {
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
                          y < e.posY + e.height &&
-                         y + e.height + 2 > e.posY) return e.entity;
-                }
+                         y + e.height  > e.posY) return e.entity;                             }
             }
             
         }

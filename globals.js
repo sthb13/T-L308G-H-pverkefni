@@ -57,5 +57,6 @@ var STATE = {
     FALLING : 2,
     INROPE : 3,
     LANDING: 4,
-    DIGGING: 5
+    DIGGING: 5,
+    ONHEAD: 6
 }
