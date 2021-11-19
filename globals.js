@@ -15,7 +15,6 @@ var g_canvas = document.getElementById("myCanvas");
 var g_ctx = g_canvas.getContext("2d");
 var gLevel;
 var gPlayer;
-var g_levelInfo;
 var g_playerDead = false;
 var g_gameOver = false;
 var g_hasMoved = false;
