@@ -27,9 +27,12 @@ class Guard extends Actor{
         gPlayer; //To Find Player
 
         this.carriesGold = false;
-        //this.trapped = false;
-        //this.trapDeath = false;
-        this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+
+        this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
+        this.sound = false;
+
+        this.timeit = false;
+        this.timeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
 
         //TODO: Remove this, debug stuff
         this.isPlayer = false;
@@ -65,15 +68,6 @@ class Guard extends Actor{
         return false;
     }
 
-    tryEscape(du) {
-        this.escapeLifeSpan -= du;
-        if (this.escapeLifeSpan < 0) {
-            this.escapePosition();
-            //console.log("ESCAPE");
-            this.trapped = false;
-            this.escapeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
-        }
-    }
 
    findPlayer(du) {
       if(g_hasMoved) {
@@ -209,14 +203,35 @@ class Guard extends Actor{
         this.dirPrev = this.dir;
         this.prevState = this.state;
 
-        //Trap Handling Logic
-        if(this.trapped == true) {
-            this.tryEscape(du);
-        }
 
         //State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
+        if (this.tellEscapePosition() === true) {
+            if (this.sound === false) {
+                //this.soundTrap.play();
+                this.sound = !this.sound;
+            }
+
+            this.escapeLifeSpan -= du;
+            if (this.escapeLifeSpan < 0) {
+                this.escapePosition();
+                console.log("escape");
+                this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
+                this.timeit = true;
+                this.sound = false;
+            }
+        }
+
+
+        if (this.timeit === true) {
+            this.timeLifeSpan -= du;
+            if (this.timeLifeSpan < 0) {
+                this.refreshEscapePosition();
+                this.timeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+                this.timeit = false;
+            }
+        }
 
         //Guard death
         if(this.blocks[1][1] === BLOCKTYPE.BREAKABLE){

@@ -20,6 +20,7 @@ class Actor extends Entity{
         this.canClimbDown = false;
         this.isClimbing = false;
         this.trapped = false;
+        this.authTrap = false;
         this.onHead = false;
     }
 
@@ -109,11 +110,10 @@ class Actor extends Entity{
         //We're digging until the hole is finished or we're interrupted
         //TODO: manage the case where we're interrupted
 
-        if(this.center === BLOCKTYPE.HOLE && this.type === BLOCKTYPE.GUARD_SPAWN) {
-            if(!this.trapped) this.soundTrap.play();
+        if(this.center === BLOCKTYPE.HIDDEN_LADDER) {
+            //if(!this.trapped) this.soundTrap.play();
             // TODO guard getting out of hole must set this back to false
-            this.trapped = true;
-            if(this.trapped) this.y = this.row*GRID_BLOCK_H, this.x = this.column*GRID_BLOCK_W;
+            if(this.trapped === false) this.y = this.row*GRID_BLOCK_H, this.x = this.column*GRID_BLOCK_W;
             if(this.carriesGold) {
                 if(this.left === BLOCKTYPE.AIR){
                     entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
@@ -191,8 +191,16 @@ class Actor extends Entity{
     }
 
     escapePosition(){
-        this.y = (this.row - 2) * GRID_BLOCK_H;
-        this.x = (this.column + 1) * GRID_BLOCK_W;
+        this.trapped = true;
+        this.authTrap = false;
+    }
+
+    refreshEscapePosition(){
+        this.trapped = false;
+    }
+
+    tellEscapePosition(){
+        return this.authTrap;
     }
 
     updateSprite(){
