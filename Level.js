@@ -14,11 +14,11 @@ class Level {
     update (du){
         //Should not be called
     }
-    
+
     render (ctx){
         //Should not be called
     }
-    
+
     init(){
         let offsetY = 0;
         //row
@@ -41,19 +41,20 @@ class Level {
                     break;
                 case BLOCKTYPE.GOLD_SPAWN:
                     entityManager._gold.push(new Gold(x,y));
-                    this.level[j][i] = BLOCKTYPE.AIR;
+                    //this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.PLAYER_SPAWN:
                     entityManager._player = (new Player(x,y));
-                    this.level[j][i] = BLOCKTYPE.AIR;
+                    //this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.FALSE_BREAKABLE:
                     console.log("Creating False Wall");
                     entityManager._blocks.push(new FalseWall(x,y));
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
+                    console.log("GUARD_SPAWN");
                     entityManager._guards.push(new Guard(x,y));
-                    this.level[j][i] = BLOCKTYPE.AIR;
+                    //this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:
                     entityManager._holes.push(new Hole(x,y));
@@ -64,16 +65,12 @@ class Level {
                 default:
                     console.log("defaultinit?");
                     break;
-                    
             }
-
             offsetX += this.width;
         }
-
         offsetY += this.height;
         }
         entityManager.initPlayerInfo();
-
     }
 
     //reveals hidden ladders by changing the block type to ladder.

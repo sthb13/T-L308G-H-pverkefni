@@ -106,7 +106,9 @@ function requestPreloads() {
         guard   : "./images/guard.png",
         guardRed   : "./images/redhat.png",
         empty   : "./images/empty.png",
-        hole    : "./images/hole.png"
+        hole    : "./images/hole.png",
+        gameOver : "./images/over.png",
+        welcome : "./images/welcome.png"
     };
 
     imagesPreload(requiredImages, g_images, preloadDone);
@@ -127,6 +129,8 @@ function preloadDone() {
     g_sprites.guardRed = new Sprite(g_images.guardRed);
     g_sprites.empty = new Sprite(g_images.empty);
     g_sprites.hole = new Sprite(g_images.hole);
+    g_sprites.gameOver = new Sprite(g_images.gameOver);
+    g_sprites.welcome = new Sprite(g_images.welcome);
 
     // g_sprites.bullet = new Sprite(g_images.ship);
     // g_sprites.bullet.scale = 0.25;
