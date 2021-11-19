@@ -42,6 +42,10 @@ addPoints: function(addToScore) {
   this.score+=addToScore;
 },
 
+resetScore: function() {
+  this.score = 0;
+},
+
 // 75 points for collecting gold.
 goldPoints: function() {
   this.addPoints(75);

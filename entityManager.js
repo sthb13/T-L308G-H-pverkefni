@@ -95,14 +95,9 @@ restartGame: function() {
   console.log("restartGame");
   g_hasMoved = false;
   g_gameOver = false;
-  spatialManager.reset();
-  this.reset();
-  //TODO: Win screen if we run out of levels;
-  this._player = null;
-  gLevel = levelData[0];
-  this._level = new Level(gLevel);
-  this._level.init();
-  this.deferredSetup();
+  this.currentLevel = 0;
+  this.resetLevel();
+  scoreManager.resetScore();
   levelNumberManager.resetLevel();
   lifeManager.resetLife();
 },
