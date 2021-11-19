@@ -44,9 +44,9 @@ register: function(entity) {
     var pos,spatialID,width, height;
     switch(entity.type){
     case BLOCKTYPE.GOLD_SPAWN:
-         pos.posX += 12;
+         pos.posX += 6;
          pos.posY += 20;
-        width = 22;
+        width = 32;
         height = 30;
         break;
     case BLOCKTYPE.GUARD_SPAWN:
@@ -141,7 +141,7 @@ render: function(ctx) {
         return false;
     },
 
-    boxCollision: function(x,y,type){
+    boxCollision: function(x,y){
         const t = 15; //tolerance
         let entities = [];
             for (let i=0;i<this._entities.length;i++) {

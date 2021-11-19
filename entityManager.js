@@ -224,6 +224,16 @@ render: function(ctx) {
 
 },
 
+guardInBlock: function(column, row) {
+    for(let i = 0; i < this._guards.length; i++){
+        let g = this._guards[i];
+        if(g.column === column && g.row === row) {
+            return true;
+        }
+    }
+    return false;
+},
+
 //Feeds the guards a reference to player, called in level when all guards and player have been initialized
 initPlayerInfo: function() {
     if(this._player !== null) gPlayer = this._player;
