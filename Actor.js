@@ -230,7 +230,6 @@ class Actor extends Entity{
 
     checkCollision(){
         const collisions = spatialManager.boxCollision(this.x,this.y);
-        console.log(collisions);
         this.onHead = false;
         for(let i = 0; i < collisions.length; i++) {
             let obj = collisions[i];
