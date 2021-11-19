@@ -147,7 +147,8 @@ render: function(ctx) {
             const e = this._entities[i];
             if(e){
                 //don't check collision with itself
-                if (e.entity.type != type){
+                 // if (e.entity.type != BLOCKTYPE.PLAYER_SPAWN){
+                 if (e.entity.type != type){
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
                          y < e.posY + e.height &&
