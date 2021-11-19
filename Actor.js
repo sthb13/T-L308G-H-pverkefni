@@ -165,7 +165,6 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
         
-        console.log(this.onHead);
         if(this.state === STATE.CLIMBING || ((this.state === STATE.FALLING && !this.onHead)) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
