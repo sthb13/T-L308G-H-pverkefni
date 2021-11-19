@@ -49,7 +49,12 @@ class Actor extends Entity{
 
     move(du,dir){
         g_hasMoved = true;
-        if(this.state == STATE.FALLING) return;
+        if(this.state === STATE.FALLING || this.state === STATE.LANDING) {
+            if(this.isPlayer && this.below === BLOCKTYPE.FALSE_BREAKABLE) {
+                entityManager.revealBlock(this.column, this.row + 1);
+            }
+            return;
+        }
 
         this.dir = dir;
         switch(dir){
@@ -114,18 +119,25 @@ class Actor extends Entity{
         }
 
         // standing on top of the ladder
-        if(this.below == BLOCKTYPE.LADDER &&
-           this.center == BLOCKTYPE.AIR) {
+        if(this.below === BLOCKTYPE.LADDER &&
+            this.INCORPOREAL_BLOCK_TYPES.includes(this.center)) {
                 return STATE.ONBLOCK;
            }
 
         if(this.center === BLOCKTYPE.AIR &&
            (this.below === BLOCKTYPE.ROPE ||
-            this.below === BLOCKTYPE.AIR)) return STATE.FALLING;
+            this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) &&
+            this.onHead) return STATE.ONHEAD;
+
+        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
+           (this.below === BLOCKTYPE.ROPE || this.INCORPOREAL_BLOCK_TYPES.includes(this.below))) {
+            return STATE.FALLING;
+           }
 
         if(this.center == BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
+
         if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR) return STATE.FALLING;
@@ -150,7 +162,7 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
 
-        if(this.state === STATE.CLIMBING || this.state === STATE.FALLING) {
+        if(this.state === STATE.CLIMBING || ((this.state === STATE.FALLING && !this.onHead) && this.trapped) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
 
@@ -216,11 +228,10 @@ class Actor extends Entity{
           if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
             lifeManager.looseLife();
             if(lifeManager.lifeNumber > 0) {
-              entityManager.reset();
-              //g_isUpdatePaused = true;  // use halt() instead TODO
+              g_playerDead = true;
             }else{
               console.log("Game Over");
-              main._isGameOver = true;
+              entityManager.gameOver();
             }
           }
         }
@@ -239,6 +250,17 @@ class Actor extends Entity{
                 }
 
             }
+        }
+
+        if(obj.type === BLOCKTYPE.GUARD_SPAWN) {
+            //running over guard
+            if(this.row < obj.row) this.onHead = true;
+            // player dies
+            if(this.row === obj.row) console.log("Player died");
+
+        }else{
+            // must be set
+            this.onHead = false;
         }
     }
 

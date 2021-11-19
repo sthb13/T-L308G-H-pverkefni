@@ -31,6 +31,13 @@ drawLifeTxt: function() {
   g_ctx.fillText(ctext, this.lifeWidth-(GRID_BLOCK_W*3)+this.xOffset, this.y);
 },
 
+// Draw Game Over Text
+drawGameOver: function() {
+  this.image = g_images.gameOver;
+  this.sprite = g_sprites.gameOver;
+  g_ctx.drawImage(this.image, g_canvas.width / 2 - this.image.width / 2, g_canvas.height / 2 - this.image.height / 2);
+},
+
   // Draw the life number
 drawLifeNumber: function() {
   g_ctx.font = '31px lode_runner_c64regular';
@@ -51,10 +58,14 @@ looseLife: function() {
   this.lifeNumber--;
 },
 
+resetLife: function() {
+  this.lifeNumber = 5;
+},
+
 render: function(ctx) {
     this.drawLifeNumber();
     this.drawLifeTxt();
-    if(this.lifeNumber <= 0) this.drawGameOver();
+    if(g_gameOver) this.drawGameOver();
 },
 
 

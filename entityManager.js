@@ -33,6 +33,10 @@ _guards : [],
 _player : [], //Change from array to single var
 _level : [], //Change from array to single var
 _blocks : [],
+_player : null,
+_level : null,
+readyToAdvance : false,
+currentLevel : 0,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -68,13 +72,58 @@ init: function() {
     this.generateGold();
     */
 
+resetLevel: function() {
+    g_hasMoved = false;
+    //TODO: FIX THIS FUNCTION
+    //TODO: Maybe we shouldn't just loop levels
+    //this.currentLevel %= levelData.length - 1;
+    spatialManager.reset();
+    this.reset();
+    //TODO: Win screen if we run out of levels;
+    this._player = null;
+    gLevel = levelData[this.currentLevel];
+    this._level = new Level(gLevel);
+    this._level.init();
+    this.deferredSetup();
+},
+
+gameOver: function() {
+  g_gameOver = true;
+  this.resetLevel();
+  console.log("PRESS \"N\" for a new game!")
+  g_hasMoved = false;
+},
+
+restartGame: function() {
+  console.log("restartGame");
+  g_hasMoved = false;
+  g_gameOver = false;
+  spatialManager.reset();
+  this.reset();
+  //TODO: Win screen if we run out of levels;
+  this._player = null;
+  gLevel = levelData[0];
+  this._level = new Level(gLevel);
+  this._level.init();
+  this.deferredSetup();
+  levelNumberManager.resetLevel();
+  lifeManager.resetLife();
 },
 
 reset: function() {
-    this._forEachOf(this._player, Player.prototype.reset);
-    this._forEachOf(this._guards, Guard.prototype.reset);
-    this._forEachOf(this._gold, Gold.prototype.reset);
-    //Level.prototype.init();
+    /*
+    for (var c = 0; c < this._categories.length; ++c) {
+        this._categories[c] = [];
+    }
+    */
+    this._holes = [];
+    this._gold = [];
+    this._guards = [];
+    this._blocks = [];
+
+    this._player = null;
+    this._level = null;
+    this.readyToAdvance = false;
 },
 
     // TODO better have this in Player class?
@@ -116,8 +165,38 @@ update: function(du) {
                 break;
             }
         }
-        if(!guardCarriesGold) {
-            this._level[0].revealLadders();
+        if(!guardCarriesGold && this._level != null) {
+            this._level.revealLadders();
+            this.readyToAdvance = true;
+        }
+    }
+    if(g_playerDead) {
+      g_playerDead = false;
+      console.log("g_playerDead");
+      this.resetLevel();
+    }
+
+    if(this._player !== null) {
+      if(this.readyToAdvance && gPlayer.row === 0) {
+        this.currentLevel++;
+        levelNumberManager.nextLevel();
+        this.resetLevel();
+      }
+  }
+},
+
+nextLevel: function() {
+    this.reset();
+    spatialManager.reset();
+},
+
+revealBlock: function(column, row) {
+    let blocks = this._categories[1]
+
+    for (let i = 0; i < blocks.length; i++) {
+        if(blocks[i].x === column*GRID_BLOCK_W && blocks[i].y === row*GRID_BLOCK_H)  {
+            console.log(blocks[i]);
+            blocks[i].revealBlock();
         }
     }
 },
@@ -135,14 +214,16 @@ render: function(ctx) {
         }
         debugY += 10;
     }
+    if(this._player !== null) {
+      this._player.render(ctx);
+    }
+
+
 },
 
 //Feeds the guards a reference to player, called in level when all guards and player have been initialized
-initGuardPlayerInfo: function() {
-    this._guards.forEach(guard => {
-        guard.player = this._player[0];
-        console.log(guard.player);
-    });
+initPlayerInfo: function() {
+    if(this._player !== null) gPlayer = this._player;
 }
 
 }

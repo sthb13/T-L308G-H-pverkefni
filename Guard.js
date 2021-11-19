@@ -8,7 +8,6 @@ class Guard extends Actor{
         this.row = Math.round(this.x/GRID_BLOCK_W);
         this.col = Math.round(this.y/GRID_BLOCK_H);
         //TODO: Remove Logging
-        console.log("Guard Spawned at: X:" , x, " Y:", y)
 
 
         this.speed = 2;
@@ -26,18 +25,7 @@ class Guard extends Actor{
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.type = BLOCKTYPE.GUARD_SPAWN;
 
-        this.dtp = this.distanceToPLayer();
-        this.dx = 0;
-        this.dy = 0;
-        this.prevDx = 0;
-        this.prevDy = 0;
-        this.player;
-
-        // Remember my reset positions
-        this.reset_x = this.x;
-        this.reset_y = this.y;
-        this.reset_row = this.row;
-        this.reset_col = this.col;
+        gPlayer; //To Find Player
 
         this.carriesGold = false;
         this.trapped = false;
@@ -121,45 +109,131 @@ class Guard extends Actor{
 
     }
 
-    findPlayer(du){
-        //Player Tracking Logic
-        //this.dtp = this.distanceToPLayer();
-        //this.prevDx = this.dx;
-        //this.prevDy = this.dy;
-        //this.dx = this.x - this.player.x;
-        //this.dy = this.y - this.player.y;
-        if(g_hasMoved) {
-          if(this.y + GRID_BLOCK_H/4 < this.player.y) {
-              //console.log("go down");
-              if((this.state === STATE.ONBLOCK && this.canClimbDown) ||
-                 (this.state === STATE.INROPE && this.canDrop) ||
-                 (this.isClimbing)) {
-                      this.moveDown(du);
-              } else {
-                  this.moveSideways(du)
-              }
-          }else if (this.y - GRID_BLOCK_H/4 > this.player.y){
-              //console.log("go up");
-              if(this.state === STATE.ONBLOCK && this.canClimbUp ||
-                (this.isClimbing && this.canClimbUp)){
-                  this.moveUp(du);
-              }else{
-                  this.moveSideways(du);
-              }
-          } else {
-              //console.log("Right Height");
-              this.moveSideways(du);
-          }
-     }
+   findPlayer(du) {
+     if(g_hasMoved) {
+       //Try to go straight
+        if(gPlayer.row == this.row && this.moveSideways(du)){
+           //All is well.
+        } else {
+           //If player is below us go down, if he's at same height or above go up.
+           if(gPlayer.row > this.row) {
+               if(this.canClimbDown || this.canDrop) {
+                   this.moveDown(du); //Can you go down here? Go for it!
+                } else {
+                    let dir = this.findBestWayDown();
+                    if(!isNaN(dir)) {
+                        this.move(du, dir); //This way to find a ladder, or a drop.
+                    } else { //No way down, try to go up!
+                        if(this.canClimbUp) {
+                            this.moveUp(du); //Can you go up here? Go for it!
+                        } else {
+                            dir = this.findBestWayUp(); //This way to find a ladder
+                            if(!isNaN(dir)) {
+                                this.move(du, dir);
+                            } else { //No way Up either! We're Stuck!
+                                this.move(du, DIRECTION.RIGHT) //LOST
+                                //TODO: Remove this debug line
+                                console.log("A Guard doesn't know how to reach the player!");
+                            }
+                        }
+                    }
+                }
+            } else {
+               if(this.canClimbUp) {
+                   this.moveUp(du); //Can you go up here? Go for it!
+               } else {
+                   let dir = this.findBestWayUp();
+                   if(!isNaN(dir)) {
+                        this.move(du, dir); //This way to find a ladder
+                    } else { //No way up, try to go down!
+                        if(this.canClimbDown || this.canDrop) {
+                            this.moveDown(du); //Can you go down here? Go for it!
+                        } else {
+                            dir = this.findBestWayDown();
+                            if(!isNaN(dir)) {
+                                this.move(du, dir); //This way to find a ladder, or a drop.
+                            } else { //No way down either! We're Stuck!
+                                this.move(du, DIRECTION.RIGHT) //LOST
+                                //TODO: Remove this debug line
+                                console.log("A Guard doesn't know how to reach the player!");
+                            }
+                        }
+                    }
+                }
+            }
+        }
    }
-    findClosestWayUp() {
-       //TODO: Implement
+ }
+
+
+   canReach(c) {
+        let reachable = true;
+        //console.log(`c = ${c}`);
+        //console.log(`this.column = ${this.column}`);
+        //console.log(`i = ${Math.min(this.column, c)}, i < ${Math.min(this.column, c)}`)
+        for(let i = Math.min(this.column, c); i < Math.max(this.column, c); i++) {
+            if(!(this.row + 1 < gLevel.length)) {
+                if(this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row][i])){
+                    reachable = false;
+                }
+           } else {
+                if(this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row][i]) ||
+                (gLevel[this.row + 1][i] === BLOCKTYPE.AIR && gLevel[this.row][i] != BLOCKTYPE.ROPE)) {
+                reachable = false;
+                }
+           }
+       }
+       return reachable;
    }
 
-   findClosestWayDown() {
-       //TODO: Implement
+    findBestWayUp() {
+        let targetDir = NaN;
+        let closestDist = Infinity; //inf
 
-   }
+        for(let i = 0; i < gLevel[0].length; i++) {
+                if(gLevel[this.row][i] === BLOCKTYPE.LADDER) {
+                    let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
+                    if(distance < closestDist) {
+                        if(this.canReach(i)) {
+                            closestDist = distance;
+                            if(i > this.column) {
+                                targetDir = DIRECTION.RIGHT;
+                            } else {
+                                targetDir = DIRECTION.LEFT;
+                            }
+                        }
+                    }
+                }
+            }
+            return targetDir;
+    }
+
+    findBestWayDown() {
+        if(!(this.row + 1 < gLevel.length)) {
+            return NaN;
+        }
+        let targetDir = NaN;
+        let closestDist = Infinity; //inf
+
+        for(let i = 0; i < gLevel[0].length; i++) {
+            if(!this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row + 1][i])) {
+                let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
+                if(distance < closestDist) {
+                    if(this.canReach(i)) {
+                        closestDist = distance;
+                        if(i > this.column) {
+                            targetDir = DIRECTION.RIGHT;
+                        } else {
+                            targetDir = DIRECTION.LEFT;
+                    }
+                    }
+
+                }
+            }
+        }
+
+        return targetDir;
+    }
 
     update(du){
         spatialManager.unregister(this);
@@ -168,8 +242,16 @@ class Guard extends Actor{
         this.prevState = this.state;
 
         //Trap Handling Logic
-        if(this.trapped) this.trapLifeSpan -= du;
-        if(this.trapLifeSpan < 0){
+        if(this.trapped == true) {
+            this.tryEscape(du);
+        }
+
+        //State and movement management
+        this.blocks = this.surroundingBlocks(this.row,this.column);
+
+
+        //Guard death
+        if(this.blocks[1][1] === BLOCKTYPE.BREAKABLE){
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;

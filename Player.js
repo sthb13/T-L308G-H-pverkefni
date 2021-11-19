@@ -5,17 +5,8 @@ class Player extends Actor{
         this.x = x;
         this.y = y;
 
-        this.row = Math.round(this.x/GRID_BLOCK_W);
-        this.column = Math.round(this.y/GRID_BLOCK_H);
-
-        this.reset_time = 3000 / NOMINAL_UPDATE_INTERVAL;
-
-        // Remember my reset positions
-        this.reset_x = this.x;
-        this.reset_y = this.y;
-        this.reset_row = this.row;
-        this.reset_column = this.column;
-
+        this.column = Math.round(this.x/GRID_BLOCK_W);
+        this.row = Math.round(this.y/GRID_BLOCK_H);
 
         this.speed = 4; // ~240 px/s
         this.image = g_images.player;
@@ -39,46 +30,20 @@ class Player extends Actor{
         this.KEY_DOWN = 'S'.charCodeAt(0);
         this.KEY_HOLE_LEFT = 'J'.charCodeAt(0);
         this.KEY_HOLE_RIGHT = 'K'.charCodeAt(0);
+        this.KEY_NEWGAME = 'N'.charCodeAt(0);
 
         this.timeDigging = 0;
 
         //TODO: Remove this debug stuff
         this.isPlayer = true;
-    }
+        this.soundFalling = new Audio("sounds/fall.ogg");
+        this.soundDig = new Audio("sounds/dig.ogg");
+        this.soundGold = new Audio("sounds/getGold.ogg");
+        this.soundDead = new Audio("sounds/dead.ogg");
+        this.soundBorn = new Audio("sounds/born.ogg");
+        // TODO: needs interaction first, like press space
+        this.soundBorn.play();
 
-    setPos(x, y, r, c) {
-      this.x = x;
-      this.y = y;
-      this.row = r;
-      this.column = c;
-    }
-
-    getPosX() {
-      return this.x;
-    }
-
-
-    reset(){
-      this.setPos(this.reset_x, this.reset_y, this.reset_row, this.reset_column);
-      // this._isFalling = false;
-      // this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
-      this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-      // this.GRABBABLE_BLOCK_TYPES = [BLOCKTYPE.ROPE];
-      this.blocks = this.surroundingBlocks(this.row,this.column);
-      this.state = STATE.ONBLOCK; //check if this is true
-      this.prevState = this.state;
-      this.spriteChange = false;
-
-      this.above = this.blocks[0][1];  //
-      this.center = this.blocks[1][1]; //
-      this.below = this.blocks[2][1];  // convenience fields to avoid
-      this.left = this.blocks[1][0];   // logic errors
-      this.right = this.blocks[1][2];  //
-      this.maxX = 0;
-      this.correctionNeeded = false;
-      this.canClimbUp = false;
-      this.canClimbDown = false;
-      this.isClimbing = false;
     }
 
 
@@ -88,40 +53,39 @@ class Player extends Actor{
         this.dirPrev = this.dir;
         this.prevState = this.state;
 
-        /* Trying to pause for 1-2 seconds after player dies
-        if(g_hasMoved) {
-          // Die downtime
-          this.reset_time -= du;
-          if (this.reset_time < 0) {
-            g_isUpdatePaused = true;
-          }
-      }
-        g_isUpdatePaused = false;
-        */
-
         // State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
         if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
         this.setClimbingOptions();
 
-        if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
-            if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
-                //Do Nothing
-            } else if(this.state != STATE.DIGGING) {
-                if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
-                if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
-            }
-        } else {
-            if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
-                //Do nothing
-            } else if(this.state != STATE.DIGGING) {
-                if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
-                if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
-            }
-
+        if(this.state == STATE.LANDING || this.state == STATE.INROPE || this.state == STATE.ONHEAD) {
+            this.soundFalling.pause();
+            this.soundFalling.currentTime = 0;
         }
+        if(!g_gameOver) {
+          if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
+              if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
+                  //Do Nothing
+              } else if(this.state != STATE.DIGGING) {
+                  if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
+                  if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+              }
+          } else {
+              if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
+                  //Do nothing
+              } else if(this.state != STATE.DIGGING) {
+                  if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+                  if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+              }
 
+          }
+        }
+        if(eatKey([this.KEY_NEWGAME])) {
+          console.log("N");
+          g_isUpdatePaused = false;
+          entityManager.restartGame();
+        }
         //Should be changed before this.checkState() is called.
         if(this.state === STATE.DIGGING) {this.timeDigging += du}
 
@@ -131,33 +95,38 @@ class Player extends Actor{
         Entity.prototype.setPos(this.x,this.y);
 
         //Digging Logic
-        if(this.state != STATE.DIGGING && this != STATE.FALLING) {
-            if(keys[this.KEY_HOLE_LEFT] && gLevel[this.row+1][this.column-1] == BLOCKTYPE.BREAKABLE) {
-                this.state = STATE.DIGGING;
-                this.timeDigging = 0;
-                entityManager._holes.push(new Hole(this.column-1,this.row+1));
-                }
+        if(this.state != STATE.DIGGING && this.state != STATE.FALLING && this.state != STATE.LANDING && this.state != STATE.INROPE) {
+            //console.log("X: " , this.x, "Column X", this.column*GRID_BLOCK_W)
+            if(keys[this.KEY_HOLE_LEFT] &&
+                gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
+                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
+                this.x >= this.column * GRID_BLOCK_W) {
+                    this.state = STATE.DIGGING;
+                    this.timeDigging = 0;
+                    this.soundDig.play();
+                    entityManager._holes.push(new Hole(this.column-1,this.row+1));
+            }
 
-            if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE) {
-                this.state = STATE.DIGGING;
-                this.timeDigging = 0;
-                entityManager._holes.push(new Hole(this.column+1,this.row+1));
+            if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE &&
+                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column+1]) &&
+                this.x <= this.column * GRID_BLOCK_W) {
+                    this.state = STATE.DIGGING;
+                    this.timeDigging = 0;
+                    this.soundDig.play();
+                    entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
         }
 
-
-        // this.row = Math.floor(this.y/GRID_BLOCK_H);
-        // this.column = Math.floor(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
-        // this.row = Math.ceil(this.y/GRID_BLOCK_H);
-        // this.column = Math.ceil(this.x/GRID_BLOCK_W);
 
-         spatialManager.register(this);
+        spatialManager.register(this);
 
         this.checkCollision();
         // console.log(spatialManager.checkCollision(this.x,this.y));
-         // this.debug();
+        // this.debug();
+        //console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
+
     }
 
 
