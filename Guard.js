@@ -242,11 +242,11 @@ class Guard extends Actor{
 
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round((this.x)/GRID_BLOCK_W);
-        spatialManager.register(this);
         this.checkCollision();
 
+        spatialManager.register(this);
         //this.debug();
-        this.debugGuards();
+        //this.debugGuards();
     }
 
     debugGuards(){

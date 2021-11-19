@@ -62,7 +62,6 @@ init: function() {
     // structure of gLevel without refactoring
     gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
     // console.log(gLevel);
-    g_levelInfo = gLevel;
     this._level = new Level(gLevel);
     this._level.init();
 

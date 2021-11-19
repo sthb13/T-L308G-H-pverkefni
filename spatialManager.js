@@ -142,21 +142,21 @@ render: function(ctx) {
     },
 
     boxCollision: function(x,y,type){
-    const t = 10; //tolerance
-        for (let i=0;i<this._entities.length;i++) {
-            const e = this._entities[i];
-            if(e){
-                //don't check collision with itself
-                 // if (e.entity.type != BLOCKTYPE.PLAYER_SPAWN){
-                 if (e.entity.type != type){
+        const t = 15; //tolerance
+        let entities = [];
+            for (let i=0;i<this._entities.length;i++) {
+                const e = this._entities[i];
+                if(e) {
                     if  (x < e.posX + e.width - t &&
-                         x + e.width - t> e.posX &&
-                         y < e.posY + e.height &&
-                         y + e.height  > e.posY) return e.entity;                             }
+                            x + e.width - t> e.posX &&
+                            y < e.posY + e.height &&
+                            y + e.height + 2 > e.posY) entities.push(e.entity);
+                }
+                
             }
-
+        if(entities.length === 0) {
+            return false;
         }
-    return false;
-},
-
+        return entities;
+    },
 }
