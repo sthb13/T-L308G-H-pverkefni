@@ -208,6 +208,7 @@ class Actor extends Entity{
 
     checkCollision(){
         const obj = spatialManager.boxCollision(this.x,this.y,this.type);
+        console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
         // catching gold
         if(obj.type === BLOCKTYPE.GOLD_SPAWN){
             if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
@@ -244,14 +245,18 @@ class Actor extends Entity{
                 if(this.carriesGold) {
 
                     //console.log(this.column,this.row);
-                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
+                    if(this.left === BLOCKTYPE.AIR){
+                        entityManager._gold.push(new Gold((this.column - 1)*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
+                    }else{
+                            entityManager._gold.push(new Gold((this.column + 1)*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
+                        }
                     this.carriesGold = false;
                 }
 
             }
         }
 
-        if(obj.type === BLOCKTYPE.GUARD_SPAWN) {
+        if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
             //running over guard
             if(this.row != obj.row) {
                 this.onHead = true;

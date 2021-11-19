@@ -246,12 +246,14 @@ class Guard extends Actor{
         this.checkCollision();
 
         //this.debug();
-        //this.debugGuards();
+        this.debugGuards();
     }
 
     debugGuards(){
-        console.log(`Distance to player: ${this.dtp}, x: ${this.dx}, y: ${this.dy}
+        console.log(`
 GuardY: ${this.y}, State: ${Object.keys(STATE)[ this.state ]}
-PlayerY: ${gPlayer.y}`);
+PlayerY: ${gPlayer.y}
+OnHead?: ${this.onHead}
+`);
     }
 }

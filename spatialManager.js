@@ -46,7 +46,7 @@ register: function(entity) {
     case BLOCKTYPE.GOLD_SPAWN:
          pos.posX += 12;
          pos.posY += 20;
-        width = 20;
+        width = 22;
         height = 30;
         break;
     case BLOCKTYPE.GUARD_SPAWN:
@@ -62,11 +62,11 @@ register: function(entity) {
     }
     // var width = entity.getWidth();
     // var height = entity.getHeight()
-    
+
     // DONE: YOUR STUFF HERE!
     this._entities[spatialID] = {posX: pos.posX, posY: pos.posY, width, height, entity}
-    
-    
+
+
 },
 
 unregister: function(entity) {
@@ -93,7 +93,7 @@ findEntityInRange: function(posX, posY, radius) {
         const b = util.square(40);
         // if(d < b) return e.entity;
             console.log(d,b);
-            
+
             if(d < b) return true;
         }
     }
@@ -104,7 +104,7 @@ render: function(ctx) {
     // console.log(this._entities);
     var oldStyle = ctx.strokeStyle;
     ctx.strokeStyle = "red";
-    
+
     // for (var ID in this._entities) {
      for (let i=0;i<this._entities.length;i++) {
         const e = this._entities[i];
@@ -135,7 +135,7 @@ render: function(ctx) {
             // return collision;
 
     },
-    // } 
+    // }
     checkExtremeties: function(x,y){
         if(x > 0 && x < 1080 && y > 0 && y < 704) return true;
         return false;
@@ -147,13 +147,14 @@ render: function(ctx) {
             const e = this._entities[i];
             if(e){
                 //don't check collision with itself
-                if (e.entity.type != type){
+                 // if (e.entity.type != BLOCKTYPE.PLAYER_SPAWN){
+                 if (e.entity.type != type){
                     if  (x < e.posX + e.width - t &&
                          x + e.width - t> e.posX &&
                          y < e.posY + e.height &&
                          y + e.height  > e.posY) return e.entity;                             }
             }
-            
+
         }
     return false;
 },
