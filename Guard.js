@@ -28,6 +28,7 @@ class Guard extends Actor{
 
         this.carriesGold = false;
         this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
+        this.sound = false;
 
         this.timeit = false;
         this.timeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
@@ -202,13 +203,18 @@ class Guard extends Actor{
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
         if (this.tellEscapePosition() === true) {
-            this.soundTrap.play();
+            if (this.sound === false) {
+                this.soundTrap.play();
+                this.sound = !this.sound;   
+            }
+
             this.escapeLifeSpan -= du;
             if (this.escapeLifeSpan < 0) {
                 this.escapePosition();
                 console.log("escape");
                 this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
                 this.timeit = true;
+                this.sound = false;
             }
         }
 
