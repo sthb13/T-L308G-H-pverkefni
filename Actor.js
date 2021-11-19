@@ -229,7 +229,8 @@ class Actor extends Entity{
     }
 
     checkCollision(){
-        const collisions = spatialManager.boxCollision(this.x,this.y,this.type);
+        const collisions = spatialManager.boxCollision(this.x,this.y);
+        console.log(collisions);
         this.onHead = false;
         for(let i = 0; i < collisions.length; i++) {
             let obj = collisions[i];
@@ -249,21 +250,22 @@ class Actor extends Entity{
                     this.carriesGold = true;
                     obj._isDeadNow = true;
                 }
-                if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
-                    //running over guard
-                    if(this.row < obj.row) {
-                        this.onHead = true;
-                    }
-                    // player dies
-                    if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
-                        console.log("Player died");
-                        lifeManager.looseLife();
-                        if(lifeManager.lifeNumber > 0) {
-                            g_playerDead = true;
-                        }else{
-                            console.log("Game Over");
-                            entityManager.gameOver();
-                        }
+            }
+            
+            if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
+                //running over guard
+                if(this.row < obj.row) {
+                    this.onHead = true;
+                }
+                // player dies
+                if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
+                    console.log("Player died");
+                    lifeManager.looseLife();
+                    if(lifeManager.lifeNumber > 0) {
+                        g_playerDead = true;
+                    }else{
+                        console.log("Game Over");
+                        entityManager.gameOver();
                     }
                 }
             }
