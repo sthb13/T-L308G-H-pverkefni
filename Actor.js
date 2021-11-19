@@ -306,6 +306,8 @@ class Actor extends Entity{
                 }
             }
         }
+            }
+        }
     }
 
     // tracks 9 blocks around actor
