@@ -19,7 +19,7 @@ var g_levelInfo;
 var g_playerDead = false;
 var g_gameOver = false;
 var g_hasMoved = false;
-var g_resetAir = false;
+var g_startGame = true;
 // The "nominal interval" is the one that all of our time-based units are
 // calibrated to e.g. a velocity unit is "pixels per nominal interval"
 //

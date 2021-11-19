@@ -38,6 +38,13 @@ drawGameOver: function() {
   g_ctx.drawImage(this.image, g_canvas.width / 2 - this.image.width / 2, g_canvas.height / 2 - this.image.height / 2);
 },
 
+// Draw Welcome Text
+drawWelcome: function() {
+  this.wImage = g_images.welcome;
+  this.wSprite = g_sprites.welcome;
+  g_ctx.drawImage(this.wImage, g_canvas.width / 2 - this.wImage.width / 2, g_canvas.height / 2 - this.wImage.height / 2);
+},
+
   // Draw the life number
 drawLifeNumber: function() {
   g_ctx.font = '31px lode_runner_c64regular';
@@ -60,6 +67,7 @@ render: function(ctx) {
     this.drawLifeNumber();
     this.drawLifeTxt();
     if(g_gameOver) this.drawGameOver();
+    //if(g_startGame) this.drawWelcome();
 },
 
 

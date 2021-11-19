@@ -3,7 +3,7 @@ class Actor extends Entity{
         super();
 
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.PLAYER_SPAWN, BLOCKTYPE.GOLD_SPAWN, BLOCKTYPE.GUARD_SPAWN, BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -254,7 +254,6 @@ class Actor extends Entity{
               console.log("Player died");
               lifeManager.looseLife();
               if(lifeManager.lifeNumber > 0) {
-                entityManager.resetLevel();
                 g_playerDead = true;
               }else{
                 console.log("Game Over");

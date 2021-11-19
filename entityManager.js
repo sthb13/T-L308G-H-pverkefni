@@ -60,15 +60,16 @@ deferredSetup : function () {
 init: function() {
     // gLevel is now initialized in globals.js, we can't change the
     // structure of gLevel without refactoring
-    gLevel = levelData[this.currentLevel];
+    gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
     // console.log(gLevel);
     g_levelInfo = gLevel;
     this._level = new Level(gLevel);
     this._level.init();
+
 },
 
 resetLevel: function() {
-    g_resetAir = true;
+    //g_resetAir = true;
     g_hasMoved = false;
     //TODO: FIX THIS FUNCTION
     //TODO: Maybe we shouldn't just loop levels
@@ -77,10 +78,14 @@ resetLevel: function() {
     this.reset();
     //TODO: Win screen if we run out of levels;
     this._player = null;
-    gLevel = levelData[this.currentLevel];
+    gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
     this._level = new Level(gLevel);
+    console.log(this._level);
     this._level.init();
     this.deferredSetup();
+    console.log(this._categories);
+    console.log(this._holes);
+    console.log();
 },
 
 gameOver: function() {
@@ -104,9 +109,10 @@ restartGame: function() {
 reset: function() {
     /*
     for (var c = 0; c < this._categories.length; ++c) {
-        this._categories[c] = [];+
+        this._categories[c] = [];
     }
     */
+    console.log("CALLED");
     this._holes = [];
     this._gold = [];
     this._guards = [];
@@ -129,23 +135,25 @@ reset: function() {
 // },
 
 update: function(du) {
-    for (var c = 0; c < this._categories.length; ++c) {
+      for (var c = 0; c < this._categories.length; ++c) {
 
-        var aCategory = this._categories[c];
-        var i = 0;
-        // console.log(this._blocks);
-        while (i < aCategory.length) {
-            var status = aCategory[i].update(du);
-            if (status === this.KILL_ME_NOW) {
-                // remove the dead guy, and shuffle the others down to
-                // prevent a confusing gap from appearing in the array
-                aCategory.splice(i,1);
-            // }
-            } else {
-                ++i;
-            }
-        }
-    }
+          var aCategory = this._categories[c];
+          var i = 0;
+          // console.log(this._blocks);
+          while (i < aCategory.length) {
+
+              var status = aCategory[i].update(du);
+              if (status === this.KILL_ME_NOW) {
+                  // remove the dead guy, and shuffle the others down to
+                  // prevent a confusing gap from appearing in the array
+                  aCategory.splice(i,1);
+              // }
+              } else {
+                  ++i;
+              }
+          }
+      }
+
     if(this._player != null) {
         this._player.update(du);
     }
@@ -158,10 +166,12 @@ update: function(du) {
                 break;
             }
         }
+
         if(!guardCarriesGold && this._level != null) {
             this._level.revealLadders();
             this.readyToAdvance = true;
         }
+
     }
 
     if(g_playerDead) {
@@ -172,6 +182,7 @@ update: function(du) {
 
     if(gPlayer !== null) {
       if(this.readyToAdvance && gPlayer.row === 0) {
+        console.log("PLAYER");
           this.currentLevel++;
           levelNumberManager.nextLevel();
           this.resetLevel();
