@@ -10,7 +10,8 @@ class Hole extends Entity{
         this.image = g_images.hole;
         this.sprite = g_sprites.hole;
 
-        this.digLifeSpan = 6000 / NOMINAL_UPDATE_INTERVAL; // dig timer.
+        this.digLifeSpan = 5000 / NOMINAL_UPDATE_INTERVAL; // dig timer.
+        this.secretLifeSpan = 4999 / NOMINAL_UPDATE_INTERVAL;
 
         this.ANIM = {LEFT:[0,1,2,3,4,5,6,7],RIGHT:[9,10,11,12,13,14,15,16]};
         this.sprites = this.generateSprites(this.ANIM.RIGHT);
@@ -27,8 +28,17 @@ class Hole extends Entity{
 
         this.spriteAnim(this.ANIM.RIGHT);
         this.nextSpriteCounter -= du;
-        gLevel[this.column][this.row] = BLOCKTYPE.HOLE;
+        gLevel[this.column][this.row] = BLOCKTYPE.LADDER;
+
+        this.secretLifeSpan -= du;
         this.digLifeSpan -= du;
+
+        if (this.secretLifeSpan < 0) {
+            this.kill();
+            gLevel[this.column][this.row] = BLOCKTYPE.HOLE;
+            //gLevel[this.column-2][this.row] = BLOCKTYPE.LADDER;
+        }
+
         if (this.digLifeSpan < 0) {
             this.kill();
             this.sprite = g_sprites.brick;

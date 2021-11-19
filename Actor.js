@@ -20,6 +20,7 @@ class Actor extends Entity{
         this.canClimbDown = false;
         this.isClimbing = false;
         this.trapped = false;
+        this.authTrap = false;
         this.onHead = false;
     }
 
@@ -165,14 +166,22 @@ class Actor extends Entity{
             this.y = this.row * GRID_BLOCK_H;
         }
         
-        if(this.state === STATE.CLIMBING || ((this.state === STATE.FALLING && !this.onHead) && this.trapped) || this.state === STATE.LANDING) {
+        if(this.state === STATE.CLIMBING || ((this.state === STATE.FALLING && !this.onHead)) || this.state === STATE.LANDING) {
             this.x = this.column * GRID_BLOCK_W;
         }
     }
 
     escapePosition(){
-        this.y = (this.row - 2) * GRID_BLOCK_H;
-        this.x = (this.column + 1) * GRID_BLOCK_W;
+        this.trapped = true;
+        this.authTrap = false;
+    }
+
+    refreshEscapePosition(){
+        this.trapped = false;
+    }
+
+    tellEscapePosition(){
+        return this.authTrap;
     }
 
     updateSprite(){
@@ -225,10 +234,7 @@ class Actor extends Entity{
         // falling in hole
         if(obj.type === BLOCKTYPE.HOLE){
             if(this.type === BLOCKTYPE.GUARD_SPAWN){
-                if(!this.trapped) this.soundTrap.play();
-                // TODO guard getting out of hole must set this back to false
-                this.trapped = true;
-                if(this.trapped) this.y = obj.y, this.x = obj.x;
+                if(this.trapped === false) this.y = obj.y, this.x = obj.x, this.authTrap = true;
 
                 if(this.carriesGold) {
 
