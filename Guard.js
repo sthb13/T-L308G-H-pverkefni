@@ -7,15 +7,15 @@ class Guard extends Actor{
         this.column = Math.round(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
         //TODO: Remove Logging
-        
 
-        this.speed = 2; 
+
+        this.speed = 2;
         this.image = g_images.guard;
         this.sprite = g_sprites.guard;
         this.ANIM = {RIGHT:[0,1,2],LEFT:[3,4,5], UP: [6,7], DOWN: [7,6],FALL: [8,8], ROPE_RIGHT:[9,10,11], ROPE_LEFT:[12,13,14]};
         this.sprites = this.generateSprites(this.ANIM.LEFT);
         this.csf = 0; //currentSpriteFrame
-        
+
         this.dir = DIRECTION.LEFT;
         this.dirPrev = DIRECTION.LEFT;
         this.SPRITEFREQ = 3; // requests next sprite every 3rd update
@@ -23,7 +23,7 @@ class Guard extends Actor{
         // formula at the bottom didn't work as exptected
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.type = BLOCKTYPE.GUARD_SPAWN;
-        
+
         gPlayer; //To Find Player
 
         this.carriesGold = false;
@@ -38,7 +38,7 @@ class Guard extends Actor{
     }
 
     tryEscape(){
-        
+
     }
 
     moveDown(du){
@@ -69,57 +69,59 @@ class Guard extends Actor{
     }
 
    findPlayer(du) {
-       //Try to go straight
-        if(gPlayer.row == this.row && this.moveSideways(du)){
-           //All is well.
-        } else {
-           //If player is below us go down, if he's at same height or above go up.
-           if(gPlayer.row > this.row) {
-               if(this.canClimbDown || this.canDrop) {
-                   this.moveDown(du); //Can you go down here? Go for it!
-                } else {
-                    let dir = this.findBestWayDown();
-                    if(!isNaN(dir)) {
-                        this.move(du, dir); //This way to find a ladder, or a drop.
-                    } else { //No way down, try to go up!
-                        if(this.canClimbUp) {
-                            this.moveUp(du); //Can you go up here? Go for it!
-                        } else {
-                            dir = this.findBestWayUp(); //This way to find a ladder
-                            if(!isNaN(dir)) {
-                                this.move(du, dir); 
-                            } else { //No way Up either! We're Stuck!
-                                this.move(du, DIRECTION.RIGHT) //LOST
-                                //TODO: Remove this debug line
-                                console.log("A Guard doesn't know how to reach the player!");
-                            }
-                        }
-                    }
-                }
-            } else {
-               if(this.canClimbUp) {
-                   this.moveUp(du); //Can you go up here? Go for it!
-               } else {
-                   let dir = this.findBestWayUp();
-                   if(!isNaN(dir)) {
-                        this.move(du, dir); //This way to find a ladder
-                    } else { //No way up, try to go down!
-                        if(this.canClimbDown || this.canDrop) {
-                            this.moveDown(du); //Can you go down here? Go for it!
-                        } else {
-                            dir = this.findBestWayDown();
-                            if(!isNaN(dir)) {
-                                this.move(du, dir); //This way to find a ladder, or a drop.
-                            } else { //No way down either! We're Stuck!
-                                this.move(du, DIRECTION.RIGHT) //LOST
-                                //TODO: Remove this debug line
-                                console.log("A Guard doesn't know how to reach the player!");
-                            }
-                        }
-                    }
-                }
-            }
-        }
+      if(g_hasMoved) {
+         //Try to go straight
+          if(gPlayer.row == this.row && this.moveSideways(du)){
+             //All is well.
+          } else {
+             //If player is below us go down, if he's at same height or above go up.
+             if(gPlayer.row > this.row) {
+                 if(this.canClimbDown || this.canDrop) {
+                     this.moveDown(du); //Can you go down here? Go for it!
+                  } else {
+                      let dir = this.findBestWayDown();
+                      if(!isNaN(dir)) {
+                          this.move(du, dir); //This way to find a ladder, or a drop.
+                      } else { //No way down, try to go up!
+                          if(this.canClimbUp) {
+                              this.moveUp(du); //Can you go up here? Go for it!
+                          } else {
+                              dir = this.findBestWayUp(); //This way to find a ladder
+                              if(!isNaN(dir)) {
+                                  this.move(du, dir);
+                              } else { //No way Up either! We're Stuck!
+                                  this.move(du, DIRECTION.RIGHT) //LOST
+                                  //TODO: Remove this debug line
+                                  console.log("A Guard doesn't know how to reach the player!");
+                              }
+                          }
+                      }
+                  }
+              } else {
+                 if(this.canClimbUp) {
+                     this.moveUp(du); //Can you go up here? Go for it!
+                 } else {
+                     let dir = this.findBestWayUp();
+                     if(!isNaN(dir)) {
+                          this.move(du, dir); //This way to find a ladder
+                      } else { //No way up, try to go down!
+                          if(this.canClimbDown || this.canDrop) {
+                              this.moveDown(du); //Can you go down here? Go for it!
+                          } else {
+                              dir = this.findBestWayDown();
+                              if(!isNaN(dir)) {
+                                  this.move(du, dir); //This way to find a ladder, or a drop.
+                              } else { //No way down either! We're Stuck!
+                                  this.move(du, DIRECTION.RIGHT) //LOST
+                                  //TODO: Remove this debug line
+                                  console.log("A Guard doesn't know how to reach the player!");
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+     }
    }
 
 
@@ -146,7 +148,7 @@ class Guard extends Actor{
     findBestWayUp() {
         let targetDir = NaN;
         let closestDist = Infinity; //inf
-        
+
         for(let i = 0; i < gLevel[0].length; i++) {
                 if(gLevel[this.row][i] === BLOCKTYPE.LADDER) {
                     let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
@@ -171,7 +173,7 @@ class Guard extends Actor{
         }
         let targetDir = NaN;
         let closestDist = Infinity; //inf
-        
+
         for(let i = 0; i < gLevel[0].length; i++) {
             if(!this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row + 1][i])) {
                 let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
@@ -184,11 +186,11 @@ class Guard extends Actor{
                             targetDir = DIRECTION.LEFT;
                     }
                     }
-                    
+
                 }
             }
         }
-        
+
         return targetDir;
     }
 
@@ -202,13 +204,13 @@ class Guard extends Actor{
 
         //Trap Handling Logic
         if(this.trapped) this.trapLifeSpan -= du;
-        
+
         if(this.trapLifeSpan < 0){
             this.kill();
             entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
             return entityManager.KILL_ME_NOW;
         }
-        
+
         //State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
@@ -217,7 +219,7 @@ class Guard extends Actor{
 
         //This also handles movement and state logic
         this.findPlayer(du);
-        
+
         this.state = this.checkState();
         this.correctPosition();
         this.updateSprite();

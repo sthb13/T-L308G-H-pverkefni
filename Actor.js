@@ -48,6 +48,7 @@ class Actor extends Entity{
     }
 
     move(du,dir){
+        g_hasMoved = true;
         if(this.state === STATE.FALLING || this.state === STATE.LANDING) {
             if(this.isPlayer && this.below === BLOCKTYPE.FALSE_BREAKABLE) {
                 entityManager.revealBlock(this.column, this.row + 1);
@@ -218,6 +219,13 @@ class Actor extends Entity{
 
         }
 
+        // Player touching a guard
+       /*if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
+         if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
+
+         }
+       }*/
+
         // falling in hole
         if(obj.type === BLOCKTYPE.HOLE){
             if(this.type === BLOCKTYPE.GUARD_SPAWN){
@@ -242,8 +250,17 @@ class Actor extends Entity{
                 this.onHead = true;
             }
             // player dies
-            if(this.row === obj.row) console.log("Player died");
-
+            if(this.row === obj.row) {
+              console.log("Player died");
+              lifeManager.looseLife();
+              if(lifeManager.lifeNumber > 0) {
+                entityManager.resetLevel();
+                g_playerDead = true;
+              }else{
+                console.log("Game Over");
+                entityManager.gameOver();
+              }
+            }
         }else{
             // must be set
             if(this.state != STATE.ONHEAD) this.onHead = false;

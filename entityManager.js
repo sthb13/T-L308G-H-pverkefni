@@ -17,7 +17,7 @@ with suitable 'data' and 'methods'.
 
 
 // Tell jslint not to complain about my use of underscore prefixes (nomen),
-// my flattening of some indentation (white), or my use of incr/decr ops 
+// my flattening of some indentation (white), or my use of incr/decr ops
 // (plusplus).
 //
 /*jslint nomen: true, white: true, plusplus: true*/
@@ -34,7 +34,7 @@ _blocks : [],
 _player : null,
 _level : null,
 readyToAdvance : false,
-currentLevel : 1,
+currentLevel : 0,
 
 
 _forEachOf: function(aCategory, fn) {
@@ -62,12 +62,14 @@ init: function() {
     // structure of gLevel without refactoring
     gLevel = levelData[this.currentLevel];
     // console.log(gLevel);
+    g_levelInfo = gLevel;
     this._level = new Level(gLevel);
     this._level.init();
-
 },
 
 resetLevel: function() {
+    g_resetAir = true;
+    g_hasMoved = false;
     //TODO: FIX THIS FUNCTION
     //TODO: Maybe we shouldn't just loop levels
     //this.currentLevel %= levelData.length - 1;
@@ -79,6 +81,24 @@ resetLevel: function() {
     this._level = new Level(gLevel);
     this._level.init();
     this.deferredSetup();
+},
+
+gameOver: function() {
+  g_gameOver = true;
+  this.resetLevel();
+  console.log("PRESS \"N\" for a new game!")
+  g_hasMoved = false;
+},
+
+restartGame: function() {
+  console.log("restartGame");
+  g_hasMoved = false;
+  g_gameOver = false;
+  this.currentLevel = 0;
+  this.resetLevel();
+  scoreManager.resetScore();
+  levelNumberManager.resetLevel();
+  lifeManager.resetLife();
 },
 
 reset: function() {
@@ -144,9 +164,18 @@ update: function(du) {
         }
     }
 
-    if(this.readyToAdvance && gPlayer.row === 0) {
-        this.currentLevel++;
-        this.resetLevel();
+    if(g_playerDead) {
+      g_playerDead = false;
+      console.log("g_playerDead");
+      this.resetLevel();
+    }
+
+    if(gPlayer !== null) {
+      if(this.readyToAdvance && gPlayer.row === 0) {
+          this.currentLevel++;
+          levelNumberManager.nextLevel();
+          this.resetLevel();
+      }
     }
 },
 
@@ -182,16 +211,15 @@ render: function(ctx) {
     if(this._player != null) {
         this._player.render(ctx);
     }
-    
+
 },
 
 //Feeds the guards a reference to player, called in level when all guards and player have been initialized
 initPlayerInfo: function() {
-    gPlayer = this._player;
+    if(this._player !== null) gPlayer = this._player;
 }
 
 }
 
 // Some deferred setup which needs the object to have been created first
 entityManager.deferredSetup();
-
