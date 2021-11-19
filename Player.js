@@ -93,7 +93,7 @@ class Player extends Actor{
             if(keys[this.KEY_HOLE_LEFT] && 
                 gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
                 this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
-                this.x >= this.column * GRID_BLOCK_W) {
+                this.x >= (this.column - 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
                     this.soundDig.play();
@@ -102,7 +102,7 @@ class Player extends Actor{
     
             if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE &&
                 this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column+1]) &&
-                this.x <= this.column * GRID_BLOCK_W) {
+                this.x <= (this.column + 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
                     this.soundDig.play();
