@@ -19,7 +19,7 @@ class Hole extends Entity{
         this.nextSpriteCounter = this.SPRITEFREQ;
         this.type = BLOCKTYPE.HOLE;
 
-        spatialManager.register(this);
+        //spatialManager.register(this);
     }
 
     update(du){
@@ -33,7 +33,7 @@ class Hole extends Entity{
             this.kill();
             this.sprite = g_sprites.brick;
             gLevel[this.column][this.row] = BLOCKTYPE.BREAKABLE;
-            spatialManager.unregister(this);
+            //spatialManager.unregister(this);
             return entityManager.KILL_ME_NOW;
         }
 

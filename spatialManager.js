@@ -44,9 +44,9 @@ register: function(entity) {
     var pos,spatialID,width, height;
     switch(entity.type){
     case BLOCKTYPE.GOLD_SPAWN:
-         pos.posX += 12;
+         pos.posX += 6;
          pos.posY += 20;
-        width = 22;
+        width = 32;
         height = 30;
         break;
     case BLOCKTYPE.GUARD_SPAWN:
@@ -141,22 +141,22 @@ render: function(ctx) {
         return false;
     },
 
-    boxCollision: function(x,y,type){
-    const t = 10; //tolerance
-        for (let i=0;i<this._entities.length;i++) {
-            const e = this._entities[i];
-            if(e){
-                //don't check collision with itself
-                 // if (e.entity.type != BLOCKTYPE.PLAYER_SPAWN){
-                 if (e.entity.type != type){
+    boxCollision: function(x,y){
+        const t = 15; //tolerance
+        let entities = [];
+            for (let i=0;i<this._entities.length;i++) {
+                const e = this._entities[i];
+                if(e) {
                     if  (x < e.posX + e.width - t &&
-                         x + e.width - t> e.posX &&
-                         y < e.posY + e.height &&
-                         y + e.height  > e.posY) return e.entity;                             }
+                            x + e.width - t> e.posX &&
+                            y < e.posY + e.height &&
+                            y + e.height + 2 > e.posY) entities.push(e.entity);
+                }
+                
             }
-
+        if(entities.length === 0) {
+            return false;
         }
-    return false;
-},
-
+        return entities;
+    },
 }

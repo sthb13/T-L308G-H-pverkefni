@@ -103,6 +103,7 @@ class Player extends Actor{
             if(keys[this.KEY_HOLE_LEFT] &&
                 gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
                 this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
+                !entityManager.guardInBlock(this.column - 1, this.row) &&
                 this.x >= (this.column - 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
@@ -112,6 +113,7 @@ class Player extends Actor{
 
             if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE &&
                 this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column+1]) &&
+                !entityManager.guardInBlock(this.column + 1, this.row) &&
                 this.x <= (this.column + 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
@@ -123,9 +125,8 @@ class Player extends Actor{
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
 
-        spatialManager.register(this);
-
         this.checkCollision();
+        spatialManager.register(this);
         // console.log(spatialManager.checkCollision(this.x,this.y));
         // this.debug();
         // console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
