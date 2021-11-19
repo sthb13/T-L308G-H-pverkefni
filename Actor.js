@@ -109,6 +109,19 @@ class Actor extends Entity{
         //We're digging until the hole is finished or we're interrupted
         //TODO: manage the case where we're interrupted
 
+        if(this.center === BLOCKTYPE.HIDDEN_LADDER) {
+            //if(!this.trapped) this.soundTrap.play();
+            // TODO guard getting out of hole must set this back to false
+            if(this.trapped === false) this.y = this.row*GRID_BLOCK_H, this.x = this.column*GRID_BLOCK_W;
+            if(this.carriesGold) {
+                if(this.left === BLOCKTYPE.AIR){
+                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
+                }else{
+                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
+                }
+                this.carriesGold = false;
+            }
+        }
 
         if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
             this.x = this.column * GRID_BLOCK_W;
@@ -216,73 +229,50 @@ class Actor extends Entity{
 
 
     checkCollision(){
-        const obj = spatialManager.boxCollision(this.x,this.y,this.type);
-        console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
-        // catching gold
-        if(obj.type === BLOCKTYPE.GOLD_SPAWN){
-            if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
-                this.soundGold.play();
-                scoreManager.goldPoints();
-                obj._isDeadNow = true;
-                           }
-            if(this.type === BLOCKTYPE.GUARD_SPAWN &&
-               this.carriesGold === false) {
-                this.image = g_images.guardRed;
-                this.sprite = g_sprites.guardRed;
-                this.spriteChange = true;
-                this.carriesGold = true;
-                obj._isDeadNow = true;
-            }
+        const collisions = spatialManager.boxCollision(this.x,this.y,this.type);
+        this.onHead = false;
 
-        }
+        for(let i = 0; i < collisions.length; i++) {
+            let obj = collisions[i];
 
-        // Player touching a guard
-       /*if(obj.type == BLOCKTYPE.GUARD_SPAWN) {
-         if(this.type == BLOCKTYPE.PLAYER_SPAWN) {
-
-         }
-       }*/
-
-        // falling in hole
-        if(obj.type === BLOCKTYPE.HOLE || obj.type === BLOCKTYPE.LADDER){
-            if(this.type === BLOCKTYPE.GUARD_SPAWN){
-                if(this.trapped === false) this.y = obj.y, this.x = obj.x, this.authTrap = true;
-
-                if(this.carriesGold) {
-
-                    //console.log(this.column,this.row);
-                    if(this.left === BLOCKTYPE.AIR){
-                        entityManager._gold.push(new Gold((this.column - 1)*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
-                    }else{
-                            entityManager._gold.push(new Gold((this.column + 1)*GRID_BLOCK_W, this.row*GRID_BLOCK_H));
-                        }
-                    this.carriesGold = false;
+            console.log(`checkColl: ${Object.keys(BLOCKTYPE)[this.type]} is colliding with ${Object.keys(BLOCKTYPE)[ obj.type ] }`);
+            // catching gold
+            if(obj.type === BLOCKTYPE.GOLD_SPAWN){
+                if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
+                    this.soundGold.play();
+                    scoreManager.goldPoints();
+                    obj._isDeadNow = true;
+                }
+                if(this.type === BLOCKTYPE.GUARD_SPAWN &&
+                   !this.carriesGold && 
+                   !this.trapped) {
+                    this.image = g_images.guardRed;
+                    this.sprite = g_sprites.guardRed;
+                    this.spriteChange = true;
+                    this.carriesGold = true;
+                    obj._isDeadNow = true;
                 }
 
             }
-        }
 
-        if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
-            //running over guard
-            if(this.row != obj.row) {
-                this.onHead = true;
+            if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
+                //running over guard
+                if(this.row < obj.row) {
+                    this.onHead = true;
+                }
+                // player dies
+                if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
+                    console.log("Player died");
+                    lifeManager.looseLife();
+                    if(lifeManager.lifeNumber > 0) {
+                        g_playerDead = true;
+                    }else{
+                        console.log("Game Over");
+                        entityManager.gameOver();
+                    }
+                }
             }
-            // player dies
-            if(this.row === obj.row) {
-              console.log("Player died");
-              lifeManager.looseLife();
-              if(lifeManager.lifeNumber > 0) {
-                g_playerDead = true;
-              }else{
-                console.log("Game Over");
-                entityManager.gameOver();
-              }
-            }
-        }else{
-            // must be set
-            if(this.state != STATE.ONHEAD) this.onHead = false;
         }
-
     }
 
     // tracks 9 blocks around actor

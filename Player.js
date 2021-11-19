@@ -123,9 +123,8 @@ class Player extends Actor{
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
 
-        spatialManager.register(this);
-
         this.checkCollision();
+        spatialManager.register(this);
         // console.log(spatialManager.checkCollision(this.x,this.y));
         // this.debug();
         // console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
