@@ -3,7 +3,8 @@ class Actor extends Entity{
         super();
 
         this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.PLAYER_SPAWN, BLOCKTYPE.GOLD_SPAWN, BLOCKTYPE.GUARD_SPAWN, BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+        this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -24,18 +25,17 @@ class Actor extends Entity{
     }
 
     setClimbingOptions(){
-        if(this.below === BLOCKTYPE.LADDER ||
-            this.center === BLOCKTYPE.LADDER &&
+        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.below) ||
+            this.CLIMBABLE_BLOCK_TYPES.includes(this.center) &&
                 (this.y < this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.below))) {
             this.canClimbDown = true;
         } else {
             this.canClimbDown = false;
         }
 
-        if((this.center === BLOCKTYPE.LADDER && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
-            (this.below === BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H) ||
-            (this.above === BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H) ||
-            (!this.isPlayer && this.escaping)) {
+        if((this.CLIMBABLE_BLOCK_TYPES.includes(this.center) && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
+            this.CLIMBABLE_BLOCK_TYPES.includes(this.below) && this.y > this.row * GRID_BLOCK_H ||
+            this.CLIMBABLE_BLOCK_TYPES.includes(this.above) && this.y < (this.row+0.25) * GRID_BLOCK_H) {
                 this.canClimbUp = true;
             }
         else {
@@ -139,12 +139,12 @@ class Actor extends Entity{
         }
 
         //if in a stair block, and not climbing then we're standing.
-        if(this.center === BLOCKTYPE.LADDER) {
+        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.center)) {
             return STATE.ONBLOCK;
         }
 
         // standing on top of the ladder
-        if(this.below === BLOCKTYPE.LADDER &&
+        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.below) &&
             this.INCORPOREAL_BLOCK_TYPES.includes(this.center)) {
                 return STATE.ONBLOCK;
            }
@@ -183,7 +183,7 @@ class Actor extends Entity{
     }
 
     correctPosition(){
-        if(this.trapped) {
+        if(this.trapped && !this.escaping) {
             this.x = this.column * GRID_BLOCK_W;
             this.y = this.row * GRID_BLOCK_H;
         }

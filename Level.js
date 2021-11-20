@@ -41,11 +41,11 @@ class Level {
                     break;
                 case BLOCKTYPE.GOLD_SPAWN:
                     entityManager._gold.push(new Gold(x,y));
-                    //this.level[j][i] = BLOCKTYPE.AIR;
+                    this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.PLAYER_SPAWN:
                     entityManager._player = (new Player(x,y));
-                    //this.level[j][i] = BLOCKTYPE.AIR;
+                    this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.FALSE_BREAKABLE:
                     console.log("Creating False Wall");
@@ -54,7 +54,7 @@ class Level {
                 case BLOCKTYPE.GUARD_SPAWN:
                     console.log("GUARD_SPAWN");
                     entityManager._guards.push(new Guard(x,y));
-                    //this.level[j][i] = BLOCKTYPE.AIR;
+                    this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.HOLE:
                     entityManager._holes.push(new Hole(x,y));

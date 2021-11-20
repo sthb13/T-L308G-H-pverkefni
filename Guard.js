@@ -76,9 +76,26 @@ class Guard extends Actor{
 
    findPlayer(du) {
       if(g_hasMoved) {
-            if(this.escaping && this.trapRow == this.row) {
-                this.moveUp(du);
+            if(this.escaping) {
+                if(this.trapRow == this.row) {
+                    this.moveUp(du);
+                } else {
+                    if(this.x < gPlayer.x) {
+                        if(this.state == STATE.CLIMBING && this.y > this.row*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                            this.moveUp(du);
+                        } else {
+                            this.move(du, DIRECTION.RIGHT);
+                        }
+                    } else if (this.x > gPlayer.x) {
+                        if(this.state == STATE.CLIMBING && this.y > this.row*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                            this.moveUp(du);
+                        } else {
+                            this.move(du, DIRECTION.LEFT);
+                        }
+                    }
+                }
                 return;
+                    
         }
          //Try to go straight
           if(gPlayer.row == this.row && this.moveSideways(du)){
@@ -160,7 +177,7 @@ class Guard extends Actor{
         let closestDist = Infinity; //inf
 
         for(let i = 0; i < gLevel[0].length; i++) {
-                if(gLevel[this.row][i] === BLOCKTYPE.LADDER) {
+                if(this.CLIMBABLE_BLOCK_TYPES.includes(gLevel[this.row][i])) {
                     let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
                     if(distance < closestDist) {
                         if(this.canReach(i)) {
@@ -220,14 +237,18 @@ class Guard extends Actor{
             if(this.escapeTimer <= 0) {
                 this.escaping = true;
                 console.log("escaping");
+                this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER, BLOCKTYPE.HOLE];
+                this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
             }
         }
         
         if(this.trapColumn != this.column) {
             if(this.escaping) {
-                console.log("done escaping");
+                this.escaping = false;
+                this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+                this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
             }
-            this.escaping = false;
+            
         }
 
         //Guard death
