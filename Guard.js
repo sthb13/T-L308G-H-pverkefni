@@ -251,13 +251,6 @@ class Guard extends Actor{
             
         }
 
-        //Guard death
-        if(this.blocks[1][1] === BLOCKTYPE.BREAKABLE){
-            this.kill();
-            entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
-            return entityManager.KILL_ME_NOW;
-        }
-
         // This used?
         //State and movement management
         //this.blocks = this.surroundingBlocks(this.row,this.column);
@@ -270,6 +263,14 @@ class Guard extends Actor{
 
         this.state = this.checkState();
         this.correctPosition();
+
+        //Guard death
+        if(this.center === BLOCKTYPE.BREAKABLE || this.below == BLOCKTYPE.BREAKABLE && this.y > this.row * GRID_BLOCK_H){
+            this.kill();
+            entityManager._guards.push(new Guard(Math.floor(util.randRange(1,26))*GRID_BLOCK_W,0));
+            return entityManager.KILL_ME_NOW;
+        }
+
         this.updateSprite();
         Entity.prototype.setPos(this.x,this.y);
 
