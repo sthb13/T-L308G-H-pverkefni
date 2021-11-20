@@ -122,6 +122,9 @@ class Actor extends Entity{
             }
             if(this.carriesGold) {
                 entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
+                this.image = g_images.guard;
+                this.sprite = g_sprites.guard;
+
                 this.carriesGold = false;
             }
         } else {
