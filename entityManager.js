@@ -35,8 +35,8 @@ _player : null,
 _level : null,
 readyToAdvance : false,
 currentLevel : 0,
-soundBorn : new Audio("sounds/born.ogg"),
-
+soundDead : new Audio("sounds/dead.ogg"),
+soundPass : new Audio("sounds/pass.ogg"),
 
 _forEachOf: function(aCategory, fn) {
     for (var i = 0; i < aCategory.length; ++i) {
@@ -62,37 +62,27 @@ init: function() {
     // gLevel is now initialized in globals.js, we can't change the
     // structure of gLevel without refactoring
     gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
-    // console.log(gLevel);
     this._level = new Level(gLevel);
     this._level.init();
-
 },
 
 resetLevel: function() {
-    //g_resetAir = true;
     g_hasMoved = false;
-    //TODO: FIX THIS FUNCTION
-    //TODO: Maybe we shouldn't just loop levels
-    //this.currentLevel %= levelData.length - 1;
     spatialManager.reset();
     this.reset();
-    //TODO: Win screen if we run out of levels;
     this._player = null;
     gLevel = JSON.parse(JSON.stringify(levelData[this.currentLevel]));
     this._level = new Level(gLevel);
-    console.log(this._level);
     this._level.init();
     this.deferredSetup();
-    console.log(this._categories);
-    console.log(this._holes);
-    console.log();
 },
 
 gameOver: function() {
   g_gameOver = true;
-  this.resetLevel();
-  console.log("PRESS \"N\" for a new game!")
   g_hasMoved = false;
+  if(!isMute) this.soundDead.play();
+  this.reset();
+  console.log("PRESS \"N\" for a new game!")
 },
 
 restartGame: function() {
@@ -107,12 +97,6 @@ restartGame: function() {
 },
 
 reset: function() {
-    /*
-    for (var c = 0; c < this._categories.length; ++c) {
-        this._categories[c] = [];
-    }
-    */
-    console.log("CALLED");
     this._holes = [];
     this._gold = [];
     this._guards = [];
@@ -122,32 +106,17 @@ reset: function() {
     this._level = null;
     this.readyToAdvance = false;
 },
-    // TODO better have this in Player class?
-// findInitalPositionOfEntity : function(entity){
-//     let entities = [];
-//     for(let j=0;j<gLevel.length;j++){
-//         for(let i=0;i<gLevel[j].length;i++){
-//             // if (gLevel[j][i] == entity) return {x:j,y:i};
-//             if (gLevel[j][i] == entity) entities.push({x:i,y:j});
-//         }
-//     }
-//     return entities;
-// },
 
 update: function(du) {
       for (var c = 0; c < this._categories.length; ++c) {
-
           var aCategory = this._categories[c];
           var i = 0;
-          // console.log(this._blocks);
           while (i < aCategory.length) {
-
               var status = aCategory[i].update(du);
               if (status === this.KILL_ME_NOW) {
                   // remove the dead guy, and shuffle the others down to
                   // prevent a confusing gap from appearing in the array
                   aCategory.splice(i,1);
-              // }
               } else {
                   ++i;
               }
@@ -176,15 +145,16 @@ update: function(du) {
 
     if(g_playerDead) {
       g_playerDead = false;
-      console.log("g_playerDead");
+      if(!isMute) this.soundDead.play();
+      console.log("Player died");
       this.resetLevel();
     }
 
     if(gPlayer !== null) {
       if(this.readyToAdvance && gPlayer.row === 0) {
-        console.log("PLAYER");
           this.currentLevel++;
-          this.soundBorn.play();
+          if(!isMute) this.soundPass.play();
+          scoreManager.levelPoints();
           lifeManager.gainLife();
           levelNumberManager.nextLevel();
           this.resetLevel();
@@ -202,7 +172,6 @@ revealBlock: function(column, row) {
 
     for (let i = 0; i < blocks.length; i++) {
         if(blocks[i].x === column*GRID_BLOCK_W && blocks[i].y === row*GRID_BLOCK_H)  {
-            console.log(blocks[i]);
             blocks[i].revealBlock();
         }
     }
@@ -213,9 +182,7 @@ render: function(ctx) {
     var debugX = 10, debugY = 100;
 
     for (var c = 0; c < this._categories.length; ++c) {
-
         var aCategory = this._categories[c];
-
         for (var i = 0; i < aCategory.length; ++i) {
             aCategory[i].render(ctx);
         }

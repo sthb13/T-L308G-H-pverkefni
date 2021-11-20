@@ -178,7 +178,7 @@ class Actor extends Entity{
     fallingDown(du){
         // TODO if time implement RIGHT_FALL and LEFT_FALL, change
         // actor into correct direction position
-        if(this.type === BLOCKTYPE.PLAYER_SPAWN) this.soundFalling.play();
+        if(this.type === BLOCKTYPE.PLAYER_SPAWN && !isMute) this.soundFalling.play();
         this.dir = DIRECTION.DOWN;
         this.spriteAnim(this.ANIM.FALL);
 
@@ -190,7 +190,7 @@ class Actor extends Entity{
             this.x = this.column * GRID_BLOCK_W;
             this.y = this.row * GRID_BLOCK_H;
         }
-        
+
         if(this.state === STATE.ONBLOCK || this.state === STATE.INROPE) {
             this.y = this.row * GRID_BLOCK_H;
         }
@@ -238,12 +238,12 @@ class Actor extends Entity{
             // catching gold
             if(obj.type === BLOCKTYPE.GOLD_SPAWN){
                 if(this.type === BLOCKTYPE.PLAYER_SPAWN) {
-                    this.soundGold.play();
+                    if(!isMute) this.soundGold.play();
                     scoreManager.goldPoints();
                     obj._isDeadNow = true;
                 }
                 if(this.type === BLOCKTYPE.GUARD_SPAWN &&
-                   !this.carriesGold && 
+                   !this.carriesGold &&
                    !this.trapped) {
                     this.image = g_images.guardRed;
                     this.sprite = g_sprites.guardRed;
@@ -252,7 +252,7 @@ class Actor extends Entity{
                     obj._isDeadNow = true;
                 }
             }
-            
+
             if(obj.type === BLOCKTYPE.GUARD_SPAWN ) {
                 //running over guard
                 if(this.row < obj.row) {

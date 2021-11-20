@@ -10,15 +10,13 @@ levelNumber : 1,
 xOffset : 4,
 y : 748,
 levelTextWidth : GRID_BLOCK_W*25,
-//height : 44,
 
 update: function(du) {
 
 },
 
 initialize: function() {
-    // Initialize the Level number
-    //drawLevelTxt();
+  
 },
 
   // Draw the text on the canvas

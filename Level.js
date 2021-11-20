@@ -7,8 +7,8 @@ class Level {
         this.height = GRID_BLOCK_H;
         this.sprite = g_sprites.empty;
 
-        this.soundPass = new Audio("sounds/pass.ogg");
-        this.soundPassPlayer = false;
+        this.soundBorn = new Audio("sounds/born.ogg");
+        this.soundBornPlayer = false;
     }
 
     update (du){
@@ -48,11 +48,9 @@ class Level {
                     this.level[j][i] = BLOCKTYPE.AIR;
                     break;
                 case BLOCKTYPE.FALSE_BREAKABLE:
-                    console.log("Creating False Wall");
                     entityManager._blocks.push(new FalseWall(x,y));
                     break;
                 case BLOCKTYPE.GUARD_SPAWN:
-                    console.log("GUARD_SPAWN");
                     entityManager._guards.push(new Guard(x,y));
                     this.level[j][i] = BLOCKTYPE.AIR;
                     break;
@@ -63,7 +61,6 @@ class Level {
                     entityManager._blocks.push(new Wall(x,y,false));
                     break;
                 default:
-                    console.log("defaultinit?");
                     break;
             }
             offsetX += this.width;
@@ -87,8 +84,8 @@ class Level {
             }
         }
 
-        if(!this.soundPassPlayed) this.soundPass.play();
-        this.soundPassPlayed = true;
+        if(!this.soundBornPlayed && !isMute) this.soundBorn.play();
+        this.soundBornPlayed = true;
     }
 
     //Deprecated, gLevel used instead

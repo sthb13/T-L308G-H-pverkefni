@@ -56,13 +56,13 @@ class Guard extends Actor{
     moveSideways(du){
         if(this.canReach(gPlayer.column)) {
             if(this.x < gPlayer.x) {
-                if(this.state == STATE.CLIMBING && this.y > (this.row-0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                if(this.state == STATE.CLIMBING && this.y > (this.row+0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
                     this.moveUp(du);
                 } else {
                     this.move(du, DIRECTION.RIGHT);
                 }
             } else if (this.x > gPlayer.x) {
-                if(this.state == STATE.CLIMBING && this.y > (this.row-0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                if(this.state == STATE.CLIMBING && this.y > (this.row+0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
                     this.moveUp(du);
                 } else {
                     this.move(du, DIRECTION.LEFT);
@@ -95,7 +95,7 @@ class Guard extends Actor{
                     }
                 }
                 return;
-                    
+
         }
          //Try to go straight
           if(gPlayer.row == this.row && this.moveSideways(du)){
@@ -241,14 +241,14 @@ class Guard extends Actor{
                 this.incorporealBlockTypes = [BLOCKTYPE.AIR, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
             }
         }
-        
+
         if(this.trapColumn != this.column) {
             if(this.escaping) {
                 this.escaping = false;
                 this.incorporealBlockTypes = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
                 this.climbableBlockTypes = [BLOCKTYPE.LADDER];
             }
-            
+
         }
 
         // This used?

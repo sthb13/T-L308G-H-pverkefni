@@ -10,15 +10,13 @@ score : 0,
 xOffset :4,
 y : 748,
 scoreWidth : GRID_BLOCK_W*5,
-//height : 44,
 
 update: function(du) {
 
 },
 
 initialize: function() {
-    // Initialize the Scoreboard
-    //drawScoreTxt();
+
 },
 
   // Draw the text on the canvas

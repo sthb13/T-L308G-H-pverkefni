@@ -54,11 +54,19 @@ var KEY_SPATIAL = keyCode('X');
 
 var KEY_RESET = keyCode('R');
 
+var KEY_NEWGAME = keyCode('N');
+
 function processDiagnostics() {
 
     if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
 
+    if(eatKey([KEY_NEWGAME])) {
+      console.log("N");
+      g_gameOver = false;
+      entityManager.restartGame();
+    }
 }
+
 
 
 // =================
@@ -85,6 +93,7 @@ function renderSimulation(ctx) {
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
+
 
 
 // =============

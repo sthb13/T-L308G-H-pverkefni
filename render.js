@@ -17,7 +17,7 @@ var TOGGLE_RENDER = 'R'.charCodeAt(0);
 var TOGGLE_GRID = 'G'.charCodeAt(0);
 
 function render(ctx) {
-    
+
     // Process various option toggles
     //
     if (eatKey(TOGGLE_CLEAR)) g_doClear = !g_doClear;
@@ -26,12 +26,12 @@ function render(ctx) {
     if (eatKey(TOGGLE_FLIPFLOP)) g_doFlipFlop = !g_doFlipFlop;
     if (eatKey(TOGGLE_RENDER)) g_doRender = !g_doRender;
     if (eatKey(TOGGLE_GRID)) g_doGrid = !g_doGrid;
-    
+
     // I've pulled the clear out of `renderSimulation()` and into
     // here, so that it becomes part of our "diagnostic" wrappers
     //
     if (g_doClear) util.clearCanvas(ctx);
-    
+
     // The main purpose of the box is to demonstrate that it is
     // always deleted by the subsequent "undo" before you get to
     // see it...
@@ -39,12 +39,12 @@ function render(ctx) {
     // i.e. double-buffering prevents flicker!
     //
     if (g_doBox) util.fillBox(ctx, 200, 200, 50, 50, "red");
-    
-    
+
+
     // The core rendering of the actual game / simulation
     //
     if (g_doRender) renderSimulation(ctx);
-    
+
     if (g_doGrid) util.helperGrid(ctx);
     // This flip-flip mechanism illustrates the pattern of alternation
     // between frames, which provides a crude illustration of whether
@@ -55,21 +55,24 @@ function render(ctx) {
     if (g_doFlipFlop) {
         var boxX = 250,
             boxY = g_isUpdateOdd ? 100 : 200;
-        
+
+        ctx.fillStyle = "orange";
+        ctx.font = 'bold 14px serif';
+
         // Draw flip-flop box
         util.fillBox(ctx, boxX, boxY, 50, 50, "green");
-        
+
         // Display the current frame-counter in the box...
         ctx.fillText(g_frameCounter % 1000, boxX + 10, boxY + 20);
         // ..and its odd/even status too
         var text = g_frameCounter % 2 ? "odd" : "even";
         ctx.fillText(text, boxX + 10, boxY + 40);
     }
-    
+
     // Optional erasure of diagnostic "box",
     // to illustrate flicker-proof double-buffering
     //
     if (g_undoBox) ctx.clearRect(200, 200, 50, 50);
-    
+
     ++g_frameCounter;
 }

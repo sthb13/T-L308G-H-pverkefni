@@ -30,8 +30,8 @@ class Player extends Actor{
         this.KEY_DOWN = 'S'.charCodeAt(0);
         this.KEY_HOLE_LEFT = 'J'.charCodeAt(0);
         this.KEY_HOLE_RIGHT = 'K'.charCodeAt(0);
-        this.KEY_NEWGAME = 'N'.charCodeAt(0);
-        
+        this.KEY_MUTE = 'L'.charCodeAt(0);
+
         this.timeDigging = 0;
 
         //TODO: Remove this debug stuff
@@ -41,8 +41,6 @@ class Player extends Actor{
         this.soundGold = new Audio("sounds/getGold.ogg");
         this.soundDead = new Audio("sounds/dead.ogg");
         this.soundBorn = new Audio("sounds/born.ogg");
-        // TODO: needs interaction first, like press space
-        this.soundBorn.play();
 
     }
 
@@ -83,10 +81,9 @@ class Player extends Actor{
             }
         }
 
-      if(eatKey([this.KEY_NEWGAME])) {
-          console.log("N");
-          g_gameOver = false;
-          entityManager.restartGame();
+        if(eatKey([this.KEY_MUTE])) {
+            console.log("L");
+            isMute = !isMute;
         }
 
         //Should be changed before this.checkState() is called.
@@ -107,7 +104,7 @@ class Player extends Actor{
                 this.x >= (this.column - 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
-                    this.soundDig.play();
+                    if(!isMute) this.soundDig.play();
                     entityManager._holes.push(new Hole(this.column-1,this.row+1));
             }
 
@@ -117,7 +114,7 @@ class Player extends Actor{
                 this.x <= (this.column + 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
                     this.timeDigging = 0;
-                    this.soundDig.play();
+                    if(!isMute) this.soundDig.play();
                     entityManager._holes.push(new Hole(this.column+1,this.row+1));
                 }
         }
