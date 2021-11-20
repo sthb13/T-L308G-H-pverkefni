@@ -102,7 +102,7 @@ class Player extends Actor{
             //console.log("X: " , this.x, "Column X", this.column*GRID_BLOCK_W)
             if(keys[this.KEY_HOLE_LEFT] &&
                 gLevel[this.row+1][this.column-1] === BLOCKTYPE.BREAKABLE &&
-                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column-1]) &&
+                this.incorporealBlockTypes.includes(gLevel[this.row][this.column-1]) &&
                 !entityManager.guardInBlock(this.column - 1, this.row) &&
                 this.x >= (this.column - 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;
@@ -112,7 +112,7 @@ class Player extends Actor{
             }
 
             if(keys[this.KEY_HOLE_RIGHT] && gLevel[this.row+1][this.column+1] == BLOCKTYPE.BREAKABLE &&
-                this.INCORPOREAL_BLOCK_TYPES.includes(gLevel[this.row][this.column+1]) &&
+                this.incorporealBlockTypes.includes(gLevel[this.row][this.column+1]) &&
                 !entityManager.guardInBlock(this.column + 1, this.row) &&
                 this.x <= (this.column + 0.33) * GRID_BLOCK_W) {
                     this.state = STATE.DIGGING;

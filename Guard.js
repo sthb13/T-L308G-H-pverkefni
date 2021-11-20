@@ -159,11 +159,11 @@ class Guard extends Actor{
         //console.log(`i = ${Math.min(this.column, c)}, i < ${Math.min(this.column, c)}`)
         for(let i = Math.min(this.column, c); i < Math.max(this.column, c); i++) {
             if(!(this.row + 1 < gLevel.length)) {
-                if(this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row][i])){
+                if(this.collidableBlockTypes.includes(gLevel[this.row][i])){
                     reachable = false;
                 }
            } else {
-                if(this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row][i]) ||
+                if(this.collidableBlockTypes.includes(gLevel[this.row][i]) ||
                 (gLevel[this.row + 1][i] === BLOCKTYPE.AIR && gLevel[this.row][i] != BLOCKTYPE.ROPE)) {
                 reachable = false;
                 }
@@ -177,7 +177,7 @@ class Guard extends Actor{
         let closestDist = Infinity; //inf
 
         for(let i = 0; i < gLevel[0].length; i++) {
-                if(this.CLIMBABLE_BLOCK_TYPES.includes(gLevel[this.row][i])) {
+                if(this.climbableBlockTypes.includes(gLevel[this.row][i])) {
                     let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
                     if(distance < closestDist) {
                         if(this.canReach(i)) {
@@ -202,7 +202,7 @@ class Guard extends Actor{
         let closestDist = Infinity; //inf
 
         for(let i = 0; i < gLevel[0].length; i++) {
-            if(!this.COLLIDEABLE_BLOCK_TYPES.includes(gLevel[this.row + 1][i])) {
+            if(!this.collidableBlockTypes.includes(gLevel[this.row + 1][i])) {
                 let distance = Math.abs(this.column - i) + Math.abs(gPlayer.column - i);
                 if(distance < closestDist) {
                     if(this.canReach(i)) {
@@ -237,16 +237,16 @@ class Guard extends Actor{
             if(this.escapeTimer <= 0) {
                 this.escaping = true;
                 console.log("escaping");
-                this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER, BLOCKTYPE.HOLE];
-                this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+                this.climbableBlockTypes = [BLOCKTYPE.LADDER, BLOCKTYPE.HOLE];
+                this.incorporealBlockTypes = [BLOCKTYPE.AIR, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
             }
         }
         
         if(this.trapColumn != this.column) {
             if(this.escaping) {
                 this.escaping = false;
-                this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
-                this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
+                this.incorporealBlockTypes = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+                this.climbableBlockTypes = [BLOCKTYPE.LADDER];
             }
             
         }
