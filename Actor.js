@@ -2,9 +2,9 @@ class Actor extends Entity{
     constructor(){
         super();
 
-        this.COLLIDEABLE_BLOCK_TYPES = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
-        this.INCORPOREAL_BLOCK_TYPES = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
-        this.CLIMBABLE_BLOCK_TYPES = [BLOCKTYPE.LADDER];
+        this.collidableBlockTypes = [BLOCKTYPE.BREAKABLE, BLOCKTYPE.SOLID];
+        this.incorporealBlockTypes = [BLOCKTYPE.AIR, BLOCKTYPE.HOLE, BLOCKTYPE.HIDDEN_LADDER, BLOCKTYPE.FALSE_BREAKABLE];
+        this.climbableBlockTypes = [BLOCKTYPE.LADDER];
         this.blocks = this.surroundingBlocks(this.row,this.column);
         this.state = STATE.ONBLOCK; //check if this is true
         this.prevState = this.state;
@@ -25,24 +25,24 @@ class Actor extends Entity{
     }
 
     setClimbingOptions(){
-        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.below) ||
-            this.CLIMBABLE_BLOCK_TYPES.includes(this.center) &&
-                (this.y < this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.below))) {
+        if(this.climbableBlockTypes.includes(this.below) ||
+            this.climbableBlockTypes.includes(this.center) &&
+                (this.y < this.row * GRID_BLOCK_H || !this.collidableBlockTypes.includes(this.below))) {
             this.canClimbDown = true;
         } else {
             this.canClimbDown = false;
         }
 
-        if((this.CLIMBABLE_BLOCK_TYPES.includes(this.center) && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
-            this.CLIMBABLE_BLOCK_TYPES.includes(this.below) && this.y > this.row * GRID_BLOCK_H ||
-            this.CLIMBABLE_BLOCK_TYPES.includes(this.above) && this.y < (this.row+0.25) * GRID_BLOCK_H) {
+        if((this.climbableBlockTypes.includes(this.center) && (this.y > this.row * GRID_BLOCK_H || !this.collidableBlockTypes.includes(this.above))) ||
+            this.climbableBlockTypes.includes(this.below) && this.y > this.row * GRID_BLOCK_H ||
+            this.climbableBlockTypes.includes(this.above) && this.y < (this.row+0.25) * GRID_BLOCK_H) {
                 this.canClimbUp = true;
             }
         else {
             this.canClimbUp = false;
         }
 
-        if((this.state === STATE.INROPE || this.state === STATE.CLIMBING) && this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) {
+        if((this.state === STATE.INROPE || this.state === STATE.CLIMBING) && this.incorporealBlockTypes.includes(this.below)) {
             this.canDrop = true;
         } else {
             this.canDrop = false;
@@ -63,7 +63,7 @@ class Actor extends Entity{
         switch(dir){
             case DIRECTION.RIGHT:
                 this.isClimbing = false;
-                if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.right)){
+                if(this.collidableBlockTypes.includes(this.right)){
                     if(this.x > this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_RIGHT);
@@ -73,7 +73,7 @@ class Actor extends Entity{
                 break;
             case DIRECTION.LEFT:
                 this.isClimbing = false;
-                if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.left)) {
+                if(this.collidableBlockTypes.includes(this.left)) {
                     if(this.x < this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
@@ -139,34 +139,34 @@ class Actor extends Entity{
         }
 
         //if in a stair block, and not climbing then we're standing.
-        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.center)) {
+        if(this.climbableBlockTypes.includes(this.center)) {
             return STATE.ONBLOCK;
         }
 
         // standing on top of the ladder
-        if(this.CLIMBABLE_BLOCK_TYPES.includes(this.below) &&
-            this.INCORPOREAL_BLOCK_TYPES.includes(this.center)) {
+        if(this.climbableBlockTypes.includes(this.below) &&
+            this.incorporealBlockTypes.includes(this.center)) {
                 return STATE.ONBLOCK;
            }
 
-        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
+        if(this.incorporealBlockTypes.includes(this.center) &&
            (this.below === BLOCKTYPE.ROPE ||
-            this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) &&
+            this.incorporealBlockTypes.includes(this.below)) &&
             this.onHead) return STATE.ONHEAD;
 
-        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.center) &&
-           (this.below === BLOCKTYPE.ROPE || this.INCORPOREAL_BLOCK_TYPES.includes(this.below))) {
+        if(this.incorporealBlockTypes.includes(this.center) &&
+           (this.below === BLOCKTYPE.ROPE || this.incorporealBlockTypes.includes(this.below))) {
             return STATE.FALLING;
            }
 
         if(this.center === BLOCKTYPE.ROPE && this.y <= this.row * GRID_BLOCK_H) return STATE.INROPE;
 
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
+        if(this.collidableBlockTypes.includes(this.below) && this.y < this.row*GRID_BLOCK_H) return STATE.LANDING;
 
-        if(this.COLLIDEABLE_BLOCK_TYPES.includes(this.below)) return STATE.ONBLOCK;
+        if(this.collidableBlockTypes.includes(this.below)) return STATE.ONBLOCK;
 
         if(this.below == BLOCKTYPE.AIR || this.below == BLOCKTYPE.HOLE) return STATE.FALLING;
-        if(this.INCORPOREAL_BLOCK_TYPES.includes(this.below)) return STATE.FALLING;
+        if(this.incorporealBlockTypes.includes(this.below)) return STATE.FALLING;
 
         //State remains unchanged
         return this.state;
@@ -258,9 +258,9 @@ class Actor extends Entity{
                 // player dies
                 if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
                     console.log("Player died");
-                    //lifeManager.looseLife();
+                    lifeManager.looseLife();
                     if(lifeManager.lifeNumber > 0) {
-                        //g_playerDead = true;
+                        g_playerDead = true;
                     }else{
                         console.log("Game Over");
                         entityManager.gameOver();
