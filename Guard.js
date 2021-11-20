@@ -81,13 +81,13 @@ class Guard extends Actor{
                     this.moveUp(du);
                 } else {
                     if(this.x < gPlayer.x) {
-                        if(this.state == STATE.CLIMBING && this.y > (this.row-0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                        if(this.state == STATE.CLIMBING && this.y > (this.row+0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
                             this.moveUp(du);
                         } else {
                             this.move(du, DIRECTION.RIGHT);
                         }
                     } else if (this.x > gPlayer.x) {
-                        if(this.state == STATE.CLIMBING && this.y > (this.row-0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
+                        if(this.state == STATE.CLIMBING && this.y > (this.row+0.10)*GRID_BLOCK_H) {//Always climb all the way up the ladder
                             this.moveUp(du);
                         } else {
                             this.move(du, DIRECTION.LEFT);
