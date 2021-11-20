@@ -48,40 +48,40 @@ class Player extends Actor{
 
 
     update(du){
-      if(!g_gameOver) {
-        // console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
-        spatialManager.unregister(this);
-        this.nextSpriteCounter -= du;
-        this.dirPrev = this.dir;
-        this.prevState = this.state;
+        if(!g_gameOver) {
+            // console.log(`State: ${Object.keys(STATE)[this.state]} OnHead?: ${this.onHead}`);
+            spatialManager.unregister(this);
+            this.nextSpriteCounter -= du;
+            this.dirPrev = this.dir;
+            this.prevState = this.state;
 
-        // State and movement management
-        this.blocks = this.surroundingBlocks(this.row,this.column);
+            // State and movement management
+            this.blocks = this.surroundingBlocks(this.row,this.column);
 
-        if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
-        this.setClimbingOptions();
+            if(this.state == STATE.FALLING || this.state == STATE.LANDING) this.fallingDown(du);
+            this.setClimbingOptions();
 
-        if(this.state == STATE.LANDING || this.state == STATE.INROPE || this.state == STATE.ONHEAD) {
-            this.soundFalling.pause();
-            this.soundFalling.currentTime = 0;
-        }
-        if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
-            if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
-                //Do Nothing
-            } else if(this.state != STATE.DIGGING) {
-                if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
-                if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+            if(this.state == STATE.LANDING || this.state == STATE.INROPE || this.state == STATE.ONHEAD) {
+                this.soundFalling.pause();
+                this.soundFalling.currentTime = 0;
             }
-        } else {
-            if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
-                //Do nothing
-            } else if(this.state != STATE.DIGGING) {
-                if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
-                if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
-            }
+            if(keys[this.KEY_UP] || keys[this.KEY_DOWN]) {
+                if(keys[this.KEY_DOWN] && keys[this.KEY_UP]) {
+                    //Do Nothing
+                } else if(this.state != STATE.DIGGING) {
+                    if(keys[this.KEY_DOWN]) this.move(du, DIRECTION.DOWN);
+                    if(keys[this.KEY_UP]) this.move(du, DIRECTION.UP);
+                }
+            } else {
+                if(keys[this.KEY_LEFT] && keys[this.KEY_RIGHT]) {
+                    //Do nothing
+                } else if(this.state != STATE.DIGGING) {
+                    if(keys[this.KEY_LEFT]) this.move(du, DIRECTION.LEFT);
+                    if(keys[this.KEY_RIGHT]) this.move(du, DIRECTION.RIGHT);
+                }
 
+            }
         }
-      }
 
       if(eatKey([this.KEY_NEWGAME])) {
           console.log("N");

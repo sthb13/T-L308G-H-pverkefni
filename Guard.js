@@ -6,7 +6,11 @@ class Guard extends Actor{
         this.y = y;
         this.column = Math.round(this.x/GRID_BLOCK_W);
         this.row = Math.round(this.y/GRID_BLOCK_H);
-        //TODO: Remove Logging
+        this.trapped = false;
+        this.escaping = false;
+        this.escapeTimer = 0;
+        this.trapColumn = 0;
+        this.TIME_TO_ESCAPE = 3*SECS_TO_NOMINALS;
 
 
         this.speed = 2;
@@ -28,13 +32,14 @@ class Guard extends Actor{
 
         this.carriesGold = false;
 
+        /*
         this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
         this.sound = false;
 
         this.timeit = false;
         this.timeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
+        */
 
-        //TODO: Remove this, debug stuff
         this.isPlayer = false;
 
         this.soundTrap = new Audio("sounds/trap.ogg");
@@ -71,6 +76,10 @@ class Guard extends Actor{
 
    findPlayer(du) {
       if(g_hasMoved) {
+            if(this.escaping && this.trapRow == this.row) {
+                this.moveUp(du);
+                return;
+        }
          //Try to go straight
           if(gPlayer.row == this.row && this.moveSideways(du)){
              //All is well.
@@ -196,8 +205,6 @@ class Guard extends Actor{
     }
 
     update(du){
-
-        //console.log(this.column, ":", this.row);
         spatialManager.unregister(this);
         this.nextSpriteCounter -= du;
         this.dirPrev = this.dir;
@@ -207,30 +214,20 @@ class Guard extends Actor{
         //State and movement management
         this.blocks = this.surroundingBlocks(this.row,this.column);
 
-        if (this.tellEscapePosition() === true) {
-            if (this.sound === false) {
-                //this.soundTrap.play();
-                this.sound = !this.sound;
-            }
-
-            this.escapeLifeSpan -= du;
-            if (this.escapeLifeSpan < 0) {
-                this.escapePosition();
-                console.log("escape");
-                this.escapeLifeSpan = 3000 / NOMINAL_UPDATE_INTERVAL;
-                this.timeit = true;
-                this.sound = false;
+        //Escaping Holes
+        if(this.trapped) {
+            this.escapeTimer -= du;
+            if(this.escapeTimer <= 0) {
+                this.escaping = true;
+                console.log("escaping");
             }
         }
-
-
-        if (this.timeit === true) {
-            this.timeLifeSpan -= du;
-            if (this.timeLifeSpan < 0) {
-                this.refreshEscapePosition();
-                this.timeLifeSpan = 2000 / NOMINAL_UPDATE_INTERVAL;
-                this.timeit = false;
+        
+        if(this.trapColumn != this.column) {
+            if(this.escaping) {
+                console.log("done escaping");
             }
+            this.escaping = false;
         }
 
         //Guard death

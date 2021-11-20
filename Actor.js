@@ -19,7 +19,6 @@ class Actor extends Entity{
         this.canClimbUp = false;
         this.canClimbDown = false;
         this.isClimbing = false;
-        this.trapped = false;
         this.authTrap = false;
         this.onHead = false;
     }
@@ -34,8 +33,9 @@ class Actor extends Entity{
         }
 
         if((this.center === BLOCKTYPE.LADDER && (this.y > this.row * GRID_BLOCK_H || !this.COLLIDEABLE_BLOCK_TYPES.includes(this.above))) ||
-            this.below === BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H ||
-            this.above === BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H ) {
+            (this.below === BLOCKTYPE.LADDER && this.y > this.row * GRID_BLOCK_H) ||
+            (this.above === BLOCKTYPE.LADDER && this.y < (this.row+0.25) * GRID_BLOCK_H) ||
+            (!this.isPlayer && this.escaping)) {
                 this.canClimbUp = true;
             }
         else {
@@ -77,7 +77,8 @@ class Actor extends Entity{
                     if(this.x < this.column * GRID_BLOCK_W ) return;
                 }
                 if(this.state === STATE.INROPE) this.spriteAnim(this.ANIM.ROPE_LEFT);
-                if(this.state === STATE.ONBLOCK) this.spriteAnim(this.ANIM.LEFT);
+                if(this.state === STATE.ONBLOCK ||
+                   this.state === STATE.ONHEAD) this.spriteAnim(this.ANIM.LEFT);
                 this.x -= this.speed * du;
                 break;
             case DIRECTION.DOWN:
@@ -110,18 +111,21 @@ class Actor extends Entity{
         //We're digging until the hole is finished or we're interrupted
         //TODO: manage the case where we're interrupted
 
-        if(this.center === BLOCKTYPE.HIDDEN_LADDER) {
+        if(this.center === BLOCKTYPE.HOLE) {
             //if(!this.trapped) this.soundTrap.play();
             // TODO guard getting out of hole must set this back to false
-            if(this.trapped === false) this.y = this.row*GRID_BLOCK_H, this.x = this.column*GRID_BLOCK_W;
+            if(!this.isPlayer && !this.trapped) {
+                this.escapeTimer = this.TIME_TO_ESCAPE;
+                this.trapColumn = this.column;
+                this.trapRow = this.row;
+                this.trapped = true;
+            }
             if(this.carriesGold) {
-                if(this.left === BLOCKTYPE.AIR){
-                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
-                }else{
-                    entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
-                }
+                entityManager._gold.push(new Gold(this.column*GRID_BLOCK_W, (this.row-1)*GRID_BLOCK_H));
                 this.carriesGold = false;
             }
+        } else {
+            this.trapped = false;
         }
 
         if(this.state === STATE.DIGGING && this.timeDigging < TIME_TO_DIG_HOLE) {
@@ -138,8 +142,6 @@ class Actor extends Entity{
         if(this.center === BLOCKTYPE.LADDER) {
             return STATE.ONBLOCK;
         }
-
-        // INCORPOREAL = AIR, HOLE, HIDDEN_LADDER, FALSE_BREAKABLE
 
         // standing on top of the ladder
         if(this.below === BLOCKTYPE.LADDER &&
@@ -181,6 +183,11 @@ class Actor extends Entity{
     }
 
     correctPosition(){
+        if(this.trapped) {
+            this.x = this.column * GRID_BLOCK_W;
+            this.y = this.row * GRID_BLOCK_H;
+        }
+        
         if(this.state === STATE.ONBLOCK || this.state === STATE.INROPE) {
             this.y = this.row * GRID_BLOCK_H;
         }
@@ -190,6 +197,7 @@ class Actor extends Entity{
         }
     }
 
+    /*
     escapePosition(){
         this.trapped = true;
         this.authTrap = false;
@@ -201,7 +209,7 @@ class Actor extends Entity{
 
     tellEscapePosition(){
         return this.authTrap;
-    }
+    }*/
 
     updateSprite(){
         if(this.dir != this.dirPrev || this.state != this.prevState) {
@@ -209,15 +217,6 @@ class Actor extends Entity{
         }
     }
 
-    /* Deprecated, use updateSprite instead
-    isStateChange(){
-        if(this.prevState != this.state) {
-            this.spriteChange = true;
-            return true;
-        }
-        return false;
-    }
-    */
 
     isDirectionChange(){
         if(this.dir != this.dirPrev) {
@@ -259,9 +258,9 @@ class Actor extends Entity{
                 // player dies
                 if(this.row === obj.row && this.type === BLOCKTYPE.PLAYER_SPAWN) {
                     console.log("Player died");
-                    lifeManager.looseLife();
+                    //lifeManager.looseLife();
                     if(lifeManager.lifeNumber > 0) {
-                        g_playerDead = true;
+                        //g_playerDead = true;
                     }else{
                         console.log("Game Over");
                         entityManager.gameOver();
