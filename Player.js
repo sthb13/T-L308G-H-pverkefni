@@ -125,6 +125,18 @@ class Player extends Actor{
         this.row = Math.round(this.y/GRID_BLOCK_H);
         this.column = Math.round(this.x/GRID_BLOCK_W);
 
+        //Player Trapped
+        if(this.center === BLOCKTYPE.BREAKABLE || this.below == BLOCKTYPE.BREAKABLE && this.y > (this.row+0.10) * GRID_BLOCK_H){
+            console.log("Player was entombed");
+                    lifeManager.looseLife();
+                    if(lifeManager.lifeNumber > 0) {
+                        g_playerDead = true;
+                    }else{
+                        console.log("Game Over");
+                        entityManager.gameOver();
+                    }
+        }
+
         this.checkCollision();
         spatialManager.register(this);
         // console.log(spatialManager.checkCollision(this.x,this.y));
